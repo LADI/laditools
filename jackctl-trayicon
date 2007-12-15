@@ -25,7 +25,7 @@ import gtk
 from jack_controller import jack_controller
 from gobject import timeout_add, source_remove
 
-class traypyjack:
+class jackctl_trayicon:
 	def destroy(self, widget):
 		gtk.main_quit()
 
@@ -78,10 +78,8 @@ class traypyjack:
 		self.quit_item.show()
 		self.statusicon.connect("popup-menu", self.menu_callback)
 
-	def main(self):
+	def run(self):
 		gtk.main()
 		return 0;
 
-if __name__ == "__main__":
-	jack_control = traypyjack()
-	jack_control.main()
+jackctl_trayicon().run()
