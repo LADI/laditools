@@ -22,26 +22,7 @@
 import pygtk
 pygtk.require('2.0')
 import gtk
-import dbus
-
-name_base = 'org.jackaudio'
-controller_interface_name = name_base + '.JackController'
-service_name = name_base + '.service'
-
-class jack_controller:
-	def __init__(self):
-		 self.bus = dbus.SessionBus()
-		 self.controller = self.bus.get_object(service_name, "/DefaultController")
-		 self.iface = dbus.Interface(self.controller, controller_interface_name)
-	
-	def start(self):
-		self.iface.StartServer()
-	
-	def stop(self):
-		self.iface.StopServer()
-
-	def kill(self):
-		self.iface.Exit()
+from jack_controller import jack_controller
 
 class pyjackctlIcon:
 	def delete_event(self, widget, event):
