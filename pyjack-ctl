@@ -23,29 +23,46 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 from jack_controller import jack_controller
+from gobject import timeout_add, source_remove
 
-class pyjackctlIcon:
-	def delete_event(self, widget, event):
-		print "delete event occurred"
-		return False
-
+class traypyjack:
 	def destroy(self, widget):
 		gtk.main_quit()
 
 	def start_callback(self, widget):
-		self.jack.StartServer()
+		self.jack.start()
+		self.tooltip_updater = timeout_add(1000, self.update_callback)
 	
 	def stop_callback(self, widget):
-		self.jack.StopServer()
+		self.jack.stop()
+		source_remove(self.tooltip_updater)
+		self.statusicon.set_tooltip("Server stopped")
 	
 	def menu_callback(self, widget, event, data=None):
 		self.menu.popup(None, None, None, 3, 0)
 		return True
 	
+	def update_callback(self):
+		# Realtime status
+		if self.jack.is_realtime():
+			status_text = "RT | "
+		
+		# DSP Load
+		status_text += str(round(float(self.jack.get_load()),1)) + "% | "
+
+		# Xruns
+		status_text += str(self.jack.get_xruns())
+
+		self.statusicon.set_tooltip(status_text)
+		return True
+	
 	def __init__(self):
 		self.jack = jack_controller()
-		self.statusicon = gtk.status_icon_new_from_file('/usr/share/pixmaps/qjackctl.png')
-		self.statusicon.set_tooltip("PyGTK JACK Control Icon !")
+		self.statusicon = gtk.status_icon_new_from_file("/usr/share/pixmaps/qjackctl.png")
+		if self.jack.is_started():
+			self.tooltip_updater = timeout_add(1000, self.update_callback)
+		else:
+			self.statusicon.set_tooltip("Server stopped")
 		self.menu = gtk.Menu()
 		self.start_item = gtk.MenuItem("_Start JACK")
 		self.stop_item = gtk.MenuItem("Sto_p JACK")
@@ -66,5 +83,5 @@ class pyjackctlIcon:
 		return 0;
 
 if __name__ == "__main__":
-	jack_control = pyjackctlIcon()
+	jack_control = traypyjack()
 	jack_control.main()
