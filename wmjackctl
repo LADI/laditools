@@ -4,6 +4,16 @@ import sys
 import os
 from wmdocklib import wmoo, pywmhelpers
 from jack_controller import jack_controller
+import time
+
+try:
+    import pygtk
+    pygtk.require('2.0')
+    import gtk
+    import gobject
+    have_gtk = True
+except:
+    have_gtk = False
 
 class wmjackctl(wmoo.Application):
     def __init__(self):
@@ -14,6 +24,44 @@ class wmjackctl(wmoo.Application):
             margin = 2,
             debug = False)
 
+        if have_gtk:
+            self.menu = gtk.Menu()
+            self.start_item = gtk.MenuItem("_Start JACK")
+            self.stop_item = gtk.MenuItem("Sto_p JACK")
+            self.quit_item = gtk.MenuItem("_Quit")
+            self.menu.append(self.start_item)
+            self.menu.append(self.stop_item)
+            self.menu.append(self.quit_item)
+            self.start_item.connect("activate", self.start_callback)
+            self.stop_item.connect("activate", self.stop_callback)
+            self.quit_item.connect("activate", self.destroy)
+
+            self.addCallback(self.on_button_release, 'buttonrelease', area=(0,0,64,64))
+
+        self.gtkloop = have_gtk
+
+    def on_button_release(self, event):
+        if event['button'] == 3:
+            self.show_popup_menu()
+
+    def show_popup_menu(self):
+        #print "show menu here!"
+        if have_gtk:
+            self.menu.popup(None, None, None, 3, 0)
+            self.menu.reposition()
+
+    def destroy(self, widget):
+        if self.gtkloop:
+            gtk.main_quit()
+        else:
+            self.go = False
+
+    def start_callback(self, widget):
+        self.jack.start()
+	
+    def stop_callback(self, widget):
+        self.jack.stop()
+	
     def update(self):
         lines = ["JACK"]
         try:
@@ -61,5 +109,53 @@ class wmjackctl(wmoo.Application):
         for line in lines:
             self.putString(x, y, line)
             y += 9
+
+    def do_dockapp(self):
+        """this is called from event loop.  events are examined and if a
+        callback has been registered, it is called, passing it the event as
+        argument.
+        """
+        event = pywmhelpers.getEvent()
+        while not event is None:
+            if event['type'] == 'destroynotify':
+                sys.exit(0)
+
+            for evtype, key, area, callback in self._events:
+                if evtype is not None and evtype != event['type']: continue
+                if key is not None and key != event['button']: continue
+                if area is not None:
+                    if not area[0] <= event['x'] <= area[2]: continue
+                    if not area[1] <= event['y'] <= area[3]: continue
+
+                callback(event)
+                
+            event = pywmhelpers.getEvent()
+        self.redraw()
+        #print "tick"
+        return True
+
+    def run_sleep(self):
+        self.go = True
+        while self.go:
+            if have_gtk:
+                while gtk.events_pending():
+                    gtk.main_iteration()
+            self.do_dockapp()
+            if have_gtk:
+                while gtk.events_pending():
+                    gtk.main_iteration()
+            time.sleep(self._sleep)
+
+    def run_gtk(self):
+        #print self._sleep
+        gobject.timeout_add(int(self._sleep * 1000), self.do_dockapp)
+        gtk.main()
+
+    def run(self):
+        if self.gtkloop:
+            self.menu.show_all()
+            self.run_gtk()
+        else:
+            self.run_sleep()
 
 wmjackctl().run()
