@@ -1,0 +1,87 @@
+#!/usr/bin/env python
+
+# pyjackctl - GNU/Linux systray integration for jackdbus
+# Copyright (C) 2007 Marc-Olivier Barre
+# 
+# Parts of this code are taken from jack_control by Nedko Arnaudov
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+name_base = 'org.jackaudio'
+controller_interface_name = name_base + '.JackController'
+service_name = name_base + '.service'
+
+import pygtk
+pygtk.require('2.0')
+import gtk
+import dbus
+
+class Jack:
+	def __init__(self):
+		 self.bus = dbus.SessionBus()
+		 self.controller = self.bus.get_object(service_name, "/DefaultController")
+		 self.iface = dbus.Interface(self.controller, controller_interface_name)
+
+class pyjackctlIcon:
+	def delete_event(self, widget, event):
+		print "delete event occurred"
+		return False
+
+	def destroy(self, widget):
+		gtk.main_quit()
+
+	def start_callback(self, widget):
+		self.jacki.iface.StartServer()
+	
+	def stop_callback(self, widget):
+		self.jacki.iface.StopServer()
+	
+	def kill_callback(self, widget):
+		self.jacki.iface.Exit()
+	
+	def menu_callback(self, widget, event, data=None):
+		self.menu.popup(None, None, None, 3, 0)
+		return True
+	
+	def __init__(self):
+		self.jacki = Jack()
+		self.statusicon = gtk.status_icon_new_from_file('/usr/share/pixmaps/qjackctl.png')
+		self.statusicon.set_tooltip("PyGTK JACK Control Icon !")
+		self.menu = gtk.Menu()
+		self.start_item = gtk.MenuItem("_Start JACK")
+		self.stop_item = gtk.MenuItem("Sto_p JACK")
+		self.kill_item = gtk.MenuItem("Stop da _bus !")
+		self.quit_item = gtk.MenuItem("_Quit")
+		self.menu.append(self.start_item)
+		self.menu.append(self.stop_item)
+		self.menu.append(self.kill_item)
+		self.menu.append(self.quit_item)
+		self.start_item.connect("activate", self.start_callback)
+		self.stop_item.connect("activate", self.stop_callback)
+		self.kill_item.connect("activate", self.kill_callback)
+		self.quit_item.connect("activate", self.destroy)
+		self.start_item.show()
+		self.stop_item.show()
+		self.kill_item.show()
+		self.quit_item.show()
+		self.statusicon.connect("popup-menu", self.menu_callback)
+
+	def main(self):
+		gtk.main()
+		return 0;
+
+if __name__ == "__main__":
+	jack_control = pyjackctlIcon()
+	jack_control.main()
