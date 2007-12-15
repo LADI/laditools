@@ -17,6 +17,8 @@ class wmjackctl(wmoo.Application):
     def update(self):
         lines = ["JACK"]
         if self.jack.is_started():
+	    if self.jack.is_realtime():
+		lines[0] += " RT"
             lines.append("started")
             lines.append("%.3f %%" % self.jack.get_load())
             xruns = self.jack.get_xruns()
