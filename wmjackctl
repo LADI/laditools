@@ -17,23 +17,28 @@ class wmjackctl(wmoo.Application):
     def update(self):
         lines = ["JACK"]
         if self.jack.is_started():
-	    if self.jack.is_realtime():
-		lines[0] += " RT"
+            if self.jack.is_realtime():
+                lines[0] += " RT"
+            else:
+                lines[0] += "   "
             lines.append("started")
             lines.append("%.3f %%" % self.jack.get_load())
             xruns = self.jack.get_xruns()
-            if xruns > 999:
+            if xruns == 0:
+                xruns = "no"
+            elif xruns > 999:
                 xruns = "lot"
             else:
                 xruns = str(xruns)
             lines.append("%s xruns" % xruns)
-	    rate = self.jack.get_sample_rate()
-	    if rate % 1000 == 0:
+            rate = self.jack.get_sample_rate()
+            if rate % 1000 == 0:
                 lines.append("%.0f Khz" % (rate / 1000))
-	    else:
+            else:
                 lines.append("%.1f Khz" % (rate / 1000))
             lines.append("%.1f ms" % self.jack.get_latency())
         else:
+            lines[0] += "   "
             lines.append("stopped")
             lines.append("         ")
             lines.append("         ")
@@ -42,8 +47,8 @@ class wmjackctl(wmoo.Application):
         self.put_lines(lines)
 
     def put_lines(self, lines):
-        x = 1
-        y = 1
+        x = 3
+        y = 2
         for line in lines:
             self.putString(x, y, line)
             y += 9
