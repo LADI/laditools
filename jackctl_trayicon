@@ -58,7 +58,7 @@ class jackctl_trayicon:
 	
 	def __init__(self):
 		self.jack = jack_controller()
-		self.statusicon = gtk.status_icon_new_from_file("/usr/share/pixmaps/qjackctl.png")
+		self.statusicon = gtk.status_icon_new_from_file("./icon-bare.svg")
 		if self.jack.is_started():
 			self.tooltip_updater = timeout_add(1000, self.update_callback)
 		else:
