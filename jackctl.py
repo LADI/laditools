@@ -32,7 +32,6 @@ class jackctl:
         self.get_controller().kill()
 	
     def on_menu_destroy(self, widget):
-        print "on_menu_destroy, parent"
         gtk.main_quit()
 
     # will this work for tray app?
