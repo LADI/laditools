@@ -15,8 +15,8 @@
    sodipodi:version="0.32"
    inkscape:version="0.45.1"
    version="1.0"
-   sodipodi:docbase="/usr/src/pyjack/trunk/icons/scalable"
-   sodipodi:docname="pyjackctl.svg"
+   sodipodi:docbase="/usr/src/pyjack/trunk/pixmaps"
+   sodipodi:docname="stopped.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="/usr/src/pyjack/trunk/icon-bare.png"
    inkscape:export-xdpi="90"
@@ -277,5 +277,12 @@
          d="M 433.40266,22.170651 C 432.89076,22.185754 432.52207,22.582985 431.72141,23.594895 C 430.5283,25.102794 430.43938,24.468681 430.43938,45.755362 C 430.43938,64.943351 430.49335,65.635094 431.87527,67.500405 C 433.15798,69.231798 435.42402,68.403523 440.2892,65.792719 L 440.2892,24.643901 C 437.04273,22.559154 434.02797,21.994278 433.40266,22.170651 z "
          style="color:#000000;fill:url(#radialGradient2246);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:3.5;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
     </g>
+    <rect
+       style="opacity:1;color:#000000;fill:#c80000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:14;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2739"
+       width="22"
+       height="22"
+       x="7.8177638"
+       y="1.9738491" />
   </g>
 </svg>

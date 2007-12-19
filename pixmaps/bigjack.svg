@@ -15,7 +15,7 @@
    sodipodi:version="0.32"
    inkscape:version="0.45.1"
    version="1.0"
-   sodipodi:docbase="/usr/src/pyjack/trunk"
+   sodipodi:docbase="/usr/src/pyjack/trunk/pixmaps"
    sodipodi:docname="bigjack.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <defs
@@ -197,7 +197,7 @@
      width="470px"
      height="91px"
      inkscape:window-width="1440"
-     inkscape:window-height="853"
+     inkscape:window-height="852"
      inkscape:window-x="0"
      inkscape:window-y="0"
      showguides="true"
@@ -272,7 +272,7 @@
        sodipodi:nodetypes="csssccc" />
     <text
        xml:space="preserve"
-       style="font-size:60.68697357px;font-style:normal;font-weight:normal;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans"
+       style="font-size:60.68697357px;font-style:normal;font-weight:normal;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans"
        x="66.62075"
        y="51.261662"
        id="text15932"
@@ -287,7 +287,7 @@
        id="path15936" />
     <text
        xml:space="preserve"
-       style="font-size:14.42232418px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       style="font-size:14.42232418px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans"
        x="71.495361"
        y="72.179733"
        id="text16907"
