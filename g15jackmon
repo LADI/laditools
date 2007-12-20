@@ -1,0 +1,153 @@
+#!/usr/bin/env python
+
+import sys
+import os
+import time
+import signal
+from jackctl import jackctl
+from jack_controller import jack_controller
+
+pipe_filename = "/dev/shm/g15log.pipe"
+log_filename = "/var/log/sys.log"
+
+class g15composer:
+    text_justify_left = 0
+    text_justify_center = 1
+    text_justify_right = 2
+
+    text_size_small = 0
+    #text_size_medium = 1
+    text_size_large = 2
+
+    width = 160
+    height = 43
+
+    def __init__(self, pipe_filename, large):
+        if large:
+            self.size = self.text_size_large
+            self.max_lines = 5              # 7 for small, 5 for large
+            self.max_chars = 20
+        else:
+            self.size = self.text_size_small
+            self.max_lines = 7
+            self.max_chars = 40
+
+        self.pipe_filename = pipe_filename
+        self.pid = os.spawnlp(os.P_NOWAIT, 'g15composer', 'g15composer', self.pipe_filename)
+        #print "g15composer started"
+        while not os.access(self.pipe_filename, os.F_OK):
+            #print "Waiting pipe to appear..."
+            time.sleep(1)
+        self.pipe = file(self.pipe_filename, "w")
+        os.remove(self.pipe_filename)
+        #print "pipe unlinked"
+
+    def __del__(self):
+        self.pipe.close()
+        #print "stopping g15composer..."
+        os.kill(self.pid, signal.SIGTERM)
+        os.waitpid(self.pid, 0)
+        #print "g15composer stopped"
+
+    def send_message(self, message):
+        #print message,
+        self.pipe.write(message)
+        self.pipe.flush()
+
+    def draw_lines(self, lines, x, y, justify):
+        message = 'TO %u %u %u %u' % (x, y, self.size, justify)
+        for line in lines:
+            message += ' "%s                                                  "' % line.replace('"', "'").strip("\n")
+        message += "\n"
+        self.send_message(message)
+
+    def draw_lines(self, lines, x, y, justify):
+        message = 'TO %u %u %u %u' % (x, y, self.size, justify)
+        for line in lines:
+            message += ' "%s                                                  "' % line.replace('"', "'").strip("\n")
+        message += "\n"
+        self.send_message(message)
+
+    def clear(self, ink):
+        if ink:
+            message = 'PC 1\n'
+        else:
+            message = 'PC 0\n'
+        self.send_message(message)
+
+    def draw_bar(self, x, y, width, height, ink, fill):
+        if width < 0:
+            width = self.width - width - x - 1
+        else:
+            if width < 5:
+                width = 5
+        if height < 3:
+            height = 3
+        width -= 1
+        height -= 3
+        y += 1
+        if ink:
+            ink = 1
+        else:
+            ink = 0
+        self.send_message("DB %u %u %u %u %u %u %u 1\n" % (x, y, x + width, y + height, ink, fill * 1000, 1000))
+
+class jackctl_g15(jackctl):
+    def __init__(self):
+        self.jack = None
+        jackctl.__init__(self)
+        self.g15 = g15composer(pipe_filename, False)
+
+    def update(self):
+        #self.g15.clear(False)
+        try:
+            if not self.jack:
+                self.jack = jack_controller()
+
+            status_line = "JACK"
+            started = False
+
+            if self.jack.is_started():
+                started = True
+                if self.jack.is_realtime():
+                    status_line += " started in realtime mode"
+                else:
+                    status_line += " started in non-realtime mode"
+                load = self.jack.get_load()
+                xruns = self.jack.get_xruns()
+                if xruns == 0:
+                    xruns_line = "no xruns"
+                elif xruns == 1:
+                    xruns_line = "1 xrun"
+                else:
+                    xruns_line = "%u xruns" % xruns
+                rate = self.jack.get_sample_rate()
+                if rate % 1000 == 0:
+                    rate_line = "Sample rate: %.0f Khz" % (rate / 1000)
+                else:
+                    rate_line = "Sample rate: %.1f Khz" % (rate / 1000)
+                latency_line = "Latency: %.1f ms" % self.jack.get_latency()
+            else:
+                status_line += " stopped"
+        except:
+            status_line = "JACK cannot be connected"
+            self.jack = None
+            started = False
+
+        self.g15.draw_lines([status_line], 0, 0, self.g15.text_justify_left)
+        if started:
+            self.g15.draw_lines(["DSP load"], 0, 12, self.g15.text_justify_left)
+            self.g15.draw_bar(35, 12, 95, 5, True, load / 100.0)
+            self.g15.draw_lines(["%.3f%%" % load], 135, 12, self.g15.text_justify_left)
+
+            self.g15.draw_lines([xruns_line], 0, 22, self.g15.text_justify_left)
+            self.g15.draw_lines([rate_line, latency_line], 0, 31, self.g15.text_justify_left)
+
+    def run(self):
+        while True:
+            self.update()
+            time.sleep(1)
+
+        del self.g15
+
+jackctl_g15().run()
