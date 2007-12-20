@@ -99,7 +99,7 @@ class jackctl_g15(jackctl):
         self.g15 = g15composer(pipe_filename, False)
 
     def update(self):
-        #self.g15.clear(False)
+        self.g15.clear(False)
         try:
             if not self.jack:
                 self.jack = jack_controller()
