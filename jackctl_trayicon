@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 
-# pyjack_trayicon - GNU/Linux systray integration for jackdbus
-# Copyright (C) 2007, Marc-Olivier Barre.
-# 
-# Parts of this code are taken from jack_control by Nedko Arnaudov
+# pyjackctl - The python jackdbus controller suite
+# jackctl_trayicon - System tray integration for jackdbus
+# Copyright (C) 2007, Marc-Olivier Barre and Nedko Arnaudov.
 #
-# This program is free software; you can redistribute it and/or modify
+# This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
+# the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -16,60 +15,57 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pygtk
 pygtk.require('2.0')
 import gtk
 from gobject import timeout_add
-from jack_controller import jack_controller
-from jackctl import jackctl
+import pyjackctl
 
-class jackctl_trayicon(jackctl):
-
+class jackctl_trayicon(gtk.StatusIcon, pyjackctl.jack_menu):
 	def __init__(self):
-		jackctl.__init__(self)
-		self.jack = jack_controller()
-		
-		# Create the needed pixbufs to manage the status icons look
-		self.stopped_pixbuf = gtk.gdk.pixbuf_new_from_file("./pixmaps/stopped.svg")
-		self.started_pixbuf = gtk.gdk.pixbuf_new_from_file("./pixmaps/started.svg")
-		
-		# Create the status icon itself
-		self.statusicon = gtk.status_icon_new_from_pixbuf(self.stopped_pixbuf)
-
+		pyjackctl.jack_menu.__init__(self)
+		gtk.StatusIcon.__init__(self)
+		self.jack = None
+		# Create the needed pixbufs to manage the status icon's look
+		self.stopped_pixbuf = gtk.gdk.pixbuf_new_from_file("/usr/share/pyjackctl/data/stopped.svg")
+		self.started_pixbuf = gtk.gdk.pixbuf_new_from_file("/usr/share/pyjackctl/data/started.svg")
+		# Get the initial status
+		self.update()
 		# Add the auto update callback
-		self.auto_updater = timeout_add(1000, self.update_callback)
-
+		self.auto_updater = timeout_add(1000, self.update)
 		# Make the menu popup when the icon is right clicked
-		self.statusicon.connect("popup-menu", self.menu_activate)
-
-	def menu_activate(self,  widget=None, event=None, data=None):
-		self.menu.popup(None, None, None, 3, 0)
-		self.menu.reposition()
+		self.connect("popup-menu", self.menu_activate)
 
 	def run(self):
 		gtk.main()
 		return 0;
 
-	def update_callback(self):
-		if self.jack.is_started():
-			# Realtime status
-			if self.jack.is_realtime():
-				status_text = "RT | "
-		
-			# DSP Load
-			status_text += str(round(float(self.jack.get_load()),1)) + "% | "
+	def update(self):
+		try:
+			if not self.jack:
+				self.jack = pyjackctl.jack_controller()
 
-			# Xruns
-			status_text += str(self.jack.get_xruns())
+			if self.jack.is_started():
+				# Get Realtime status
+				if self.jack.is_realtime():
+					status_text = "RT | "
+				# Get DSP Load
+				status_text += str(round(float(self.jack.get_load()),1)) + "% | "
+				# Get Xruns
+				status_text += str(self.jack.get_xruns())
+				# Set a started status
+				self.set_tooltip(status_text)
+				self.set_from_pixbuf(self.started_pixbuf)
+			else:
+				self.set_tooltip("JACK is stopped")
+				self.set_from_pixbuf(self.stopped_pixbuf)
+		except:
+			self.set_tooltip("JACK is sick")
+			self.set_from_pixbuf(self.stopped_pixbuf)
+			self.jack = None
 
-			self.statusicon.set_tooltip(status_text)
-			self.statusicon.set_from_pixbuf(self.started_pixbuf)
-		else:
-			self.statusicon.set_tooltip("JACK is stopped")
-			self.statusicon.set_from_pixbuf(self.stopped_pixbuf)
 		return True
 
 	def get_controller(self):

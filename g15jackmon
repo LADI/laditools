@@ -1,11 +1,27 @@
 #!/usr/bin/env python
 
+# pyjackctl - The python jackdbus controller suite
+# g15jackmon - A jack monitor for the g15 keyboard that uses the dbus interface
+# Copyright (C) 2007, Marc-Olivier Barre and Nedko Arnaudov.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import sys
 import os
 import time
 import signal
-from jackctl import jackctl
-from jack_controller import jack_controller
+import pyjackctl
 
 pipe_filename = "/dev/shm/g15log.pipe"
 log_filename = "/var/log/sys.log"
@@ -92,17 +108,16 @@ class g15composer:
             ink = 0
         self.send_message("DB %u %u %u %u %u %u %u 1\n" % (x, y, x + width, y + height, ink, fill * 1000, 1000))
 
-class jackctl_g15(jackctl):
+class jackctl_g15:
     def __init__(self):
         self.jack = None
-        jackctl.__init__(self)
         self.g15 = g15composer(pipe_filename, False)
 
     def update(self):
         self.g15.clear(False)
         try:
             if not self.jack:
-                self.jack = jack_controller()
+                self.jack = pyjackctl.jack_controller()
 
             status_line = "JACK"
             started = False
