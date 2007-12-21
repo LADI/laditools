@@ -29,8 +29,9 @@ setup(name='pyjackctl',
 	scripts=['jackctl_trayicon', 'wmjackctl', 'g15jackmon'],
 	data_files=[('share/doc/pyjackctl', ['README', 'COPYING']),
 		('share/pixmaps', ['icons/scalable/pyjackctl.svg']),
-		('share/pyjackctl/data', ['data/bigjack.svg',
-		'data/pyjack_conf_ui.glade',
+		('share/pyjackctl/data', ['data/pyjackctl_logo.svg',
+		'data/jackctl_conf_ui.glade',
+		'data/jackctl_logview_ui.glade',
 		'data/started.svg',
 		'data/stopped.svg'])]
 )
