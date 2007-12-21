@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.0 on Fri Dec 21 22:26:01 2007 -->
+<!--Generated with glade3 3.4.0 on Fri Dec 21 22:57:46 2007 -->
 <glade-interface>
   <widget class="GtkWindow" id="jackctl_logview_ui">
     <property name="visible">True</property>
@@ -19,13 +19,27 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
+            <property name="padding">5</property>
           </packing>
         </child>
         <child>
-          <widget class="GtkTextView" id="log_view">
+          <widget class="GtkScrolledWindow" id="log_view_scroll">
+            <property name="width_request">600</property>
+            <property name="height_request">300</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+            <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
+            <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+            <child>
+              <widget class="GtkTextView" id="log_view_text">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <property name="wrap_mode">GTK_WRAP_WORD</property>
+                <property name="accepts_tab">False</property>
+              </widget>
+            </child>
           </widget>
           <packing>
             <property name="position">1</property>
@@ -58,6 +72,7 @@
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <property name="label" translatable="yes">Clear</property>
                 <property name="response_id">0</property>
+                <signal name="clicked" handler="on_clear_button_clicked"/>
               </widget>
               <packing>
                 <property name="fill">False</property>

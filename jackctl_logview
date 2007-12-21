@@ -26,11 +26,17 @@ class jackctl_logview(gtk.glade.XML):
 	def __init__(self):
 		gtk.glade.XML.__init__(self, "/usr/share/pyjackctl/data/jackctl_logview_ui.glade")
 		self.event_dict = {"on_jackctl_logview_ui_destroy" : self.quit_callback,
-			"on_close_button_clicked" : self.quit_callback }
+			"on_close_button_clicked" : self.quit_callback,
+			"on_clear_button_clicked" : self.clear_text_callback }
 		self.signal_autoconnect(self.event_dict)
+		self.log_view_text = self.get_widget("log_view_text")
+		self.text_buffer = self.log_view_text.get_buffer()
 	
 	def quit_callback(self, data=None):
 		gtk.main_quit()
+	
+	def clear_text_callback(self, data=None):
+		self.text_buffer.set_text("")
 	
 	def run(self):
 		gtk.main()
