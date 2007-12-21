@@ -16,11 +16,3 @@
 
 from jack_controller import jack_controller
 from jack_menu import jack_menu
-
-class jackctl(jack_menu):
-	def __init__(self):
-		self.jack = jack_controller()
-		jack_menu.__init__(self)
-		
-	def get_controller(self):
-		return self.jack

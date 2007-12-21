@@ -1,5 +1,5 @@
 This should be enough for now...
 
-./setup.py install
+python setup.py install
 
 Run as root of course...
