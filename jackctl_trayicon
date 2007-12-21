@@ -34,13 +34,13 @@ class jackctl_trayicon(gtk.StatusIcon, pyjackctl.jack_menu):
 		# Get the initial status
 		self.update()
 		# Add the auto update callback
-		self.auto_updater = timeout_add(1000, self.update)
+		self.auto_updater = timeout_add(250, self.update)
 		# Make the menu popup when the icon is right clicked
 		self.connect("popup-menu", self.menu_activate)
 
 	def run(self):
 		gtk.main()
-		return 0;
+		return 0
 
 	def update(self):
 		try:
