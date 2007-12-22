@@ -19,8 +19,8 @@
    sodipodi:docname="pyjackctl_logo.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="/home/marco/pyjackctl_logo.png"
-   inkscape:export-xdpi="74.59565"
-   inkscape:export-ydpi="74.59565">
+   inkscape:export-xdpi="89.514778"
+   inkscape:export-ydpi="89.514778">
   <defs
      id="defs4">
     <linearGradient
@@ -360,30 +360,30 @@
            xml:space="preserve"
            style="font-size:34px;font-style:normal;font-weight:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#d6e0ea;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans"
            x="136.99066"
-           y="33.355583"
+           y="32.659283"
            id="text2343"><tspan
              sodipodi:role="line"
              x="136.99066"
-             y="33.355583"
+             y="32.659283"
              style="font-size:32px;fill:#d6e0ea;fill-opacity:1"
              id="tspan3350">pyjackctl</tspan></text>
         <path
            style="fill:none;fill-rule:evenodd;stroke:#d6e0ea;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-           d="M 68.585184,46.3251 L 202.97037,46.3251"
+           d="M 68.585184,45.739407 L 202.97037,45.739407"
            id="path3354" />
         <text
            xml:space="preserve"
-           style="font-size:12px;font-style:normal;font-weight:normal;text-align:center;text-anchor:middle;fill:#d6e0ea;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans"
+           style="font-size:14px;font-style:normal;font-weight:normal;text-align:center;text-anchor:middle;fill:#d6e0ea;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans"
            x="136.02679"
-           y="61.755554"
+           y="62.799999"
            id="text4325"><tspan
              sodipodi:role="line"
              id="tspan4327"
              x="136.02679"
-             y="61.755554">A python jackdbus</tspan><tspan
+             y="62.799999">A python jackdbus</tspan><tspan
              sodipodi:role="line"
              x="136.02679"
-             y="76.755554"
+             y="80.299999"
              id="tspan4329">controller suite</tspan></text>
       </g>
     </g>
