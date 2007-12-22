@@ -48,7 +48,6 @@ class jack_menu:
     def on_menu_destroy(self, widget):
         gtk.main_quit()
 
-    # will this work for tray app?
     def menu_activate(self, widget=None, event=None, data=None):
         self.menu.popup(None, None, None, 3, 0)
         self.menu.reposition()
