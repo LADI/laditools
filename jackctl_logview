@@ -25,6 +25,7 @@ from gobject import timeout_add
 from os import environ, sep
 
 jackdbus_log = environ['HOME'] + sep + ".jackdbus" + sep + "jackdbus.log"
+max_lines = 100
 
 class jackctl_logview(gtk.glade.XML):
 	def __init__(self):
@@ -59,6 +60,7 @@ class jackctl_logview(gtk.glade.XML):
 		self.text_buffer.set_text("")
 
 	def update(self):
+		# Append latest output to the buffer
 		line = self.log_file.readline()
 		while line:
 			self.text_buffer.insert(self.text_buffer.get_end_iter(), line)
@@ -67,8 +69,13 @@ class jackctl_logview(gtk.glade.XML):
 		return True
 	
 	def on_text_change(self, data=None):
+		# Scrolldown
 		self.text_buffer.move_mark(self.current_pos, self.text_buffer.get_end_iter())
 		self.log_textview.scroll_mark_onscreen(self.current_pos)
+		# Cleanup the buffer
+		line_count = self.text_buffer.get_line_count()
+		if line_count > max_lines:
+			self.text_buffer.delete(self.text_buffer.get_start_iter(), self.text_buffer.get_iter_at_line(line_count-max_lines))
 
 	def run(self):
 		gtk.main()
