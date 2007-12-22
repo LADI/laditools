@@ -36,9 +36,11 @@ class jackctl_logview(gtk.glade.XML):
 		self.signal_autoconnect(self.event_dict)
 		self.log_textview = self.get_widget("log_textview")
 		self.text_buffer = self.log_textview.get_buffer()
-		self.auto_updater = timeout_add(250, self.update)
+		self.current_pos = self.text_buffer.create_mark("my_cursor", self.text_buffer.get_end_iter())
+		self.text_buffer.connect("changed", self.scrolldown_callback)
 		for line in log_file:
 			self.text_buffer.insert(self.text_buffer.get_end_iter(), line)
+		self.auto_updater = timeout_add(250, self.update)
 
 	def quit_callback(self, data=None):
 		gtk.main_quit()
@@ -54,6 +56,10 @@ class jackctl_logview(gtk.glade.XML):
 		log_file.seek(log_file.tell())
 		
 		return True
+	
+	def scrolldown_callback(self, data=None):
+		self.text_buffer.move_mark(self.current_pos, self.text_buffer.get_end_iter())
+		self.log_textview.scroll_mark_onscreen(self.current_pos)
 
 	def run(self):
 		gtk.main()

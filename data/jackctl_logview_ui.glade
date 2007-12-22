@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.0 on Sat Dec 22 02:26:53 2007 -->
+<!--Generated with glade3 3.4.0 on Sat Dec 22 13:05:24 2007 -->
 <glade-interface>
   <widget class="GtkWindow" id="jackctl_logview_ui">
     <property name="visible">True</property>
@@ -25,13 +25,14 @@
         <child>
           <widget class="GtkScrolledWindow" id="log_scroll">
             <property name="width_request">600</property>
-            <property name="height_request">300</property>
+            <property name="height_request">400</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
             <property name="border_width">10</property>
             <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
             <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+            <property name="shadow_type">GTK_SHADOW_IN</property>
             <child>
               <widget class="GtkTextView" id="log_textview">
                 <property name="visible">True</property>
