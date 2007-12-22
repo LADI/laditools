@@ -30,7 +30,6 @@ setup(name='pyjackctl',
 	data_files=[('share/doc/pyjackctl', ['README', 'COPYING']),
 		('share/pixmaps', ['icons/scalable/pyjackctl.svg']),
 		('share/pyjackctl/data', ['data/pyjackctl_logo.svg',
-		'data/jackctl_conf_ui.glade',
 		'data/jackctl_logview_ui.glade',
 		'data/started.svg',
 		'data/stopped.svg'])]

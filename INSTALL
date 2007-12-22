@@ -1,5 +1,10 @@
-This should be enough for now...
+This should be enough for now :
 
 python setup.py install
 
-Run as root of course...
+Tunas root to install of course...
+
+If you want to know about more options you might want to try either
+python setup.py --help
+ - or -
+python setup.py --help-commands

@@ -15,9 +15,12 @@
    sodipodi:version="0.32"
    inkscape:version="0.45.1"
    version="1.0"
-   sodipodi:docbase="/usr/src/pyjack/trunk/data"
-   sodipodi:docname="pyjackctl-logo.svg"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+   sodipodi:docbase="/usr/src/pyjackctl/trunk/data"
+   sodipodi:docname="pyjackctl_logo.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:export-filename="/home/marco/pyjackctl_logo.png"
+   inkscape:export-xdpi="74.59565"
+   inkscape:export-ydpi="74.59565">
   <defs
      id="defs4">
     <linearGradient
@@ -287,7 +290,9 @@
        id="g9417"
        transform="translate(0.412953,7.1525574e-7)">
       <g
-         id="g9406">
+         id="g9406"
+         inkscape:export-xdpi="18.0413"
+         inkscape:export-ydpi="18.0413">
         <rect
            style="color:#000000;fill:url(#linearGradient9436);fill-opacity:1;fill-rule:evenodd;stroke:#0e1723;stroke-width:3.43014407;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
            id="rect8065"
