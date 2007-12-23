@@ -28,57 +28,63 @@ jackdbus_log = environ['HOME'] + sep + ".jackdbus" + sep + "jackdbus.log"
 max_lines = 100
 
 class jackctl_logview(gtk.glade.XML):
-	def __init__(self):
-		# Load the glade file
-		gtk.glade.XML.__init__(self, "/usr/share/pyjackctl/data/jackctl_logview_ui.glade")
-		# Get the ui ready for action
-		self.event_dict = {"on_jackctl_logview_ui_destroy" : self.on_quit,
-			"on_close_button_clicked" : self.on_quit,
-			"on_clear_button_clicked" : self.on_clear_text,
-			"on_purge_button_clicked" : self.on_purge}
-		self.signal_autoconnect(self.event_dict)
-		self.log_textview = self.get_widget("log_textview")
-		self.text_buffer = self.log_textview.get_buffer()
-		self.current_pos = self.text_buffer.create_mark("log_cursor", self.text_buffer.get_end_iter())
-		self.text_buffer.connect("changed", self.on_text_change)
-		# Add the existing log content
-		self.log_file = open(jackdbus_log)
-		for line in self.log_file:
-			self.text_buffer.insert(self.text_buffer.get_end_iter(), line)
-		# Tail the logs output every 250ms
-		self.auto_updater = timeout_add(250, self.update)
+    def __init__(self):
+        # Load the glade file
+        gtk.glade.XML.__init__(self, "/usr/share/pyjackctl/data/jackctl_logview_ui.glade")
+        # Get the ui ready for action
+        self.event_dict = {"on_jackctl_logview_ui_destroy" : self.on_quit,
+            "on_close_button_clicked" : self.on_quit,
+            "on_clear_button_clicked" : self.on_clear_text,
+            "on_purge_button_clicked" : self.on_purge,
+            "on_jackctl_logview_ui_check_resize" : self.on_text_change}
+        self.signal_autoconnect(self.event_dict)
+        self.log_textview = self.get_widget("log_textview")
+        self.text_buffer = self.log_textview.get_buffer()
+        self.current_pos = self.text_buffer.create_mark("log_cursor", self.text_buffer.get_end_iter())
+        self.text_buffer.connect("changed", self.on_resize)
+        # Add the existing log content
+        self.log_file = open(jackdbus_log)
+        for line in self.log_file:
+            self.text_buffer.insert(self.text_buffer.get_end_iter(), line)
+        # Tail the logs output every 250ms
+        self.auto_updater = timeout_add(250, self.update)
 
-	def on_quit(self, data=None):
-		gtk.main_quit()
-	
-	def on_clear_text(self, data=None):
-		self.text_buffer.set_text("")
-	
-	def on_purge(self, date=None):
-		# Opens the file in write anew mode thus clearing the file and close it right away 
-		open(jackdbus_log, "w+")
-		self.text_buffer.set_text("")
+    def on_quit(self, data=None):
+        gtk.main_quit()
 
-	def update(self):
-		# Append latest output to the buffer
-		line = self.log_file.readline()
-		while line:
-			self.text_buffer.insert(self.text_buffer.get_end_iter(), line)
-			line = self.log_file.readline()
-		self.log_file.seek(self.log_file.tell())
-		return True
-	
-	def on_text_change(self, data=None):
-		# Scrolldown
-		self.text_buffer.move_mark(self.current_pos, self.text_buffer.get_end_iter())
-		self.log_textview.scroll_mark_onscreen(self.current_pos)
-		# Cleanup the buffer
-		line_count = self.text_buffer.get_line_count()
-		if line_count > max_lines:
-			self.text_buffer.delete(self.text_buffer.get_start_iter(), self.text_buffer.get_iter_at_line(line_count-max_lines))
+    def on_clear_text(self, data=None):
+        self.text_buffer.set_text("")
 
-	def run(self):
-		gtk.main()
-		return 0
+    def on_purge(self, date=None):
+        # Opens the file in write anew mode thus clearing the file and close it right away 
+        open(jackdbus_log, "w+")
+        self.text_buffer.set_text("")
+
+    def update(self):
+        # Append latest output to the buffer
+        line = self.log_file.readline()
+        while line:
+            self.text_buffer.insert(self.text_buffer.get_end_iter(), line)
+            line = self.log_file.readline()
+        self.log_file.seek(self.log_file.tell())
+        return True
+
+    def on_resize(self, data = None):
+        # Scrolldown
+        self.text_buffer.move_mark(self.current_pos, self.text_buffer.get_end_iter())
+        self.log_textview.scroll_mark_onscreen(self.current_pos)
+
+    def on_text_change(self, data = None):
+        # Scrolldown
+        self.text_buffer.move_mark(self.current_pos, self.text_buffer.get_end_iter())
+        self.log_textview.scroll_mark_onscreen(self.current_pos)
+        # Cleanup the buffer
+        line_count = self.text_buffer.get_line_count()
+        if line_count > max_lines:
+            self.text_buffer.delete(self.text_buffer.get_start_iter(), self.text_buffer.get_iter_at_line(line_count-max_lines))
+
+    def run(self):
+        gtk.main()
+        return 0
 
 jackctl_logview().run()

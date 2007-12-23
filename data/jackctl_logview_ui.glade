@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.0 on Sat Dec 22 14:47:56 2007 -->
+<!--Generated with glade3 3.4.0 on Sun Dec 23 13:37:30 2007 -->
 <glade-interface>
   <widget class="GtkWindow" id="jackctl_logview_ui">
     <property name="visible">True</property>
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+    <signal name="check_resize" handler="on_jackctl_logview_ui_check_resize"/>
     <signal name="destroy" handler="on_jackctl_logview_ui_destroy"/>
     <child>
       <widget class="GtkVBox" id="logview_vbox">
