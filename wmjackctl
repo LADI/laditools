@@ -41,6 +41,12 @@ class wmjackctl(wmoo.Application, pyjackctl.jack_menu):
 
         self.addCallback(self.on_button_release, 'buttonrelease', area=(0,0,64,64))
 
+        self.lines = []
+        for i in range(6):
+            self.lines.append("")
+        self.clear()
+        self.started = False
+
     def get_controller(self):
         return self.jack
 
@@ -48,49 +54,71 @@ class wmjackctl(wmoo.Application, pyjackctl.jack_menu):
         if event['button'] == 3:
             self.menu_activate()
 
+    def set_line(self, line, text):
+        self.lines[line] = text
+        while len(self.lines[line]) < 9:
+            self.lines[line] += ' '
+
+    def clear_line(self, line):
+        self.set_line(line, "")
+
+    def clear(self):
+        for i in range(6):
+            self.clear_line(i)
+
     def update(self):
-        lines = ["JACK"]
         try:
 	    if not self.jack:
                 self.jack = pyjackctl.jack_controller()
 
             if self.jack.is_started():
+                self.started = True
                 if self.jack.is_realtime():
-                    lines[0] += " RT"
+                    self.set_line(0, "JACK RT")
                 else:
-                    lines[0] += "   "
-                lines.append("started")
-                lines.append("%.3f %%" % self.jack.get_load())
+                    self.set_line(0, "JACK")
+
+                self.set_line(1, "started")
+
+                self.set_line(2, "%.3f %%" % self.jack.get_load())
+
                 xruns = self.jack.get_xruns()
                 if xruns == 0:
-                    xruns = "no"
+                    self.set_line(3, "no xruns")
+                elif xruns == 1:
+                    self.set_line(3, "1 xrun")
                 elif xruns > 999:
-                    xruns = "lot"
+                    self.set_line(3, "lot xruns")
                 else:
-                    xruns = str(xruns)
-                lines.append("%s xruns" % xruns)
+                    self.set_line(3, "%s xruns" % xruns)
+
                 rate = self.jack.get_sample_rate()
                 if rate % 1000 == 0:
-                    lines.append("%.0f Khz" % (rate / 1000))
+                    self.set_line(4, "%.0f Khz" % (rate / 1000))
                 else:
-                    lines.append("%.1f Khz" % (rate / 1000))
-                lines.append("%.1f ms" % self.jack.get_latency())
-            else:
-                lines[0] += "   "
-                lines.append("stopped")
-                lines.append("         ")
-                lines.append("         ")
-                lines.append("         ")
-                lines.append("         ")
-        except:
-            lines.append("error    ")
-            lines.append("         ")
-            lines.append("         ")
-            lines.append("         ")
-            lines.append("         ")
-            self.jack = None
+                    self.set_line(4, "%.1f Khz" % (rate / 1000))
 
-        self.put_lines(lines)
+                self.set_line(5, "%.1f ms" % self.jack.get_latency())
+            else:
+                self.set_line(0, "JACK")
+                self.set_line(1, "stopped")
+                if self.started:
+                    self.clear_line(2)
+                    self.clear_line(3)
+                    self.clear_line(4)
+                    self.clear_line(5)
+                    self.started = False
+        except:
+            self.set_line(0, "JACK")
+            self.set_line(1, "error")
+            if self.jack:
+                self.clear_line(2)
+                self.clear_line(3)
+                self.clear_line(4)
+                self.clear_line(5)
+                self.jack = None
+
+        self.put_lines(self.lines)
         wmoo.Application.update(self)
 
     def put_lines(self, lines):
