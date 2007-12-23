@@ -112,18 +112,17 @@ class jackctl_g15:
     def __init__(self):
         self.jack = None
         self.g15 = g15composer(pipe_filename, False)
+        self.started = False
 
     def update(self):
-        self.g15.clear(False)
         try:
             if not self.jack:
                 self.jack = pyjackctl.jack_controller()
 
             status_line = "JACK"
-            started = False
 
             if self.jack.is_started():
-                started = True
+                self.started = True
                 if self.jack.is_realtime():
                     status_line += " started in realtime mode"
                 else:
@@ -144,13 +143,18 @@ class jackctl_g15:
                 latency_line = "Latency: %.1f ms" % self.jack.get_latency()
             else:
                 status_line += " stopped"
+                if self.started:
+                    self.g15.clear(False)
+                    self.started = False
         except:
             status_line = "JACK cannot be connected"
-            self.jack = None
-            started = False
+            if self.jack:
+                self.g15.clear(False)
+                self.jack = None
+            self.started = False
 
         self.g15.draw_lines([status_line], 0, 0, self.g15.text_justify_left)
-        if started:
+        if self.started:
             self.g15.draw_lines(["DSP load"], 0, 12, self.g15.text_justify_left)
             self.g15.draw_bar(35, 12, 95, 5, True, load / 100.0)
             self.g15.draw_lines(["%.3f%%" % load], 135, 12, self.g15.text_justify_left)
