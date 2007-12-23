@@ -18,35 +18,37 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import gobject
+import os
 
 class jack_menu:
     def __init__(self):
         self.menu = gtk.Menu()
-        self.start_item = gtk.MenuItem("_Start JACK")
-        self.stop_item = gtk.MenuItem("Sto_p JACK")
-        self.reactivate_item = gtk.MenuItem("Reactivate JACK")
-	self.quit_item = gtk.MenuItem("_Quit")
-        self.menu.append(self.start_item)
-        self.menu.append(self.stop_item)
-        self.menu.append(self.reactivate_item)
-        self.menu.append(self.quit_item)
-        self.start_item.connect("activate", self.on_menu_start)
-        self.stop_item.connect("activate", self.on_menu_stop)
-        self.reactivate_item.connect("activate", self.on_menu_reactivate)
-        self.quit_item.connect("activate", self.on_menu_destroy)
+        self.menu_items = [(gtk.MenuItem("_Connect"), self.on_menu_launcher, "patchage"),
+            (gtk.MenuItem("_Logs"), self.on_menu_launcher, "jackctl_logview"),
+            (gtk.MenuItem("_Start JACK"), self.on_menu_start, None),
+            (gtk.MenuItem("Sto_p JACK"), self.on_menu_stop, None),
+            (gtk.MenuItem("_Reactivate JACK"), self.on_menu_reactivate, None),
+            (gtk.MenuItem("_Quit"), self.on_menu_destroy, None)]
+        for tuples in self.menu_items:
+            item, callback, exec_path = tuples
+            self.menu.append(item)
+            item.connect("activate", callback, exec_path)
         self.menu.show_all()
 
-    def on_menu_start(self, widget):
+    def on_menu_start(self, widget, data=None):
         self.get_controller().start()
-	
-    def on_menu_stop(self, widget):
+
+    def on_menu_stop(self, widget, data=None):
         self.get_controller().stop()
-	
-    def on_menu_reactivate(self, widget):
+
+    def on_menu_reactivate(self, widget, data=None):
         self.get_controller().kill()
-	
-    def on_menu_destroy(self, widget):
+
+    def on_menu_destroy(self, widget, data=None):
         gtk.main_quit()
+
+    def on_menu_launcher(self, widget, exec_path):
+        os.spawnlp(os.P_NOWAIT, exec_path, exec_path)
 
     def menu_activate(self, widget=None, event=None, data=None):
         self.menu.popup(None, None, None, 3, 0)
