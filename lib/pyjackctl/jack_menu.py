@@ -25,6 +25,7 @@ class jack_menu:
         self.menu = gtk.Menu()
         self.menu_items = [(gtk.MenuItem("_Connect"), self.on_menu_launcher, "patchage"),
             (gtk.MenuItem("_Logs"), self.on_menu_launcher, "jackctl_logview"),
+            (gtk.MenuItem("Reset _Xruns"), self.on_menu_reset_xruns, None),
             (gtk.MenuItem("_Start JACK"), self.on_menu_start, None),
             (gtk.MenuItem("Sto_p JACK"), self.on_menu_stop, None),
             (gtk.MenuItem("_Reactivate JACK"), self.on_menu_reactivate, None),
@@ -49,6 +50,9 @@ class jack_menu:
 
     def on_menu_launcher(self, widget, exec_path):
         os.spawnlp(os.P_NOWAIT, exec_path, exec_path)
+
+    def on_menu_reset_xruns(self, widget, data=None):
+        self.get_controller().reset_xruns()
 
     def menu_activate(self, widget=None, event=None, data=None):
         self.menu.popup(None, None, None, 3, 0)

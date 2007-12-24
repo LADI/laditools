@@ -44,6 +44,9 @@ class jack_controller:
         def get_latency(self):
                 return self.iface.GetLatency()
 
+        def reset_xruns(self):
+                return self.iface.ResetXruns()
+
         def start(self):
                 self.iface.StartServer()
 
