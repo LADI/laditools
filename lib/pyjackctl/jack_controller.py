@@ -30,7 +30,7 @@ class jack_controller:
                 return self.iface.IsStarted()
 
         def is_realtime(self):
-                return self.iface.GetEngineParameterValueBool("realtime")
+                return self.iface.IsRealtime()
 
         def get_load(self):
                 return self.iface.GetLoad()
