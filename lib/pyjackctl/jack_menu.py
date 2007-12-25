@@ -20,19 +20,24 @@ import gtk
 import gobject
 import os
 
+# TODO : we need stock icons, nothing else can be used for ImageMenuItems
+
 class jack_menu:
     def __init__(self):
         self.menu = gtk.Menu()
-        self.menu_items = [(gtk.MenuItem("_Connect"), self.on_menu_launcher, "patchage"),
-            (gtk.MenuItem("_Logs"), self.on_menu_launcher, "jackctl_logview"),
-            (gtk.MenuItem("Reset _Xruns"), self.on_menu_reset_xruns, None),
-            (gtk.MenuItem("_Start JACK"), self.on_menu_start, None),
-            (gtk.MenuItem("Sto_p JACK"), self.on_menu_stop, None),
-            (gtk.MenuItem("_Reactivate JACK"), self.on_menu_reactivate, None),
-            (gtk.MenuItem("_Quit"), self.on_menu_destroy, None)]
+        self.menu_items = [(gtk.ImageMenuItem("_Connect"), self.on_menu_launcher, "patchage"),
+            (gtk.ImageMenuItem("_Logs"), self.on_menu_launcher, "jackctl_logview"),
+            (gtk.SeparatorMenuItem(), self.on_menu_start, None),
+            (gtk.ImageMenuItem("Reset _Xruns"), self.on_menu_reset_xruns, None),
+            (gtk.ImageMenuItem("_Start JACK"), self.on_menu_start, None),
+            (gtk.ImageMenuItem("Sto_p JACK"), self.on_menu_stop, None),
+            (gtk.SeparatorMenuItem(), self.on_menu_start, None),
+            (gtk.ImageMenuItem("_Reactivate JACK"), self.on_menu_reactivate, None),
+            (gtk.ImageMenuItem("_Quit"), self.on_menu_destroy, None)]
         for tuples in self.menu_items:
             item, callback, exec_path = tuples
             self.menu.append(item)
+            # TODO : SeparatorMenuItems also get "connected". It does nothing but it's ugly.
             item.connect("activate", callback, exec_path)
         self.menu.show_all()
 
