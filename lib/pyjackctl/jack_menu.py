@@ -54,6 +54,6 @@ class jack_menu:
     def on_menu_reset_xruns(self, widget, data=None):
         self.get_controller().reset_xruns()
 
-    def menu_activate(self, widget=None, event=None, data=None):
+    def menu_activate(self):
         self.menu.popup(None, None, None, 3, 0)
         self.menu.reposition()
