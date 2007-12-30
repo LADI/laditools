@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+
+# pyjackctl - The python jackdbus controller suite
+# jackctl_logview - A log viewer for the python JACK dbus suite
+# Copyright (C) 2007, Marc-Olivier Barre and Nedko Arnaudov.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import pygtk
+pygtk.require('2.0')
+import gtk
+import gtk.glade
+from gobject import timeout_add
+from os import environ, sep
+
+jackdbus_log = environ['HOME'] + sep + ".jackdbus" + sep + "jackdbus.log"
+max_lines = 100
+
+class jackctl_conf(gtk.glade.XML):
+    def __init__(self):
+        # Load the glade file
+        gtk.glade.XML.__init__(self, "/usr/share/pyjackctl/data/jackctl_conf_ui.glade")
+        # Get the ui ready for action
+        self.event_dict = {"on_jackctl_conf_ui_destroy" : self.on_quit,
+            "on_close_button_clicked" : self.on_quit}
+        self.signal_autoconnect(self.event_dict)
+
+    def on_quit(self, data=None):
+        gtk.main_quit()
+
+    def run(self):
+        gtk.main()
+        return 0
+
+jackctl_conf().run()

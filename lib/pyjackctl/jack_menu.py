@@ -25,15 +25,16 @@ import os
 class jack_menu:
     def __init__(self):
         self.menu = gtk.Menu()
-        self.menu_items = [(gtk.ImageMenuItem("_Connect"), self.on_menu_launcher, "patchage"),
-            (gtk.ImageMenuItem("_Logs"), self.on_menu_launcher, "jackctl_logview"),
+        self.menu_items = [(gtk.ImageMenuItem("Configure"), self.on_menu_launcher, "jackctl_conf"),
+            (gtk.ImageMenuItem("Connect"), self.on_menu_launcher, "patchage"),
+            (gtk.ImageMenuItem("Logs"), self.on_menu_launcher, "jackctl_logview"),
             (gtk.SeparatorMenuItem(), self.on_menu_start, None),
-            (gtk.ImageMenuItem("Reset _Xruns"), self.on_menu_reset_xruns, None),
-            (gtk.ImageMenuItem("_Start JACK"), self.on_menu_start, None),
-            (gtk.ImageMenuItem("Sto_p JACK"), self.on_menu_stop, None),
+            (gtk.ImageMenuItem("Reset Xruns"), self.on_menu_reset_xruns, None),
+            (gtk.ImageMenuItem("Start JACK"), self.on_menu_start, None),
+            (gtk.ImageMenuItem("Stop JACK"), self.on_menu_stop, None),
             (gtk.SeparatorMenuItem(), self.on_menu_start, None),
-            (gtk.ImageMenuItem("_Reactivate JACK"), self.on_menu_reactivate, None),
-            (gtk.ImageMenuItem("_Quit"), self.on_menu_destroy, None)]
+            (gtk.ImageMenuItem("Reactivate JACK"), self.on_menu_reactivate, None),
+            (gtk.ImageMenuItem("Quit"), self.on_menu_destroy, None)]
         for tuples in self.menu_items:
             item, callback, exec_path = tuples
             self.menu.append(item)

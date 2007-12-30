@@ -19,18 +19,19 @@
 from distutils.core import setup
 
 setup(name='pyjackctl',
-	version='0.1',
-	description='The pyjackctl controller suite',
-	author='Marc-Olivier Barre and Nedko Arnaudov',
-	author_email='mobarre@gmail.com',
-	url='http://www.marcochapeau.org/software/1',
-	packages=['pyjackctl'],
-	package_dir={'pyjackctl': 'lib/pyjackctl'},
-	scripts=['jackctl_trayicon', 'wmjackctl', 'g15jackmon', 'jackctl_logview'],
-	data_files=[('share/doc/pyjackctl', ['README', 'COPYING']),
-		('share/pixmaps', ['icons/scalable/pyjackctl.svg']),
-		('share/pyjackctl/data', ['data/pyjackctl_logo.svg',
-		'data/jackctl_logview_ui.glade',
-		'data/started.svg',
-		'data/stopped.svg'])]
+    version='0.1',
+    description='The pyjackctl controller suite',
+    author='Marc-Olivier Barre and Nedko Arnaudov',
+    author_email='mobarre@gmail.com',
+    url='http://www.marcochapeau.org/software/1',
+    packages=['pyjackctl'],
+    package_dir={'pyjackctl': 'lib/pyjackctl'},
+    scripts=['jackctl_trayicon', 'wmjackctl', 'g15jackmon', 'jackctl_logview', 'jackctl_conf'],
+    data_files=[('share/doc/pyjackctl', ['README', 'COPYING']),
+        ('share/pixmaps', ['icons/scalable/pyjackctl.svg']),
+        ('share/pyjackctl/data', ['data/pyjackctl_logo.svg',
+        'data/jackctl_logview_ui.glade',
+        'data/jackctl_conf_ui.glade',
+        'data/started.svg',
+        'data/stopped.svg'])]
 )
