@@ -68,7 +68,7 @@ class wmjackctl(wmoo.Application, pyjackctl.jack_menu):
 
     def update(self):
         try:
-	    if not self.jack:
+            if not self.jack:
                 self.jack = pyjackctl.jack_controller()
 
             if self.jack.is_started():
@@ -120,6 +120,9 @@ class wmjackctl(wmoo.Application, pyjackctl.jack_menu):
 
         self.put_lines(self.lines)
         wmoo.Application.update(self)
+        # Take a look at the processes we've started so we don't get any zombies
+        for i in self.proc_list:
+            i.poll()
 
     def put_lines(self, lines):
         x = 3

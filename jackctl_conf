@@ -24,9 +24,6 @@ import gtk.glade
 from gobject import timeout_add
 from os import environ, sep
 
-jackdbus_log = environ['HOME'] + sep + ".jackdbus" + sep + "jackdbus.log"
-max_lines = 100
-
 class jackctl_conf(gtk.glade.XML):
     def __init__(self):
         # Load the glade file

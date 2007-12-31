@@ -18,16 +18,20 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import gobject
-import os
+import subprocess
 
-# TODO : we need stock icons, nothing else can be used for ImageMenuItems
+# TODO : somehow, we need stock icons. Nothing else can be used for ImageMenuItems
+
+config_app = "/usr/bin/jackctl_conf"
+connect_app = "/usr/bin/patchage"
+log_app = "/usr/bin/jackctl_logview"
 
 class jack_menu:
     def __init__(self):
         self.menu = gtk.Menu()
-        self.menu_items = [(gtk.ImageMenuItem("Configure"), self.on_menu_launcher, "jackctl_conf"),
-            (gtk.ImageMenuItem("Connect"), self.on_menu_launcher, "patchage"),
-            (gtk.ImageMenuItem("Logs"), self.on_menu_launcher, "jackctl_logview"),
+        self.menu_items = [(gtk.ImageMenuItem("Configure"), self.on_menu_launcher, config_app),
+            (gtk.ImageMenuItem("Connect"), self.on_menu_launcher, connect_app),
+            (gtk.ImageMenuItem("Logs"), self.on_menu_launcher, log_app),
             (gtk.SeparatorMenuItem(), self.on_menu_start, None),
             (gtk.ImageMenuItem("Reset Xruns"), self.on_menu_reset_xruns, None),
             (gtk.ImageMenuItem("Start JACK"), self.on_menu_start, None),
@@ -41,6 +45,7 @@ class jack_menu:
             # TODO : SeparatorMenuItems also get "connected". It does nothing but it's ugly.
             item.connect("activate", callback, exec_path)
         self.menu.show_all()
+        self.proc_list = []
 
     def on_menu_start(self, widget, data=None):
         self.get_controller().start()
@@ -55,7 +60,7 @@ class jack_menu:
         gtk.main_quit()
 
     def on_menu_launcher(self, widget, exec_path):
-        os.spawnlp(os.P_NOWAIT, exec_path, exec_path)
+        self.proc_list.append(subprocess.Popen([exec_path,  exec_path]))
 
     def on_menu_reset_xruns(self, widget, data=None):
         self.get_controller().reset_xruns()
