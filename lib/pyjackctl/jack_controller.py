@@ -17,13 +17,13 @@
 import dbus
 
 name_base = 'org.jackaudio'
-controller_interface_name = name_base + '.JackController'
+controller_interface_name = name_base + '.JackControl'
 service_name = name_base + '.service'
 
 class jack_controller:
         def __init__(self):
                  self.bus = dbus.SessionBus()
-                 self.controller = self.bus.get_object(service_name, "/DefaultController")
+                 self.controller = self.bus.get_object(service_name, "/org/jackaudio/Controller")
                  self.iface = dbus.Interface(self.controller, controller_interface_name)
 
         def is_started(self):
