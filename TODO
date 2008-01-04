@@ -1,0 +1,10 @@
+No release happens before that :
+* jackctl_logview shouldn't have to parse the whole logfile to fill it's buffer
+* dynamically render SVG to reflect jack's status (started/stopped/xrun detected mini icons in corners of the bigger jack icon)
+* add icons to jack_menu
+* retrieve configuration options from dbus and automatically update jackctl_conf's tabs on startup
+* manage some sort of config file for custom menu items (format ideas ?)
+
+The rest that comes eventually afterwards :
+* preset management
+* handling a fallback preset if the default one doesn't work (external soundcard not preset for instance switches to the internal soundcard)
