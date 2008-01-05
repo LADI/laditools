@@ -28,6 +28,8 @@ pygtk.require('2.0')
 import gtk
 import gobject
 
+debug = False
+
 class wmjackctl(wmoo.Application, pyjackctl.jack_menu):
     def __init__(self):
         self.jack = None
@@ -108,7 +110,9 @@ class wmjackctl(wmoo.Application, pyjackctl.jack_menu):
                     self.clear_line(4)
                     self.clear_line(5)
                     self.started = False
-        except:
+        except Exception, e:
+            if debug:
+                print repr(e)
             self.set_line(0, "JACK")
             self.set_line(1, "error")
             if self.jack:
