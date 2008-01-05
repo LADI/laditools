@@ -1,5 +1,5 @@
 # pyjackctl - The python jackdbus controller suite
-# Copyright (C) 2007, Marc-Olivier Barre and Nedko Arnaudov.
+# Copyright (C) 2007-2008, Marc-Olivier Barre and Nedko Arnaudov.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,4 +15,5 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from jack_controller import jack_controller
+from jack_configure import jack_configure
 from jack_menu import jack_menu

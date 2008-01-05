@@ -1,5 +1,5 @@
 # pyjackctl - The python jackdbus controller suite
-# Copyright (C) 2007, Marc-Olivier Barre and Nedko Arnaudov.
+# Copyright (C) 2007-2008, Marc-Olivier Barre and Nedko Arnaudov.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,37 +21,37 @@ controller_interface_name = name_base + '.JackControl'
 service_name = name_base + '.service'
 
 class jack_controller:
-        def __init__(self):
-                 self.bus = dbus.SessionBus()
-                 self.controller = self.bus.get_object(service_name, "/org/jackaudio/Controller")
-                 self.iface = dbus.Interface(self.controller, controller_interface_name)
+    def __init__(self):
+        self.bus = dbus.SessionBus()
+        self.controller = self.bus.get_object(service_name, "/org/jackaudio/Controller")
+        self.iface = dbus.Interface(self.controller, controller_interface_name)
 
-        def is_started(self):
-                return self.iface.IsStarted()
+    def is_started(self):
+        return self.iface.IsStarted()
 
-        def is_realtime(self):
-                return self.iface.IsRealtime()
+    def is_realtime(self):
+        return self.iface.IsRealtime()
 
-        def get_load(self):
-                return self.iface.GetLoad()
+    def get_load(self):
+        return self.iface.GetLoad()
 
-        def get_xruns(self):
-                return self.iface.GetXruns()
+    def get_xruns(self):
+        return self.iface.GetXruns()
 
-        def get_sample_rate(self):
-                return self.iface.GetSampleRate()
+    def get_sample_rate(self):
+        return self.iface.GetSampleRate()
 
-        def get_latency(self):
-                return self.iface.GetLatency()
+    def get_latency(self):
+        return self.iface.GetLatency()
 
-        def reset_xruns(self):
-                return self.iface.ResetXruns()
+    def reset_xruns(self):
+        return self.iface.ResetXruns()
 
-        def start(self):
-                self.iface.StartServer()
+    def start(self):
+        self.iface.StartServer()
 
-        def stop(self):
-                self.iface.StopServer()
+    def stop(self):
+        self.iface.StopServer()
 
-        def kill(self):
-                self.iface.Exit()
+    def kill(self):
+        self.iface.Exit()

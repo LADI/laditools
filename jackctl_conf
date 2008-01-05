@@ -2,7 +2,7 @@
 
 # pyjackctl - The python jackdbus controller suite
 # jackctl_logview - A log viewer for the python JACK dbus suite
-# Copyright (C) 2007, Marc-Olivier Barre and Nedko Arnaudov.
+# Copyright (C) 2007-2008, Marc-Olivier Barre and Nedko Arnaudov.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,8 +21,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import gtk.glade
-from gobject import timeout_add
-from os import environ, sep
+import pyjackctl
 
 class jackctl_conf(gtk.glade.XML):
     def __init__(self):
