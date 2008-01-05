@@ -35,7 +35,7 @@ class jack_configure:
     def select_driver(self, driver):
         self.iface.SelectDriver(driver)
 
-    def get_driver_param_names():
+    def get_driver_param_names(self):
         return self.iface.GetDriverParameterNames()
 
     def get_driver_short_description(self, param):
@@ -75,7 +75,7 @@ class jack_configure:
         elif typestr == "uint":
             self.iface.SetDriverParameterValueUint(param, value)
 
-    def get_engine_param_names():
+    def get_engine_param_names(self):
         return self.iface.GetEngineParameterNames()
 
     def get_engine_short_description(self, param):

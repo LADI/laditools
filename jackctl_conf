@@ -25,12 +25,90 @@ import pyjackctl
 
 class jackctl_conf(gtk.glade.XML):
     def __init__(self):
+        # Dbus interface
+        self.jack = pyjackctl.jack_configure()
         # Load the glade file
         gtk.glade.XML.__init__(self, "/usr/share/pyjackctl/data/jackctl_conf_ui.glade")
         # Get the ui ready for action
         self.event_dict = {"on_jackctl_conf_ui_destroy" : self.on_quit,
             "on_close_button_clicked" : self.on_quit}
         self.signal_autoconnect(self.event_dict)
+        # Device tab setup
+        self.device_vbox_left = self.get_widget("device_vbox_left")
+        self.device_vbox_right = self.get_widget("device_vbox_right")
+        self.driver_params = self.jack.get_driver_param_names()
+        for driver_param in self.driver_params:
+            typestr = self.jack.get_driver_param_type(driver_param)
+            isset, default, value = self.jack.get_driver_param_value(driver_param)
+            short_descr = self.jack.get_driver_short_description(driver_param)
+            long_descr = self.jack.get_driver_long_description(driver_param)
+            if typestr == "bool":
+                param_widget = gtk.CheckButton(driver_param)
+                self.device_vbox_left.pack_start(param_widget, False)
+                param_widget.set_active(value)
+                param_widget.show()
+            elif typestr == "str":
+                param_entry = gtk.Entry()
+                param_label = gtk.Label(driver_param)
+                param_label.set_alignment(1, 0.5)
+                param_label.set_padding(5, 0)
+                param_widget = gtk.HBox()
+                param_widget.set_homogeneous(True)
+                param_widget.pack_start(param_label)
+                param_widget.pack_start(param_entry)
+                self.device_vbox_right.pack_start(param_widget, False)
+                param_entry.set_text(value)
+                param_widget.show_all()
+            elif typestr == "uint" or typestr == "sint":
+                param_spinbox = gtk.SpinButton()
+                param_label = gtk.Label(driver_param)
+                param_label.set_alignment(1, 0.5)
+                param_label.set_padding(5, 0)
+                param_widget = gtk.HBox()
+                param_widget.set_homogeneous(True)
+                param_widget.pack_start(param_label)
+                param_widget.pack_start(param_spinbox)
+                self.device_vbox_right.pack_start(param_widget, False)
+                param_spinbox.set_value(value)
+                param_widget.show_all()
+                
+        #Engine tab setup
+        self.engine_vbox_left = self.get_widget("engine_vbox_left")
+        self.engine_vbox_right = self.get_widget("engine_vbox_right")
+        self.engine_params = self.jack.get_engine_param_names()
+        for engine_param in self.engine_params:
+            typestr = self.jack.get_engine_param_type(engine_param)
+            value = self.jack.get_engine_param_value(engine_param)
+            descr = self.jack.get_engine_short_description(engine_param)
+            if typestr == "bool":
+                param_widget = gtk.CheckButton(engine_param)
+                self.engine_vbox_left.pack_start(param_widget, False)
+                param_widget.set_active(value)
+                param_widget.show()
+            elif typestr == "str":
+                param_entry = gtk.Entry()
+                param_label = gtk.Label(engine_param)
+                param_label.set_alignment(1, 0.5)
+                param_label.set_padding(5, 0)
+                param_widget = gtk.HBox()
+                param_widget.set_homogeneous(True)
+                param_widget.pack_start(param_label)
+                param_widget.pack_start(param_entry)
+                self.engine_vbox_right.pack_start(param_widget, False)
+                param_entry.set_text(value)
+                param_widget.show_all()
+            elif typestr == "uint" or typestr == "sint":
+                param_spinbox = gtk.SpinButton()
+                param_label = gtk.Label(engine_param)
+                param_label.set_alignment(1, 0.5)
+                param_label.set_padding(5, 0)
+                param_widget = gtk.HBox()
+                param_widget.set_homogeneous(True)
+                param_widget.pack_start(param_label)
+                param_widget.pack_start(param_spinbox)
+                self.engine_vbox_right.pack_start(param_widget, False)
+                param_spinbox.set_value(value)
+                param_widget.show_all()
 
     def on_quit(self, data=None):
         gtk.main_quit()
