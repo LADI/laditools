@@ -1,10 +1,13 @@
 No release happens before that :
-* jackctl_logview shouldn't have to parse the whole logfile to fill it's buffer
-* dynamically render SVG to reflect jack's status (started/stopped/xrun detected mini icons in corners of the bigger jack icon)
-* add icons to jack_menu
-* retrieve configuration options from dbus and automatically update jackctl_conf's tabs on startup
-* manage some sort of config file for custom menu items (format ideas ?)
+* Jackctl_logview shouldn't have to parse the whole logfile to fill it's buffer
+* Dynamically render SVG to reflect jack's status (started/stopped/xrun detected mini icons in corners of the bigger jack icon)
+* Add icons to jack_menu
+* Retrieve configuration options from dbus and automatically update jackctl_conf's tabs on startup
+* Display those options in an "orderly fashion". Right now this gui is a mess.
+* Manage some sort of config file for custom menu items (format ideas ?)
 
-The rest that comes eventually afterwards :
-* preset management
-* handling a fallback preset if the default one doesn't work (external soundcard not preset for instance switches to the internal soundcard)
+The rest that comes eventually afterwards, or rekated to jackdbus progress :
+* Preset management
+* Handling a fallback preset if the default one doesn't work (external soundcard not preset for instance switches to the internal soundcard)
+* SpinButton need ranges to work effectively (needs Jack's support)
+* Jack needs to handle enums so we can have some proper combox to choose options from.
