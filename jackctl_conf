@@ -33,6 +33,7 @@ class jackctl_conf(gtk.glade.XML):
         self.event_dict = {"on_jackctl_conf_ui_destroy" : self.on_quit,
             "on_close_button_clicked" : self.on_quit}
         self.signal_autoconnect(self.event_dict)
+        self.param_dict = {}
         # Device tab setup
         self.device_vbox_left = self.get_widget("device_vbox_left")
         self.device_vbox_right = self.get_widget("device_vbox_right")
@@ -43,15 +44,11 @@ class jackctl_conf(gtk.glade.XML):
             short_descr = self.jack.get_driver_short_description(driver_param)
             long_descr = self.jack.get_driver_long_description(driver_param)
             if typestr == "bool":
-                param_widget = self.make_checkbox(driver_param, value)
-                self.device_vbox_left.pack_start(param_widget, False)
+                self.device_vbox_left.pack_start(self.make_checkbox(driver_param, value), False)
             elif typestr == "str":
-                param_widget = self.make_textentry(driver_param, value)
-                self.device_vbox_right.pack_start(param_widget, False)
+                self.device_vbox_right.pack_start(self.make_textentry(driver_param, value), False)
             elif typestr == "uint" or typestr == "sint":
-                param_widget = self.make_spinbutton(driver_param, value)
-                self.device_vbox_right.pack_start(param_widget, False)
-                
+                self.device_vbox_right.pack_start(self.make_spinbutton(driver_param, value), False)
         #Engine tab setup
         self.engine_vbox_left = self.get_widget("engine_vbox_left")
         self.engine_vbox_right = self.get_widget("engine_vbox_right")
@@ -61,44 +58,41 @@ class jackctl_conf(gtk.glade.XML):
             value = self.jack.get_engine_param_value(engine_param)
             descr = self.jack.get_engine_short_description(engine_param)
             if typestr == "bool":
-                param_widget = self.make_checkbox(engine_param, value)
-                self.engine_vbox_left.pack_start(param_widget, False)
+                self.engine_vbox_left.pack_start(self.make_checkbox(engine_param, value), False)
             elif typestr == "str":
-                param_widget = self.make_textentry(engine_param, value)
-                self.engine_vbox_right.pack_start(param_widget, False)
+                self.engine_vbox_right.pack_start(self.make_textentry(engine_param, value), False)
             elif typestr == "uint" or typestr == "sint":
-                param_widget = self.make_spinbutton(engine_param, value)
-                self.engine_vbox_right.pack_start(param_widget, False)
+                self.engine_vbox_right.pack_start(self.make_spinbutton(engine_param, value), False)
     
     def make_checkbox(self, label, value):
-        param_widget = gtk.CheckButton(label)
-        param_widget.set_active(value)
-        param_widget.show()
-        return param_widget
+        self.param_dict[label] = gtk.CheckButton(label)
+        self.param_dict[label].set_active(value)
+        self.param_dict[label].show()
+        return self.param_dict[label]
     
     def make_spinbutton(self, label, value):
-        param_spinbox = gtk.SpinButton()
+        self.param_dict[label] = gtk.SpinButton()
         param_label = gtk.Label(label)
         param_label.set_alignment(1, 0.5)
         param_label.set_padding(10, 0)
         param_widget = gtk.HBox()
         param_widget.set_homogeneous(True)
         param_widget.pack_start(param_label)
-        param_widget.pack_start(param_spinbox)
-        param_spinbox.set_value(value)
+        param_widget.pack_start(self.param_dict[label])
+        self.param_dict[label].set_value(value)
         param_widget.show_all()
         return param_widget
 
     def make_textentry(self, label, value):
-        param_entry = gtk.Entry()
+        self.param_dict[label] = gtk.Entry()
         param_label = gtk.Label(label)
         param_label.set_alignment(1, 0.5)
         param_label.set_padding(10, 0)
         param_widget = gtk.HBox()
         param_widget.set_homogeneous(True)
         param_widget.pack_start(param_label)
-        param_widget.pack_start(param_entry)
-        param_entry.set_text(value)
+        param_widget.pack_start(self.param_dict[label])
+        self.param_dict[label].set_text(value)
         param_widget.show_all()
         return param_widget
 
