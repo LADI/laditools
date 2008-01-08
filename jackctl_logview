@@ -27,6 +27,28 @@ from os import environ, sep
 jackdbus_log = environ['HOME'] + sep + ".jackdbus" + sep + "jackdbus.log"
 max_lines = 100
 
+def read_last(lfile, lines):
+    chunk_size = lines * 60
+    lfile.seek(0, 2)
+    endpos = lfile.tell()
+    pos = endpos - chunk_size
+    if pos < 0:
+        pos = 0
+    backlog = ''
+    backlog_size = 0
+    lines += 1
+    while pos >= 0 and backlog_size <= lines:
+        lfile.seek(pos, 0)
+        s = lfile.read(chunk_size)
+        pos = pos - 10000
+        backlog_size += s.count("\n")
+        backlog = s + backlog
+    backlog = backlog.split("\n")
+    if len(backlog) > lines:
+        backlog = backlog[-lines:]
+    lfile.seek(endpos, 0)
+    return "\n".join(backlog)
+
 class jackctl_logview(gtk.glade.XML):
     def __init__(self):
         # Load the glade file
@@ -43,9 +65,9 @@ class jackctl_logview(gtk.glade.XML):
         self.current_pos = self.text_buffer.create_mark("log_cursor", self.text_buffer.get_end_iter())
         self.text_buffer.connect("changed", self.on_resize)
         # Add the existing log content
-        self.log_file = open(jackdbus_log)
-        for line in self.log_file:
-            self.text_buffer.insert(self.text_buffer.get_end_iter(), line)
+        self.log_file = open(jackdbus_log, "rb")
+        log_data = read_last(self.log_file, max_lines)
+        self.text_buffer.insert(self.text_buffer.get_end_iter(), log_data)
         # Tail the logs output every 250ms
         self.auto_updater = timeout_add(250, self.update)
 
