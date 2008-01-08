@@ -53,8 +53,12 @@ class wmjackctl(wmoo.Application, pyjackctl.jack_menu):
         return self.jack
     
     def set_starting_status(self):
-        # TODO: make that a real starting status display... :-p
-        print "Jack is starting"
+        self.set_line(0, "JACK")
+        self.set_line(1, "Starting")
+        self.clear_line(2)
+        self.clear_line(3)
+        self.clear_line(4)
+        self.clear_line(5)
 
     def on_button_release(self, event):
         if event['button'] == 3:

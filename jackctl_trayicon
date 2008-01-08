@@ -45,6 +45,7 @@ class jackctl_trayicon(gtk.StatusIcon, pyjackctl.jack_menu):
         self.menu.reposition()
 
     def set_starting_status(self):
+        self.set_tooltip("JACK is starting")
         self.set_from_pixbuf(self.starting_pixbuf)
 
     def update(self):
