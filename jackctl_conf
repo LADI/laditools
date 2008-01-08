@@ -78,6 +78,9 @@ class jackctl_conf(gtk.glade.XML):
     
     def make_spinbutton(self, param_name, value, storage_dict):
         storage_dict[param_name] = gtk.SpinButton()
+        storage_dict[param_name].set_range(0, 100000)
+        storage_dict[param_name].set_increments(1, 1000)
+        storage_dict[param_name].set_value(value)
         param_label = gtk.Label(param_name)
         param_label.set_alignment(1, 0.5)
         param_label.set_padding(10, 0)
@@ -85,7 +88,6 @@ class jackctl_conf(gtk.glade.XML):
         param_widget.set_homogeneous(True)
         param_widget.pack_start(param_label)
         param_widget.pack_start(storage_dict[param_name])
-        storage_dict[param_name].set_value(value)
         storage_dict[param_name].connect("changed", self.on_param_update, param_name)
         param_widget.show_all()
         return param_widget
