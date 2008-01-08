@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.0 on Tue Jan  8 07:33:14 2008 -->
+<!--Generated with glade3 3.4.0 on Tue Jan  8 19:32:33 2008 -->
 <glade-interface>
   <widget class="GtkWindow" id="jackctl_conf_ui">
     <property name="visible">True</property>
@@ -278,8 +278,6 @@
             </child>
           </widget>
           <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
             <property name="position">1</property>
           </packing>
         </child>
