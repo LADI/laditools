@@ -30,6 +30,7 @@ class jackctl_trayicon(gtk.StatusIcon, pyjackctl.jack_menu):
         self.jack = None
         # Create the needed pixbufs to manage the status icon's look
         self.stopped_pixbuf = gtk.gdk.pixbuf_new_from_file("/usr/share/pyjackctl/data/stopped.svg")
+        self.starting_pixbuf = gtk.gdk.pixbuf_new_from_file("/usr/share/pyjackctl/data/starting.svg")
         self.started_pixbuf = gtk.gdk.pixbuf_new_from_file("/usr/share/pyjackctl/data/started.svg")
         self.set_from_pixbuf(self.stopped_pixbuf)
         # Get the initial status
@@ -42,6 +43,9 @@ class jackctl_trayicon(gtk.StatusIcon, pyjackctl.jack_menu):
     def menu_activate(self, statusicon, button, activate_time):
         self.menu.popup(None, None, gtk.status_icon_position_menu, button, activate_time, self)
         self.menu.reposition()
+
+    def set_starting_status(self):
+        self.set_from_pixbuf(self.starting_pixbuf)
 
     def update(self):
         try:

@@ -42,12 +42,13 @@ class jack_menu:
         for tuples in self.menu_items:
             item, callback, exec_path = tuples
             self.menu.append(item)
-            # TODO : SeparatorMenuItems also get "connected". It does nothing but it's ugly.
-            item.connect("activate", callback, exec_path)
+            if type(item) is not gtk.SeparatorMenuItem:
+                item.connect("activate", callback, exec_path)
         self.menu.show_all()
         self.proc_list = []
 
     def on_menu_start(self, widget, data=None):
+        self.set_starting_status()
         self.get_controller().start()
 
     def on_menu_stop(self, widget, data=None):

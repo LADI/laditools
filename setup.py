@@ -34,5 +34,6 @@ setup(name='pyjackctl',
         'data/jackctl_logview_ui.glade',
         'data/jackctl_conf_ui.glade',
         'data/started.svg',
+        'data/starting.svg',
         'data/stopped.svg'])]
 )
