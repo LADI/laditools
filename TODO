@@ -1,8 +1,7 @@
 No release happens before that :
-* Jackctl_logview shouldn't have to parse the whole logfile to fill it's buffer
 * Dynamically render SVG to reflect jack's status (started/stopped/xrun detected mini icons in corners of the bigger jack icon)
 * Add icons to jack_menu
-* Retrieve configuration options from dbus and automatically update jackctl_conf's tabs on startup
+* Retrieve configuration options from dbus and automatically update jackctl_conf's tabs on startup (Partially done)
 * Display those options in an "orderly fashion". Right now this gui is a mess.
 * Manage some sort of config file for custom menu items (format ideas ?)
 
