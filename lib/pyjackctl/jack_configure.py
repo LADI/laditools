@@ -20,6 +20,13 @@ name_base = 'org.jackaudio'
 controller_interface_name = name_base + '.JackConfigure'
 service_name = name_base + '.service'
 
+def dbus_type_to_python_type(dbus_value):
+    if type(dbus_value) == dbus.Boolean:
+	return bool(dbus_value)
+    if type(dbus_value) == dbus.Int32 or type(dbus_value) == dbus.UInt32:
+	return int(dbus_value)
+    return dbus_value
+
 class jack_configure:
     def __init__(self):
         self.bus = dbus.SessionBus()
@@ -48,32 +55,19 @@ class jack_configure:
         return self.iface.GetDriverParameterTypeString(param)
 
     def get_driver_param_value(self, param):
-        typestr = self.get_driver_param_type(param)
-        if typestr == "str":
-            return self.iface.GetDriverParameterValueString(param)
-        elif typestr == "bool":
-            return self.iface.GetDriverParameterValueBool(param)
-        elif typestr == "char":
-            return self.iface.GetDriverParameterValueChar(param)
-        elif typestr == "sint":
-            return self.iface.GetDriverParameterValueInt(param)
-        elif typestr == "uint":
-            return self.iface.GetDriverParameterValueUint(param)
-        else:
-            return None
+        return dbus_type_to_python_type(self.iface.GetDriverParameterValue(param))
 
     def set_driver_param_value(self, param, value):
         typestr = self.get_driver_param_type(param)
-        if typestr == "str":
-            self.iface.SetDriverParameterValueString(param, value)
-        elif typestr == "bool":
-            self.iface.SetDriverParameterValueBool(param, value)
+
+        if typestr == "bool":
+            value = dbus.Boolean(value);
         elif typestr == "char":
-            self.iface.SetDriverParameterValueChar(param, value)
-        elif typestr == "sint":
-            self.iface.SetDriverParameterValueInt(param, value)
-        elif typestr == "uint":
-            self.iface.SetDriverParameterValueUint(param, value)
+            value = dbus.Byte(value);
+        elif typestr == "sint" or typestr == "uint":
+            value = dbus.UInt32(value)
+
+        self.iface.SetDriverParameterValue(param, value)
 
     def get_engine_param_names(self):
         return self.iface.GetEngineParameterNames()
@@ -88,29 +82,16 @@ class jack_configure:
         return self.iface.GetEngineParameterTypeString(param)
 
     def get_engine_param_value(self, param):
-        typestr = self.get_engine_param_type(param)
-        if typestr == "str":
-            return self.iface.GetEngineParameterValueString(param)
-        elif typestr == "bool":
-            return self.iface.GetEngineParameterValueBool(param)
-        elif typestr == "char":
-            return self.iface.GetEngineParameterValueChar(param)
-        elif typestr == "sint":
-            return self.iface.GetEngineParameterValueInt(param)
-        elif typestr == "uint":
-            return self.iface.GetEngineParameterValueUint(param)
-        else:
-            return None
+        return dbus_type_to_python_type(self.iface.GetEngineParameterValue(param))
 
     def set_engine_param_value(self, param, value):
         typestr = self.get_engine_param_type(param)
-        if typestr == "str":
-            self.iface.SetEngineParameterValueString(param, value)
-        elif typestr == "bool":
-            self.iface.SetEngineParameterValueBool(param, value)
+
+        if typestr == "bool":
+            value = dbus.Boolean(value);
         elif typestr == "char":
-            self.iface.SetEngineParameterValueChar(param, value)
-        elif typestr == "sint":
-            self.iface.SetEngineParameterValueInt(param, value)
-        elif typestr == "uint":
-            self.iface.SetEngineParameterValueUint(param, value)
+            value = dbus.Byte(value);
+        elif typestr == "sint" or typestr == "uint":
+            value = dbus.UInt32(value)
+
+        self.iface.SetEngineParameterValue(param, value)
