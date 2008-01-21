@@ -14,29 +14,49 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import xml.dom
-from xml.dom.minidom import parse
+from xml.dom.minidom import parse, getDOMImplementation
 from xml.dom.ext import PrettyPrint
+from os import environ, sep
+
+config_file = environ['HOME'] + sep + ".config" + sep + "pyjackctl" + sep + "config.xml"
 
 class config:
-    def __init__(self, filename):
-        self.load(filename)
-        node_list = self.doc.getElementsByTagName('config')
-        if node_list.length == 1:
-            self.root = node_list[0]
+    def __init__(self):
+        try:
+            self.doc = parse(config_file)
+            self.app = {}
+            for child in self.doc.documentElement.childNodes:
+                self.app[child.tagName] = child
+        except:
+            self.doc = getDOMImplementation().createDocument(None, "config", None)
+            self.save(config_file)
+
+    # This will clear an app node from it's children parameters
+    def cleanup(self, app_name):
+        for child in self.app[app_name].childNodes:
+            self.app[app_name].removeChild(child)
+
+    # Use this to create the dictionary that you'll use in your application
+    # You can add remove any parameters you wish from it, it'll get saved magically
+    def get(self, app_name):
+        param_dict = {}
+        if app_name in self.app:
+            for child in self.app[app_name].childNodes:
+                param_dict[child.tagName] = child.nodeValue
+            return param_dict
         else:
-            print "your XML file is fracked up"
+            return param_dict
 
-    def load(self, filename):
-        self.doc = parse('c:\\temp\\mydata.xml')
+    # Use this when you want to update the xml doc with the content of your dictionary
+    def set(self, app_name, param_dict):
+        # Full cleanup to avoid keeping deprecated entries in the xml file
+        self.cleanup(app_name)
+        # Fill in the current list of parametters
+        for param, value in param_dict.items():
+            element = self.doc.createElement(param)
+            element.nodeValue = value
+            self.app[app_name].appendChild(element)
 
-    def save(self, filename):
-        PrettyPrint(self.doc, filename)
-
-    def get_module_config(self, module_name):
-        node_list = self.root.getElementsByTagName(module_name)
-        if node_list.length == 1:
-            return node_list[0].
-
-    def append(self, section, name, value):
-        self.doc.createElement(name)
+    # Use this when you want to write the config file to disk
+    def save(self):
+        PrettyPrint(self.doc, config_file)

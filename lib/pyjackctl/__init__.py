@@ -17,3 +17,4 @@
 from jack_controller import jack_controller
 from jack_configure import jack_configure
 from jack_menu import jack_menu
+from config import config
