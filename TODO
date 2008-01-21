@@ -10,3 +10,9 @@ The rest that comes eventually afterwards, or rekated to jackdbus progress :
 * Handling a fallback preset if the default one doesn't work (external soundcard not preset for instance switches to the internal soundcard)
 * SpinButton need ranges to work effectively (needs Jack's support)
 * Jack needs to handle enums so we can have some proper combox to choose options from.
+
+Some concepts on the use of pyjackctl.config :
+- it is up to each client to maintain it's own dictionary of parameters
+- the dictionary is loaded by the config module from the xml config file at startup
+- the dictionary is saved by the config module to the xml config file whenever necessary (up to the devs decision)
+- if there's no config present in the xml file, an empty dict will be return by the config module, the application will feed t with its default values, which will be saved by the appropriate function (provided by the config module). magic !
