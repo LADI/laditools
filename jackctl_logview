@@ -119,5 +119,7 @@ if 'jackdbus_log' not in param_dict:
     param_dict['jackdbus_log'] = jackdbus_log_default
 if 'max_lines' not in param_dict:
     param_dict['max_lines'] = max_lines_default
+else:
+    param_dict['max_lines'] = int(param_dict['max_lines'])
 
 jackctl_logview().run()

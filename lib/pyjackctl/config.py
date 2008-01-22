@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import xml.dom
 from xml.dom.minidom import parse, getDOMImplementation
 from xml.dom.ext import PrettyPrint
 
@@ -28,18 +29,20 @@ if not exists(config_dir):
 class config:
     def __init__(self):
         self.app = {}
+        self.doc = parse(config_filename)
         try:
-            self.doc = parse(config_file)
             for child in self.doc.documentElement.childNodes:
-                self.app[child.tagName] = child
+                if child.nodeType == child.ELEMENT_NODE:
+                    self.app[child.tagName] = child
         except:
             self.doc = getDOMImplementation().createDocument(None, "config", None)
             self.save()
 
     # This will clear an app node from it's children parameters
     def cleanup(self, app_name):
-        for child in self.app[app_name].childNodes:
-            self.app[app_name].removeChild(child)
+        replacement = self.doc.createElement(app_name)
+        self.doc.documentElement.replaceChild(replacement, self.app[app_name])
+        self.app[app_name] = replacement
 
     # Use this to create the dictionary that you'll use in your application
     # You can add remove any parameters you wish from it, it'll get saved magically
@@ -47,7 +50,8 @@ class config:
         param_dict = {}
         if app_name in self.app:
             for child in self.app[app_name].childNodes:
-                param_dict[child.tagName] = child.nodeValue
+                if child.nodeType == child.ELEMENT_NODE:
+                    param_dict[child.tagName] = child.getAttribute('value')
             return param_dict
         else:
             new_app = self.doc.createElement(app_name)
@@ -62,6 +66,9 @@ class config:
         # Fill in the current list of parametters
         for param, value in param_dict.items():
             param_node = self.doc.createElement(param)
+            if type(value) is not str:
+                value = str(value)
+            param_node.setAttribute('value', value)
             self.app[app_name].appendChild(param_node)
 
     # Use this when you want to write the config file to disk
