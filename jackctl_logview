@@ -21,12 +21,11 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import gtk.glade
+import pyjackctl
 from gobject import timeout_add
 from os import environ, sep
 
-jackdbus_log = environ['HOME'] + sep + ".jackdbus" + sep + "jackdbus.log"
-max_lines = 100
-
+# Output the last
 def read_last(lfile, lines):
     chunk_size = lines * 60
     lfile.seek(0, 2)
@@ -65,8 +64,8 @@ class jackctl_logview(gtk.glade.XML):
         self.current_pos = self.text_buffer.create_mark("log_cursor", self.text_buffer.get_end_iter())
         self.text_buffer.connect("changed", self.on_resize)
         # Add the existing log content
-        self.log_file = open(jackdbus_log, "rb")
-        log_data = read_last(self.log_file, max_lines)
+        self.log_file = open(param_dict['jackdbus_log'], "rb")
+        log_data = read_last(self.log_file, param_dict['max_lines'])
         self.text_buffer.insert(self.text_buffer.get_end_iter(), log_data)
         # Tail the logs output every 250ms
         self.auto_updater = timeout_add(250, self.update)
@@ -102,11 +101,23 @@ class jackctl_logview(gtk.glade.XML):
         self.log_textview.scroll_mark_onscreen(self.current_pos)
         # Cleanup the buffer
         line_count = self.text_buffer.get_line_count()
-        if line_count > max_lines:
-            self.text_buffer.delete(self.text_buffer.get_start_iter(), self.text_buffer.get_iter_at_line(line_count-max_lines))
+        if line_count > param_dict['max_lines']:
+            self.text_buffer.delete(self.text_buffer.get_start_iter(), self.text_buffer.get_iter_at_line(line_count-param_dict['max_lines']))
 
     def run(self):
         gtk.main()
+        logview_config.set('jackctl_logview', param_dict)
+        logview_config.save()
         return 0
+
+# Configuration section
+jackdbus_log_default = environ['HOME'] + sep + ".jackdbus" + sep + "jackdbus.log"
+max_lines_default = 100
+logview_config = pyjackctl.config()
+param_dict = logview_config.get('jackctl_logview')
+if 'jackdbus_log' not in param_dict:
+    param_dict['jackdbus_log'] = jackdbus_log_default
+if 'max_lines' not in param_dict:
+    param_dict['max_lines'] = max_lines_default
 
 jackctl_logview().run()

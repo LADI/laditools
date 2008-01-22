@@ -16,20 +16,25 @@
 
 from xml.dom.minidom import parse, getDOMImplementation
 from xml.dom.ext import PrettyPrint
-from os import environ, sep
 
-config_file = environ['HOME'] + sep + ".config" + sep + "pyjackctl" + sep + "config.xml"
+# Let's make sure we'll place the file in an existing dir
+from os import environ, sep, mkdir
+from os.path import exists
+config_dir = environ['HOME'] + sep + ".config" + sep + "pyjackctl" + sep
+config_filename = config_dir + "config.xml"
+if not exists(config_dir):
+    mkdir(config_dir, 0755)
 
 class config:
     def __init__(self):
+        self.app = {}
         try:
             self.doc = parse(config_file)
-            self.app = {}
             for child in self.doc.documentElement.childNodes:
                 self.app[child.tagName] = child
         except:
             self.doc = getDOMImplementation().createDocument(None, "config", None)
-            self.save(config_file)
+            self.save()
 
     # This will clear an app node from it's children parameters
     def cleanup(self, app_name):
@@ -45,6 +50,9 @@ class config:
                 param_dict[child.tagName] = child.nodeValue
             return param_dict
         else:
+            new_app = self.doc.createElement(app_name)
+            self.doc.documentElement.appendChild(new_app)
+            self.app[app_name] = new_app
             return param_dict
 
     # Use this when you want to update the xml doc with the content of your dictionary
@@ -53,10 +61,10 @@ class config:
         self.cleanup(app_name)
         # Fill in the current list of parametters
         for param, value in param_dict.items():
-            element = self.doc.createElement(param)
-            element.nodeValue = value
-            self.app[app_name].appendChild(element)
+            param_node = self.doc.createElement(param)
+            self.app[app_name].appendChild(param_node)
 
     # Use this when you want to write the config file to disk
     def save(self):
+        config_file = open(config_filename, 'w')
         PrettyPrint(self.doc, config_file)

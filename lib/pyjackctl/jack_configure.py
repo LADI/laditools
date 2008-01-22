@@ -22,9 +22,9 @@ service_name = name_base + '.service'
 
 def dbus_type_to_python_type(dbus_value):
     if type(dbus_value) == dbus.Boolean:
-	return bool(dbus_value)
+        return bool(dbus_value)
     if type(dbus_value) == dbus.Int32 or type(dbus_value) == dbus.UInt32:
-	return int(dbus_value)
+        return int(dbus_value)
     return dbus_value
 
 class jack_configure:
