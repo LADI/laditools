@@ -29,8 +29,8 @@ if not exists(config_dir):
 class config:
     def __init__(self):
         self.app = {}
-        self.doc = parse(config_filename)
         try:
+            self.doc = parse(config_filename)
             for child in self.doc.documentElement.childNodes:
                 if child.nodeType == child.ELEMENT_NODE:
                     self.app[child.tagName] = child
