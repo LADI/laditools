@@ -1,11 +1,11 @@
 No release happens before that :
 * Dynamically render SVG to reflect jack's status (started/stopped/xrun detected mini icons in corners of the bigger jack icon)
 * Add icons to jack_menu
-* Retrieve configuration options from dbus and automatically update jackctl_conf's tabs on startup (Partially done)
 * Display those options in an "orderly fashion". Right now this gui is a mess.
-* Manage some sort of config file for custom menu items (format ideas ?)
+* Manage some sort of config file for custom menu items (XML, see config.py)
+* popup a window when clicking on jacktray to show detailed jack status
 
-The rest that comes eventually afterwards, or rekated to jackdbus progress :
+The rest that comes eventually afterwards, or related to jackdbus progress :
 * Preset management
 * Handling a fallback preset if the default one doesn't work (external soundcard not preset for instance switches to the internal soundcard)
 * SpinButton need ranges to work effectively (needs Jack's support)

@@ -1,5 +1,9 @@
 This should be enough for now :
 
+known dependencies : 
+- pygtk-2.12
+- pyxml (0.8.4 is known to work, earlyier might also...)
+
 python setup.py install
 
 Tunas root to install of course...

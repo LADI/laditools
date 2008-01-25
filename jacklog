@@ -51,7 +51,7 @@ def read_last(lfile, lines):
 class jackctl_logview(gtk.glade.XML):
     def __init__(self):
         # Load the glade file
-        gtk.glade.XML.__init__(self, "/usr/share/pyjackctl/data/jackctl_logview_ui.glade")
+        gtk.glade.XML.__init__(self, "/usr/share/pyjackctl/data/jacklog_ui.glade")
         # Get the ui ready for action
         self.event_dict = {"on_jackctl_logview_ui_destroy" : self.on_quit,
             "on_close_button_clicked" : self.on_quit,
@@ -106,7 +106,7 @@ class jackctl_logview(gtk.glade.XML):
 
     def run(self):
         gtk.main()
-        logview_config.set('jackctl_logview', param_dict)
+        logview_config.set('jacklog', param_dict)
         logview_config.save()
         return 0
 
@@ -114,7 +114,7 @@ class jackctl_logview(gtk.glade.XML):
 jackdbus_log_default = environ['HOME'] + sep + ".jackdbus" + sep + "jackdbus.log"
 max_lines_default = 100
 logview_config = pyjackctl.config()
-param_dict = logview_config.get('jackctl_logview')
+param_dict = logview_config.get('jacklog')
 if 'jackdbus_log' not in param_dict:
     param_dict['jackdbus_log'] = jackdbus_log_default
 if 'max_lines' not in param_dict:

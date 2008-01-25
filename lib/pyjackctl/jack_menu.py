@@ -22,9 +22,9 @@ import subprocess
 
 # TODO : somehow, we need stock icons. Nothing else can be used for ImageMenuItems
 
-config_app = "/usr/bin/jackctl_conf"
+config_app = "/usr/bin/jackconf"
 connect_app = "/usr/bin/patchage"
-log_app = "/usr/bin/jackctl_logview"
+log_app = "/usr/bin/jacklog"
 
 class jack_menu:
     def __init__(self):
@@ -61,7 +61,7 @@ class jack_menu:
         gtk.main_quit()
 
     def on_menu_launcher(self, widget, exec_path):
-        self.proc_list.append(subprocess.Popen([exec_path,  exec_path]))
+        self.proc_list.append(subprocess.Popen([exec_path, exec_path]))
 
     def on_menu_reset_xruns(self, widget, data=None):
         self.get_controller().reset_xruns()

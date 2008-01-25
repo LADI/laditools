@@ -28,7 +28,7 @@ class jackctl_conf(gtk.glade.XML):
         # Dbus interface
         self.jack = pyjackctl.jack_configure()
         # Load the glade file
-        gtk.glade.XML.__init__(self, "/usr/share/pyjackctl/data/jackctl_conf_ui.glade")
+        gtk.glade.XML.__init__(self, "/usr/share/pyjackctl/data/jackconf_ui.glade")
         # Get the ui ready for action
         self.event_dict = {"on_jackctl_conf_ui_destroy" : self.on_quit,
             "on_close_button_clicked" : self.on_quit,
