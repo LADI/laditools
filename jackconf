@@ -59,7 +59,7 @@ class jackctl_conf(gtk.glade.XML):
         self.engine_params = self.jack.get_engine_param_names()
         for engine_param in self.engine_params:
             typestr = self.jack.get_engine_param_type(engine_param)
-            value = self.jack.get_engine_param_value(engine_param)
+            isset, default, value = self.jack.get_engine_param_value(engine_param)
             short_descr = self.jack.get_engine_short_description(engine_param)
             if typestr == "bool":
                 self.engine_vbox_left.pack_start(self.make_checkbox(engine_param, value, short_descr, self.engine_param_dict), False)

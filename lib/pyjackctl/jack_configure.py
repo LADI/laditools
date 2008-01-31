@@ -27,6 +27,19 @@ def dbus_type_to_python_type(dbus_value):
         return int(dbus_value)
     return dbus_value
 
+def dbus_typesig_to_type_string(type_char):
+    type_char = str(type_char)
+    if type_char == 'i':
+	return "sint"
+    if type_char == 'u':
+	return "uint"
+    if type_char == 'y':
+	return "char"
+    if type_char == 's':
+	return "str"
+    if type_char == 'b':
+	return "bool"
+
 class jack_configure:
     def __init__(self):
         self.bus = dbus.SessionBus()
@@ -43,19 +56,33 @@ class jack_configure:
         self.iface.SelectDriver(driver)
 
     def get_driver_param_names(self):
-        return self.iface.GetDriverParameterNames()
+        infos = self.iface.GetDriverParametersInfo()
+
+        names = []
+
+        for info in infos:
+            names.append(info[1])
+
+        return names
 
     def get_driver_short_description(self, param):
-        return self.iface.GetDriverParameterShortDescription(param)
+        type_char, name, short_descr, long_descr = self.iface.GetDriverParameterInfo(param)
+        return short_descr
 
     def get_driver_long_description(self, param):
-        return self.iface.GetDriverParameterLongDescription(param)
+        type_char, name, short_descr, long_descr = self.iface.GetDriverParameterInfo(param)
+        return long_descr
 
     def get_driver_param_type(self, param):
-        return self.iface.GetDriverParameterTypeString(param)
+        type_char, name, short_descr, long_descr = self.iface.GetDriverParameterInfo(param)
+        return dbus_typesig_to_type_string(type_char)
 
     def get_driver_param_value(self, param):
-        return dbus_type_to_python_type(self.iface.GetDriverParameterValue(param))
+        isset, default, value = self.iface.GetDriverParameterValue(param)
+        isset = bool(isset)
+        default = dbus_type_to_python_type(default)
+        value = dbus_type_to_python_type(value)
+        return isset, default, value
 
     def set_driver_param_value(self, param, value):
         typestr = self.get_driver_param_type(param)
@@ -70,19 +97,33 @@ class jack_configure:
         self.iface.SetDriverParameterValue(param, value)
 
     def get_engine_param_names(self):
-        return self.iface.GetEngineParameterNames()
+        infos = self.iface.GetEngineParametersInfo()
+
+        names = []
+
+        for info in infos:
+            names.append(info[1])
+
+        return names
 
     def get_engine_short_description(self, param):
-        return self.iface.GetEngineParameterShortDescription(param)
+        type_char, name, short_descr, long_descr = self.iface.GetEngineParameterInfo(param)
+        return short_descr
 
     def get_engine_long_description(self, param):
-        return self.iface.GetEngineParameterLongDescription(param)
+        type_char, name, short_descr, long_descr = self.iface.GetEngineParameterInfo(param)
+        return long_descr
 
     def get_engine_param_type(self, param):
-        return self.iface.GetEngineParameterTypeString(param)
+        type_char, name, short_descr, long_descr = self.iface.GetEngineParameterInfo(param)
+        return dbus_typesig_to_type_string(type_char)
 
     def get_engine_param_value(self, param):
-        return dbus_type_to_python_type(self.iface.GetEngineParameterValue(param))
+        isset, default, value = self.iface.GetEngineParameterValue(param)
+        isset = bool(isset)
+        default = dbus_type_to_python_type(default)
+        value = dbus_type_to_python_type(value)
+        return isset, default, value
 
     def set_engine_param_value(self, param, value):
         typestr = self.get_engine_param_type(param)
