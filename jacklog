@@ -25,7 +25,11 @@ import pyjackctl
 from gobject import timeout_add
 from os import environ, sep
 
-# Output the last
+# Default configuration
+jackdbus_log_default = environ['HOME'] + sep + ".jackdbus" + sep + "jackdbus.log"
+max_lines_default = 100
+
+# Output the last <lines> lines
 def read_last(lfile, lines):
     chunk_size = lines * 60
     lfile.seek(0, 2)
@@ -50,6 +54,16 @@ def read_last(lfile, lines):
 
 class jackctl_logview(gtk.glade.XML):
     def __init__(self):
+        # Handle the configuration
+        self.logview_config = pyjackctl.config()
+        self.param_dict = self.logview_config.get('jacklog')
+        if 'jackdbus_log' not in self.param_dict:
+            self.param_dict['jackdbus_log'] = jackdbus_log_default, {}
+        if 'max_lines' not in self.param_dict:
+            self.param_dict['max_lines'] = max_lines_default, {}
+        self.jackdbus_log, devnull = self.param_dict['jackdbus_log']
+        max_lines_text, devnull = self.param_dict['max_lines']
+        self.max_lines = int(max_lines_text)
         # Load the glade file
         gtk.glade.XML.__init__(self, "/usr/share/pyjackctl/data/jacklog_ui.glade")
         # Get the ui ready for action
@@ -64,8 +78,8 @@ class jackctl_logview(gtk.glade.XML):
         self.current_pos = self.text_buffer.create_mark("log_cursor", self.text_buffer.get_end_iter())
         self.text_buffer.connect("changed", self.on_resize)
         # Add the existing log content
-        self.log_file = open(param_dict['jackdbus_log'], "rb")
-        log_data = read_last(self.log_file, param_dict['max_lines'])
+        self.log_file = open(self.jackdbus_log, "rb")
+        log_data = read_last(self.log_file, self.max_lines)
         self.text_buffer.insert(self.text_buffer.get_end_iter(), log_data)
         # Tail the logs output every 250ms
         self.auto_updater = timeout_add(250, self.update)
@@ -101,25 +115,12 @@ class jackctl_logview(gtk.glade.XML):
         self.log_textview.scroll_mark_onscreen(self.current_pos)
         # Cleanup the buffer
         line_count = self.text_buffer.get_line_count()
-        if line_count > param_dict['max_lines']:
-            self.text_buffer.delete(self.text_buffer.get_start_iter(), self.text_buffer.get_iter_at_line(line_count-param_dict['max_lines']))
+        if line_count > self.max_lines:
+            self.text_buffer.delete(self.text_buffer.get_start_iter(), self.text_buffer.get_iter_at_line(line_count-self.max_lines))
 
     def run(self):
         gtk.main()
-        logview_config.set('jacklog', param_dict)
-        logview_config.save()
+        self.logview_config.set('jacklog', self.param_dict)
         return 0
-
-# Configuration section
-jackdbus_log_default = environ['HOME'] + sep + ".jackdbus" + sep + "jackdbus.log"
-max_lines_default = 100
-logview_config = pyjackctl.config()
-param_dict = logview_config.get('jacklog')
-if 'jackdbus_log' not in param_dict:
-    param_dict['jackdbus_log'] = jackdbus_log_default
-if 'max_lines' not in param_dict:
-    param_dict['max_lines'] = max_lines_default
-else:
-    param_dict['max_lines'] = int(param_dict['max_lines'])
 
 jackctl_logview().run()

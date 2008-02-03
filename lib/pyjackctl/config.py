@@ -51,7 +51,14 @@ class config:
         if app_name in self.app:
             for child in self.app[app_name].childNodes:
                 if child.nodeType == child.ELEMENT_NODE:
-                    param_dict[child.tagName] = child.getAttribute('value')
+                    attrib_dict = {}
+                    text = ''
+                    for grandchild_node in child.childNodes:
+                        if grandchild_node.nodeType == child.TEXT_NODE:
+                            text = grandchild_node.data
+                        if grandchild_node.nodeType == child.ATTRIBUTE_NODE:
+                            attrib_dict[grandchild_node.name] = grandchild_node.nodeValue
+                    param_dict[child.tagName] = text, attrib_dict
             return param_dict
         else:
             new_app = self.doc.createElement(app_name)
@@ -65,11 +72,18 @@ class config:
         self.cleanup(app_name)
         # Fill in the current list of parametters
         for param, value in param_dict.items():
-            param_node = self.doc.createElement(param)
-            if type(value) is not str:
-                value = str(value)
-            param_node.setAttribute('value', value)
-            self.app[app_name].appendChild(param_node)
+            param_element = self.doc.createElement(param)
+            text, attrib_dict = value
+            if type(text) is not str:
+                text = str(text)
+            param_text = self.doc.createTextNode(text)
+            for attribute_name, attribute_value in attrib_dict.items():
+                if type(attribute_value) is not str:
+                    attribute_value = str(attribute_value)
+                param_element.setAttribute(attribute_name, attribute_value)
+            param_element.appendChild(param_text)
+            self.app[app_name].appendChild(param_element)
+        self.save()
 
     # Use this when you want to write the config file to disk
     def save(self):
