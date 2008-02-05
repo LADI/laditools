@@ -24,9 +24,9 @@ from gobject import timeout_add
 import pyjackctl
 
 # Default configuration
-autostart_default = False
+autostart_default = 0
 
-class jackctl_trayicon(gtk.StatusIcon, pyjackctl.jack_menu):
+class jacktray(gtk.StatusIcon, pyjackctl.jack_menu):
     def __init__(self):
         # Handle the configuration
         self.jacktray_config = pyjackctl.config()
@@ -34,7 +34,7 @@ class jackctl_trayicon(gtk.StatusIcon, pyjackctl.jack_menu):
         if 'autostart' not in self.param_dict:
             self.param_dict['autostart'] = str(autostart_default), {}
         self.autostart, devnull = self.param_dict['autostart']
-        self.autostart = bool(self.autostart)
+        self.autostart = int(self.autostart)
         # Build the UI
         pyjackctl.jack_menu.__init__(self)
         gtk.StatusIcon.__init__(self)
@@ -96,4 +96,4 @@ class jackctl_trayicon(gtk.StatusIcon, pyjackctl.jack_menu):
     def get_controller(self):
         return self.jack
 
-jackctl_trayicon().run()
+jacktray().run()
