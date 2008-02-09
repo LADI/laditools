@@ -28,11 +28,22 @@ pygtk.require('2.0')
 import gtk
 import gobject
 
-debug = False
+# Default configuration
+autostart_default = 0
+debug_default = False
 
 class wmjackctl(wmoo.Application, pyjackctl.jack_menu):
     def __init__(self):
-        self.jack = None
+        # Handle the configuration
+        self.wmjackctl_config = pyjackctl.config()
+        self.param_dict = self.wmjackctl_config.get('wmjackctl')
+        if 'autostart' not in self.param_dict:
+            self.param_dict['autostart'] = str(autostart_default), {}
+        self.autostart, devnull = self.param_dict['autostart']
+        self.autostart = int(self.autostart)
+        self.jack = pyjackctl.jack_controller()
+        if self.autostart:
+            self.jack.start()
         wmoo.Application.__init__(
             self,
             #background = os.path.dirname(sys.argv[0]) + os.sep + "wmjackctl.xpm",
@@ -184,5 +195,6 @@ class wmjackctl(wmoo.Application, pyjackctl.jack_menu):
 
     def run(self):
         self.run_gtk()
+        self.wmjackctl_config.set('wmjackctl', self.param_dict)
 
 wmjackctl().run()
