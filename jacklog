@@ -52,11 +52,11 @@ def read_last(lfile, lines):
     lfile.seek(endpos, 0)
     return "\n".join(backlog)
 
-class jackctl_logview(gtk.glade.XML):
+class jacklog(gtk.glade.XML):
     def __init__(self):
         # Handle the configuration
-        self.logview_config = pyjackctl.config()
-        self.param_dict = self.logview_config.get('jacklog')
+        self.jacklog_config = pyjackctl.config()
+        self.param_dict = self.jacklog_config.get('jacklog')
         if 'jackdbus_log' not in self.param_dict:
             self.param_dict['jackdbus_log'] = jackdbus_log_default, {}
         if 'max_lines' not in self.param_dict:
@@ -120,7 +120,7 @@ class jackctl_logview(gtk.glade.XML):
 
     def run(self):
         gtk.main()
-        self.logview_config.set('jacklog', self.param_dict)
+        self.jacklog_config.set('jacklog', self.param_dict)
         return 0
 
-jackctl_logview().run()
+jacklog().run()

@@ -56,8 +56,8 @@ class config:
                     for grandchild_node in child.childNodes:
                         if grandchild_node.nodeType == child.TEXT_NODE:
                             text = grandchild_node.data
-                        if grandchild_node.nodeType == child.ATTRIBUTE_NODE:
-                            attrib_dict[grandchild_node.name] = grandchild_node.nodeValue
+                    for i in range(child.attributes.length):
+                        attrib_dict[child.attributes.item(i).name] = child.attributes.item(i).nodeValue
                     param_dict[child.tagName] = text, attrib_dict
             return param_dict
         else:

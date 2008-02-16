@@ -19,28 +19,40 @@ pygtk.require('2.0')
 import gtk
 import gobject
 import subprocess
+from config import config
 
 # TODO : somehow, we need stock icons. Nothing else can be used for ImageMenuItems
 
-config_app = "/usr/bin/jackconf"
-connect_app = "/usr/bin/patchage"
-log_app = "/usr/bin/jacklog"
+# Default configuration
+config_app_default = "/usr/bin/jackconf"
+connect_app_default = "/usr/bin/patchage"
+log_app_default = "/usr/bin/jacklog"
 
 class jack_menu:
     def __init__(self):
+        self.menu_items = []
+        # Handle the configuration and grab custom menu items
+        self.jack_menu_config = config()
+        self.menu_dict = self.jack_menu_config.get('jack_menu')
+        if self.menu_dict == {}:
+            self.menu_dict['menuitem0'] = config_app_default, {'name' : 'Configure'}
+            self.menu_dict['menuitem1'] = connect_app_default, {'name' : 'Connect'}
+            self.menu_dict['menuitem2'] = log_app_default, {'name' : 'Logs'}
+            self.jack_menu_config.set('jack_menu', self.menu_dict)
+        for menu_entry in self.menu_dict.values():
+            path, attrib_dict = menu_entry
+            self.menu_items.append((gtk.ImageMenuItem(attrib_dict['name']), self.on_menu_launcher, path))
+        #Create the rest of the menu
         self.menu = gtk.Menu()
-        self.menu_items = [(gtk.ImageMenuItem("Configure"), self.on_menu_launcher, config_app),
-            (gtk.ImageMenuItem("Connect"), self.on_menu_launcher, connect_app),
-            (gtk.ImageMenuItem("Logs"), self.on_menu_launcher, log_app),
-            (gtk.SeparatorMenuItem(), self.on_menu_start, None),
-            (gtk.ImageMenuItem("Reset Xruns"), self.on_menu_reset_xruns, None),
-            (gtk.ImageMenuItem("Start JACK"), self.on_menu_start, None),
-            (gtk.ImageMenuItem("Stop JACK"), self.on_menu_stop, None),
-            (gtk.SeparatorMenuItem(), self.on_menu_start, None),
-            (gtk.ImageMenuItem("Reactivate JACK"), self.on_menu_reactivate, None),
-            (gtk.ImageMenuItem("Quit"), self.on_menu_destroy, None)]
-        for tuples in self.menu_items:
-            item, callback, exec_path = tuples
+        self.menu_items.append((gtk.SeparatorMenuItem(), self.on_menu_start, None))
+        self.menu_items.append((gtk.ImageMenuItem("Reset Xruns"), self.on_menu_reset_xruns, None))
+        self.menu_items.append((gtk.ImageMenuItem("Start JACK"), self.on_menu_start, None))
+        self.menu_items.append((gtk.ImageMenuItem("Stop JACK"), self.on_menu_stop, None))
+        self.menu_items.append((gtk.SeparatorMenuItem(), self.on_menu_start, None))
+        self.menu_items.append((gtk.ImageMenuItem("Reactivate JACK"), self.on_menu_reactivate, None))
+        self.menu_items.append((gtk.ImageMenuItem("Quit"), self.on_menu_destroy, None))
+        for menu_tuple in self.menu_items:
+            item, callback, exec_path = menu_tuple
             self.menu.append(item)
             if type(item) is not gtk.SeparatorMenuItem:
                 item.connect("activate", callback, exec_path)
