@@ -23,24 +23,24 @@ from config import config
 
 # TODO : somehow, we need stock icons. Nothing else can be used for ImageMenuItems
 
-# Default configuration
-config_app_default = "/usr/bin/jackconf"
-connect_app_default = "/usr/bin/patchage"
-log_app_default = "/usr/bin/jacklog"
+# Default launcher menu :
+menu_default = [("Configure", "/usr/bin/jackconf"),
+    ("Connect", "/usr/bin/patchage"),
+    ("Logs", "/usr/bin/jacklog")]
 
 class jack_menu:
     def __init__(self):
         self.menu_items = []
         # Handle the configuration and grab custom menu items
         self.jack_menu_config = config()
-        self.menu_dict = self.jack_menu_config.get('jack_menu')
-        if self.menu_dict == {}:
-            self.menu_dict['menuitem0'] = config_app_default, {'name' : 'Configure'}
-            self.menu_dict['menuitem1'] = connect_app_default, {'name' : 'Connect'}
-            self.menu_dict['menuitem2'] = log_app_default, {'name' : 'Logs'}
-            self.jack_menu_config.set('jack_menu', self.menu_dict)
-        for menu_entry in self.menu_dict.values():
-            path, attrib_dict = menu_entry
+        self.menu_array = self.jack_menu_config.get_as_array('jack_menu')
+        # Add some defaults if we don't already have a menu
+        if self.menu_array == {}:
+            for name, path in menu_default:
+                self.menu_array.append((path, {'name' : name}))
+            self.jack_menu_config.set_as_array('jack_menu', self.menu_array)
+        # Add the laucher entries at the beginning of the menu
+        for path, attrib_dict in self.menu_array:
             self.menu_items.append((gtk.ImageMenuItem(attrib_dict['name']), self.on_menu_launcher, path))
         #Create the rest of the menu
         self.menu = gtk.Menu()

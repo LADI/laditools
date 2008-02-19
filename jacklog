@@ -56,7 +56,7 @@ class jacklog(gtk.glade.XML):
     def __init__(self):
         # Handle the configuration
         self.jacklog_config = pyjackctl.config()
-        self.param_dict = self.jacklog_config.get('jacklog')
+        self.param_dict = self.jacklog_config.get_as_dict('jacklog')
         if 'jackdbus_log' not in self.param_dict:
             self.param_dict['jackdbus_log'] = jackdbus_log_default, {}
         if 'max_lines' not in self.param_dict:
@@ -120,7 +120,7 @@ class jacklog(gtk.glade.XML):
 
     def run(self):
         gtk.main()
-        self.jacklog_config.set('jacklog', self.param_dict)
+        self.jacklog_config.set_as_dict('jacklog', self.param_dict)
         return 0
 
 jacklog().run()

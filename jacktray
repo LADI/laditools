@@ -30,7 +30,7 @@ class jacktray(gtk.StatusIcon, pyjackctl.jack_menu):
     def __init__(self):
         # Handle the configuration
         self.jacktray_config = pyjackctl.config()
-        self.param_dict = self.jacktray_config.get('jacktray')
+        self.param_dict = self.jacktray_config.get_as_dict('jacktray')
         if 'autostart' not in self.param_dict:
             self.param_dict['autostart'] = str(autostart_default), {}
         self.autostart, devnull = self.param_dict['autostart']
@@ -90,7 +90,7 @@ class jacktray(gtk.StatusIcon, pyjackctl.jack_menu):
 
     def run(self):
         gtk.main()
-        self.jacktray_config.set('jacktray', self.param_dict)
+        self.jacktray_config.set_as_dict('jacktray', self.param_dict)
         return 0
 
     def get_controller(self):

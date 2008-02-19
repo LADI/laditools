@@ -46,7 +46,7 @@ class config:
 
     # Use this to create the dictionary that you'll use in your application
     # You can add remove any parameters you wish from it, it'll get saved magically
-    def get(self, app_name):
+    def get_as_dict(self, app_name):
         param_dict = {}
         if app_name in self.app:
             for child in self.app[app_name].childNodes:
@@ -66,12 +66,54 @@ class config:
             self.app[app_name] = new_app
             return param_dict
 
+    # Use this to create the dictionary that you'll use in your application
+    # You can add remove any parameters you wish from it, it'll get saved magically
+    def get_as_array(self, app_name):
+        param_array = []
+        if app_name in self.app:
+            for child in self.app[app_name].childNodes:
+                if child.nodeType == child.ELEMENT_NODE:
+                    attrib_dict = {}
+                    text = ''
+                    for grandchild_node in child.childNodes:
+                        if grandchild_node.nodeType == child.TEXT_NODE:
+                            text = grandchild_node.data
+                    for i in range(child.attributes.length):
+                        attrib_dict[child.attributes.item(i).name] = child.attributes.item(i).nodeValue
+                    param_array.append((text, attrib_dict))
+            return param_array
+        else:
+            new_app = self.doc.createElement(app_name)
+            self.doc.documentElement.appendChild(new_app)
+            self.app[app_name] = new_app
+            return param_array
+
+
     # Use this when you want to update the xml doc with the content of your dictionary
-    def set(self, app_name, param_dict):
+    def set_as_dict(self, app_name, param_dict):
         # Full cleanup to avoid keeping deprecated entries in the xml file
         self.cleanup(app_name)
         # Fill in the current list of parametters
         for param, value in param_dict.items():
+            param_element = self.doc.createElement(param)
+            text, attrib_dict = value
+            if type(text) is not str:
+                text = str(text)
+            param_text = self.doc.createTextNode(text)
+            for attribute_name, attribute_value in attrib_dict.items():
+                if type(attribute_value) is not str:
+                    attribute_value = str(attribute_value)
+                param_element.setAttribute(attribute_name, attribute_value)
+            param_element.appendChild(param_text)
+            self.app[app_name].appendChild(param_element)
+        self.save()
+
+    # Use this when you want to update the xml doc with the content of your dictionary
+    def set_as_array(self, app_name, param_array):
+        # Full cleanup to avoid keeping deprecated entries in the xml file
+        self.cleanup(app_name)
+        # Fill in the current list of parametters
+        for param, value in param_array:
             param_element = self.doc.createElement(param)
             text, attrib_dict = value
             if type(text) is not str:

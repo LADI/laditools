@@ -36,7 +36,7 @@ class wmjackctl(wmoo.Application, pyjackctl.jack_menu):
     def __init__(self):
         # Handle the configuration
         self.wmjackctl_config = pyjackctl.config()
-        self.param_dict = self.wmjackctl_config.get('wmjackctl')
+        self.param_dict = self.wmjackctl_config.get_as_dict('wmjackctl')
         if 'autostart' not in self.param_dict:
             self.param_dict['autostart'] = str(autostart_default), {}
         self.autostart, devnull = self.param_dict['autostart']
@@ -195,6 +195,6 @@ class wmjackctl(wmoo.Application, pyjackctl.jack_menu):
 
     def run(self):
         self.run_gtk()
-        self.wmjackctl_config.set('wmjackctl', self.param_dict)
+        self.wmjackctl_config.set_as_dict('wmjackctl', self.param_dict)
 
 wmjackctl().run()
