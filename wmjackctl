@@ -30,7 +30,7 @@ import gobject
 
 # Default configuration
 autostart_default = 0
-debug_default = False
+debug = False
 
 class wmjackctl(wmoo.Application, pyjackctl.jack_menu):
     def __init__(self):
