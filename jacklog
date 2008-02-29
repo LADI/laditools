@@ -92,7 +92,7 @@ class jacklog(gtk.glade.XML):
 
     def on_purge(self, date=None):
         # Opens the file in write anew mode thus clearing the file and close it right away 
-        open(jackdbus_log, "w+")
+        open(self.jackdbus_log, "w+")
         self.text_buffer.set_text("")
 
     def update(self):
