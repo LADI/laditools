@@ -1,18 +1,5 @@
-No release happens before that :
+Post 1.0 release issues to solve :
+* popup a window when clicking on jacktray to show detailed jack status
+* Display those options in an "orderly fashion". Right now this gui is a mess.
 * Dynamically render SVG to reflect jack's status (started/stopped/xrun detected mini icons in corners of the bigger jack icon)
 * Add icons to jack_menu
-* Display those options in an "orderly fashion". Right now this gui is a mess.
-* Manage some sort of config file for custom menu items (XML, see config.py)
-* popup a window when clicking on jacktray to show detailed jack status
-
-The rest that comes eventually afterwards, or related to jackdbus progress :
-* Preset management
-* Handling a fallback preset if the default one doesn't work (external soundcard not preset for instance switches to the internal soundcard)
-* SpinButton need ranges to work effectively (needs Jack's support)
-* Jack needs to handle enums so we can have some proper combox to choose options from.
-
-Some concepts on the use of pyjackctl.config :
-- it is up to each client to maintain it's own dictionary of parameters
-- the dictionary is loaded by the config module from the xml config file at startup
-- the dictionary is saved by the config module to the xml config file whenever necessary (up to the devs decision)
-- if there's no config present in the xml file, an empty dict will be return by the config module, the application will feed t with its default values, which will be saved by the appropriate function (provided by the config module). magic !
