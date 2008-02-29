@@ -1,13 +1,13 @@
 The python JACK dbus controller suite
 
-This project was created to take advantage of Nedko Arnaudov's JACK Audio Connection Kit (improvements) patches, especially the dbus one.
-Those patches can be found here : http://sharesource.org/project/jack/
+This project was created to take advantage of Nedko Arnaudov's JACK Audio Connection Kit (improvements) patches, especially the dbus one. Those patches can be found here : http://sharesource.org/project/jack/
 
 You will find in this suite :
  - The pyjackctl python module
- - jackctl_trayicon : a system tray icon
+ - jacktray : a system tray icon
  - wmjackctl : a controller as a Window Maker dockapp
- - jackctl_logview : a JACK log viewer
+ - jacklog : a JACK log viewer
+ - jackconf : a gui to setup jack's configuration
  - g15jackmon : a JACK monitor for g15 keyboards
 
 Enjoy !

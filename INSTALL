@@ -6,8 +6,6 @@ known dependencies :
 
 python setup.py install
 
-Tunas root to install of course...
-
 If you want to know about more options you might want to try either
 python setup.py --help
  - or -
