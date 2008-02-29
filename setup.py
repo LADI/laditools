@@ -19,7 +19,7 @@
 from distutils.core import setup
 
 setup(name='pyjackctl',
-    version='0.1',
+    version='1.0',
     description='The pyjackctl controller suite',
     author='Marc-Olivier Barre and Nedko Arnaudov',
     author_email='mobarre@gmail.com',
