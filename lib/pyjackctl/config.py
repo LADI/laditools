@@ -110,13 +110,12 @@ class config:
         self.save()
 
     # Use this when you want to update the xml doc with the content of the array
-    def set_as_array(self, app_name, param_array):
+    def set_as_array(self, app_name, param_array, element_name):
         # Full cleanup to avoid keeping deprecated entries in the xml file
         self.cleanup(app_name)
         # Fill in the current list of parametters
-        for param, value in param_array:
-            param_element = self.doc.createElement(param)
-            text, attrib_dict = value
+        for text, attrib_dict in param_array:
+            param_element = self.doc.createElement(element_name)
             if type(text) is not str:
                 text = str(text)
             param_text = self.doc.createTextNode(text)

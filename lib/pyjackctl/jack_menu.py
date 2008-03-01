@@ -35,10 +35,10 @@ class jack_menu:
         self.jack_menu_config = config()
         self.menu_array = self.jack_menu_config.get_as_array('jack_menu')
         # Add some defaults if we don't already have a menu
-        if self.menu_array == {}:
+        if self.menu_array == []:
             for name, path in menu_default:
                 self.menu_array.append((path, {'name' : name}))
-            self.jack_menu_config.set_as_array('jack_menu', self.menu_array)
+            self.jack_menu_config.set_as_array('jack_menu', self.menu_array, 'menuitem')
         # Add the laucher entries at the beginning of the menu
         for path, attrib_dict in self.menu_array:
             self.menu_items.append((gtk.ImageMenuItem(attrib_dict['name']), self.on_menu_launcher, path))
