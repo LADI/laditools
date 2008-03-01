@@ -3,6 +3,7 @@ This should be enough for now :
 known dependencies : 
 - pygtk-2.12
 - pyxml (0.8.4 is known to work, earlyier might also...)
+- a recent glade and it's python bindings
 
 python setup.py install
 

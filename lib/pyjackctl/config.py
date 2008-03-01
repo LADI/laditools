@@ -66,7 +66,8 @@ class config:
             self.app[app_name] = new_app
             return param_dict
 
-    # Use this to create the dictionary that you'll use in your application
+    # Use this to create the array that you'll use in your application
+    # The array is used when you want to take into account the order the items are listed in the file
     # You can add remove any parameters you wish from it, it'll get saved magically
     def get_as_array(self, app_name):
         param_array = []
@@ -89,7 +90,7 @@ class config:
             return param_array
 
 
-    # Use this when you want to update the xml doc with the content of your dictionary
+    # Use this when you want to update the xml doc with the content of the dictionary
     def set_as_dict(self, app_name, param_dict):
         # Full cleanup to avoid keeping deprecated entries in the xml file
         self.cleanup(app_name)
@@ -108,7 +109,7 @@ class config:
             self.app[app_name].appendChild(param_element)
         self.save()
 
-    # Use this when you want to update the xml doc with the content of your dictionary
+    # Use this when you want to update the xml doc with the content of the array
     def set_as_array(self, app_name, param_array):
         # Full cleanup to avoid keeping deprecated entries in the xml file
         self.cleanup(app_name)
