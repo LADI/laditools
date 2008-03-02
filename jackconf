@@ -47,11 +47,11 @@ class jackctl_conf(gtk.glade.XML):
             typestr = self.jack.get_driver_param_type(driver_param)
             isset, default, value = self.jack.get_driver_param_value(driver_param)
             short_descr = self.jack.get_driver_short_description(driver_param)
-            if typestr == "bool":
+            if typestr == "b":
                 self.driver_vbox_left.pack_start(self.make_checkbox(driver_param, value, short_descr, self.driver_param_dict), False)
-            elif typestr == "str":
+            elif typestr == "s":
                 self.driver_vbox_right.pack_start(self.make_textentry(driver_param, value, short_descr, self.driver_param_dict), False)
-            elif typestr == "uint" or typestr == "sint":
+            elif typestr == "u" or typestr == "i":
                 self.driver_vbox_right.pack_start(self.make_spinbutton(driver_param, value, short_descr, self.driver_param_dict), False)
         #Engine tab setup
         self.engine_vbox_left = self.get_widget("engine_vbox_left")
@@ -61,11 +61,11 @@ class jackctl_conf(gtk.glade.XML):
             typestr = self.jack.get_engine_param_type(engine_param)
             isset, default, value = self.jack.get_engine_param_value(engine_param)
             short_descr = self.jack.get_engine_short_description(engine_param)
-            if typestr == "bool":
+            if typestr == "b":
                 self.engine_vbox_left.pack_start(self.make_checkbox(engine_param, value, short_descr, self.engine_param_dict), False)
-            elif typestr == "str":
+            elif typestr == "s":
                 self.engine_vbox_right.pack_start(self.make_textentry(engine_param, value, short_descr, self.engine_param_dict), False)
-            elif typestr == "uint" or typestr == "sint":
+            elif typestr == "u" or typestr == "i":
                 self.engine_vbox_right.pack_start(self.make_spinbutton(engine_param, value, short_descr, self.engine_param_dict), False)
     
     def make_checkbox(self, param_name, value, short_descr, storage_dict):
