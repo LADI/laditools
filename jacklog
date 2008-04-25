@@ -23,7 +23,8 @@ import gtk
 import gtk.glade
 import pyjackctl
 from gobject import timeout_add
-from os import environ, sep
+from os import environ, sep, path
+import sys
 
 # Default configuration
 jackdbus_log_default = environ['HOME'] + sep + ".jackdbus" + sep + "jackdbus.log"
@@ -53,7 +54,7 @@ def read_last(lfile, lines):
     return "\n".join(backlog)
 
 class jacklog(gtk.glade.XML):
-    def __init__(self):
+    def __init__(self, logfile = None, title = None):
         # Handle the configuration
         self.jacklog_config = pyjackctl.config()
         self.param_dict = self.jacklog_config.get_as_dict('jacklog')
@@ -62,6 +63,8 @@ class jacklog(gtk.glade.XML):
         if 'max_lines' not in self.param_dict:
             self.param_dict['max_lines'] = max_lines_default, {}
         self.jackdbus_log, devnull = self.param_dict['jackdbus_log']
+        if logfile:
+            self.jackdbus_log = logfile
         max_lines_text, devnull = self.param_dict['max_lines']
         self.max_lines = int(max_lines_text)
         # Load the glade file
@@ -74,6 +77,8 @@ class jacklog(gtk.glade.XML):
             "on_jackctl_logview_ui_check_resize" : self.on_text_change}
         self.signal_autoconnect(self.event_dict)
         self.log_textview = self.get_widget("log_textview")
+        if title:
+            self.get_widget("jackctl_logview_ui").set_title(title)
         self.text_buffer = self.log_textview.get_buffer()
         self.current_pos = self.text_buffer.create_mark("log_cursor", self.text_buffer.get_end_iter())
         self.text_buffer.connect("changed", self.on_resize)
@@ -123,4 +128,13 @@ class jacklog(gtk.glade.XML):
         self.jacklog_config.set_as_dict('jacklog', self.param_dict)
         return 0
 
-jacklog().run()
+logfile = None
+title = None
+
+execname = path.basename(sys.argv[0])
+
+if execname == 'lashlog':
+    logfile = environ['HOME'] + sep + ".log" + sep + "lash" + sep + "lash.log"
+    title = 'LASH log'
+
+jacklog(logfile, title).run()
