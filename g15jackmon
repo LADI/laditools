@@ -136,10 +136,10 @@ class jackctl_g15:
                 else:
                     xruns_line = "%u xruns" % xruns
                 rate = self.jack.get_sample_rate()
-                if rate % 1000 == 0:
-                    rate_line = "Sample rate: %.0f Khz" % (rate / 1000)
+                if rate % 1000.0 == 0:
+                    rate_line = "Sample rate: %.0f Khz" % (rate / 1000.0)
                 else:
-                    rate_line = "Sample rate: %.1f Khz" % (rate / 1000)
+                    rate_line = "Sample rate: %.1f Khz" % (rate / 1000.0)
                 latency_line = "Latency: %.1f ms" % self.jack.get_latency()
             else:
                 status_line += " stopped"

@@ -114,10 +114,10 @@ class wmjackctl(wmoo.Application, pyjackctl.jack_menu):
                     self.set_line(3, "%s xruns" % xruns)
 
                 rate = self.jack.get_sample_rate()
-                if rate % 1000 == 0:
-                    self.set_line(4, "%.0f Khz" % (rate / 1000))
+                if rate % 1000.0 == 0:
+                    self.set_line(4, "%.0f Khz" % (rate / 1000.0))
                 else:
-                    self.set_line(4, "%.1f Khz" % (rate / 1000))
+                    self.set_line(4, "%.1f Khz" % (rate / 1000.0))
 
                 self.set_line(5, "%.1f ms" % self.jack.get_latency())
             else:
