@@ -14,12 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Dirty workaround for some Ubuntu crap
-try:
-    sys.path.append('/usr/lib/python%s/site-packages/oldxml' % sys.version[:3])
-except:
-    print "Ubuntu workaround not needed it seems..."
-
 import xml.dom
 from xml.dom.minidom import parse, getDOMImplementation
 from xml.dom.ext import PrettyPrint
