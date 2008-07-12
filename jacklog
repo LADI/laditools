@@ -27,7 +27,7 @@ from os import environ, sep, path
 import sys
 
 # Default configuration
-jackdbus_log_default = environ['HOME'] + sep + ".config" + sep + "jack" + sep + "jackdbus.log"
+jackdbus_log_default = environ['HOME'] + sep + ".log" + sep + "jack" + sep + "jackdbus.log"
 max_lines_default = 100
 
 # Output the last <lines> lines
