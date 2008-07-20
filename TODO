@@ -4,4 +4,4 @@
 * Add icons to jack_menu
 * Add a simple wizard for initial setup. Or maybe just a prompt for initial driver selection
 * Fix jacktray's behavior in case there is no initial driver selected
-
+* Add driver selection combobox to jackconf
