@@ -24,7 +24,6 @@ import signal
 import pyjackctl
 
 pipe_filename = "/dev/shm/g15log.pipe"
-log_filename = "/var/log/sys.log"
 
 class g15composer:
     text_justify_left = 0
