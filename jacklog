@@ -17,111 +17,93 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import pygtk
-pygtk.require ('2.0')
-import gtk
-import gtk.glade
-import pyjackctl
-from gobject import timeout_add
 from os import environ, sep, path
 import sys
 
 try:
-  import vte
+    from gobject import timeout_add
+    import pygtk
+    pygtk.require ('2.0')
+    import gtk
+    import gtk.glade
+    import vte
+    import pyjackctl
 except:
-  error = gtk.MessageDialog (None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, 'You need to install python bindings for libvte')
-  error.run ()
-  exit (1)
+    error = gtk.MessageDialog (None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Wow dude...\n\nYou really need to get you dependencies right before you run this program. Ask your package maintainer why he didn't do his job properly")
+    error.run ()
+    exit (1)
 
 # Default configuration
 jackdbus_log_default = environ['HOME'] + sep + ".log" + sep + "jack" + sep + "jackdbus.log"
+lash_log_default = environ['HOME'] + sep + ".log" + sep + "lash" + sep + "lash.log"
 max_lines_default = 100
 
-class jacklog (gtk.glade.XML):
-    def __init__ (self, logfile = None, title = None):
+class ladilog (gtk.glade.XML):
+    def __init__ (self):
         # Handle the configuration
         self.jacklog_config = pyjackctl.config ()
-        self.param_dict = self.jacklog_config.get_as_dict ('jacklog')
+        self.param_dict = self.jacklog_config.get_as_dict ('ladilog')
         if 'jackdbus_log' not in self.param_dict:
             self.param_dict['jackdbus_log'] = jackdbus_log_default, {}
+        if 'lash_log' not in self.param_dict:
+            self.param_dict['lash_log'] = lash_log_default, {}
         if 'max_lines' not in self.param_dict:
             self.param_dict['max_lines'] = max_lines_default, {}
         self.jackdbus_log, devnull = self.param_dict['jackdbus_log']
-        if logfile:
-            self.jackdbus_log = logfile
+        self.lash_log, devnull = self.param_dict['lash_log']
         max_lines_text, devnull = self.param_dict['max_lines']
         self.max_lines = int (max_lines_text)
         # Load the glade file
         gtk.glade.XML.__init__ (self, "/usr/share/pyjackctl/data/ladilog_ui.glade")
         # Get the ui ready for action
-        self.event_dict = {"on_jackctl_logview_ui_destroy" : self.on_quit,
+        self.event_dict = {"on_jackctl_ladilog_ui_destroy" : self.on_quit,
             "on_close_button_clicked" : self.on_quit,
             "on_clear_button_clicked" : self.on_clear_text,
             "on_purge_button_clicked" : self.on_purge}
         self.signal_autoconnect (self.event_dict)
-        # Create our terminal
-        self.vte = vte.Terminal ()
-        # TODO: I don't understand why I can't run tail instead of a login shell...
-        # self.vte.fork_command ("/usr/bin/tail", ["-"+str (self.max_lines)+"f ", self.jackdbus_log])
-        self.vte.fork_command ();
-        self.vte.feed_child ('tail -' + str (self.max_lines) + 'f ' + self.jackdbus_log + '\n')
-        self.vte.show ()
-        self.logview_vbox = self.get_widget ("logview_vbox")
-        self.button_hbox = self.get_widget ("button_hbox")
-        self.laditools_logo = self.get_widget ("laditools_logo")
-        self.logview_vbox.pack_start (self.vte)
-        self.logview_vbox.reorder_child (self.laditools_logo, 0)
-        self.logview_vbox.reorder_child (self.vte, 1)
-        self.logview_vbox.reorder_child (self.button_hbox, 2)
-        if title:
-            self.get_widget ("ladilog_ui").set_title(title)
+        # Create our terminal and display it
+        self.jack_term = vte.Terminal ()
+        self.lash_term = vte.Terminal ()
+        self.jack_tab_label = gtk.Label("JACK")
+        self.lash_tab_label = gtk.Label("LASH")
+        self.logview_notebook = self.get_widget ("ladilog_notebook")
+        self.logview_notebook.append_page (self.jack_term)
+        self.logview_notebook.append_page (self.lash_term)
+        self.logview_notebook.set_tab_label (self.jack_term, self.jack_tab_label)
+        self.logview_notebook.set_tab_label (self.lash_term, self.lash_tab_label)
+        self.jack_term.show ()
+        self.lash_term.show ()
+        # Make it do something...
+        self.tail_cmd = ["/usr/bin/tail", "-"+str (self.max_lines)+"f"]
+        self.jack_term.fork_command (self.tail_cmd[0], self.tail_cmd + [self.jackdbus_log])
+        self.lash_term.fork_command (self.tail_cmd[0], self.tail_cmd + [self.lash_log])
 
     def on_quit (self, data=None):
         gtk.main_quit ()
 
     def on_clear_text (self, data=None):
-        self.text_buffer.set_text ("")
+        current_view = self.logview_notebook.get_current_page()
+        if (current_view == 0):
+            term = self.jack_term
+        elif (current_view == 1):
+            term = self.lash_term
+        term.feed ('\033[2J\033[;f')
 
-    def on_purge (self, date=None):
-        # Opens the file in write anew mode thus clearing the file and close it right away 
-        open (self.jackdbus_log, "w+")
-        self.text_buffer.set_text ("")
-
-    def update (self):
-        # Append latest output to the buffer
-        line = self.log_file.readline ()
-        while line:
-            self.text_buffer.insert(self.text_buffer.get_end_iter (), line)
-            line = self.log_file.readline ()
-        self.log_file.seek (self.log_file.tell ())
-        return True
-
-    def on_resize (self, data = None):
-        # Scrolldown
-        self.text_buffer.move_mark (self.current_pos, self.text_buffer.get_end_iter ())
-        self.log_textview.scroll_mark_onscreen (self.current_pos)
-
-    def on_text_change (self, data = None):
-        # Scrolldown
-        self.text_buffer.move_mark (self.current_pos, self.text_buffer.get_end_iter ())
-        self.log_textview.scroll_mark_onscreen (self.current_pos)
-        # Cleanup the buffer
-        line_count = self.text_buffer.get_line_count ()
-        if line_count > self.max_lines:
-            self.text_buffer.delete (self.text_buffer.get_start_iter (), self.text_buffer.get_iter_at_line (line_count-self.max_lines))
+    def on_purge (self, data=None):
+        current_view = self.logview_notebook.get_current_page()
+        if (current_view == 0):
+            logfile = self.jackdbus_log
+            term = self.jack_term
+        elif (current_view == 1):
+            logfile = self.lash_log
+            term = self.lash_term
+        # Opens the file in write anew mode thus clearing the file and close it right away
+        open (logfile, "w+")
+        term.feed ('\033[2J\033[;f')
 
     def run (self):
         gtk.main ()
-        self.jacklog_config.set_as_dict ('jacklog', self.param_dict)
+        self.jacklog_config.set_as_dict ('ladilog', self.param_dict)
         return 0
 
-logfile = None
-title = None
-
-execname = path.basename (sys.argv[0])
-
-if execname == 'lashlog':
-    logfile = environ['HOME'] + sep + ".log" + sep + "lash" + sep + "lash.log"
-    title = 'LASH log'
-
-jacklog (logfile, title).run ()
+ladilog ().run ()
