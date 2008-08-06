@@ -75,7 +75,7 @@ class ladilog (gtk.glade.XML):
         # Load the glade file
         gtk.glade.XML.__init__ (self, "/usr/share/pyjackctl/data/ladilog_ui.glade")
         # Get the ui ready for action
-        self.event_dict = {"on_jackctl_ladilog_ui_destroy" : self.on_quit,
+        self.event_dict = {"on_ladilog_ui_destroy" : self.on_quit,
             "on_close_button_clicked" : self.on_quit,
             "on_clear_button_clicked" : self.on_clear_text,
             "on_purge_button_clicked" : self.on_purge}
