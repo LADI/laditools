@@ -30,7 +30,7 @@ import gobject
 
 # Default configuration
 autostart_default = 0
-debug = True
+debug = False
 
 class wma2jctl(wmoo.Application, pyjackctl.a2j_menu):
     def __init__(self):
