@@ -6,7 +6,7 @@ You will find in this suite :
  - The pyjackctl python module
  - jacktray : a system tray icon
  - wmjackctl : a controller as a Window Maker dockapp
- - jacklog : a JACK log viewer
+ - ladilog : a JACK, LASH and a2jmidid log viewer
  - jackconf : a gui to setup jack's configuration
  - g15jackmon : a JACK monitor for g15 keyboards
 

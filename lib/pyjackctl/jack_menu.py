@@ -26,7 +26,7 @@ from config import config
 # Default launcher menu :
 menu_default = [("Configure", "/usr/bin/jackconf"),
     ("Connect", "/usr/bin/patchage"),
-    ("Logs", "/usr/bin/jacklog")]
+    ("Logs", "/usr/bin/ladilog")]
 
 class jack_menu:
     def __init__(self):
