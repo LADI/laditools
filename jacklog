@@ -100,7 +100,6 @@ class ladilog (gtk.glade.XML):
             log['term'].fork_command (self.tail_cmd[0], self.tail_cmd + [log['logfile_path']])
 
     def on_quit (self, data=None):
-        print "on_quit!!!"
         gtk.main_quit ()
 
     def on_clear_text (self, data=None):
