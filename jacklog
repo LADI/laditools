@@ -34,23 +34,42 @@ except:
     exit (1)
 
 # Default configuration
-jackdbus_log_default = environ['HOME'] + sep + ".log" + sep + "jack" + sep + "jackdbus.log"
-lash_log_default = environ['HOME'] + sep + ".log" + sep + "lash" + sep + "lash.log"
 max_lines_default = 100
 
 class ladilog (gtk.glade.XML):
     def __init__ (self):
+        self.log_files = [
+            {
+            'name': 'JACK',
+            'config_name': 'jackdbus_log',
+            'config_default': sep.join([environ['HOME'], ".log", "jack", "jackdbus.log"]),
+            },
+            {
+            'name': 'LASH',
+            'config_name': 'lash_log',
+            'config_default': sep.join([environ['HOME'], ".log", "lash", "lash.log"]),
+            },
+            {
+            'name': 'A2J',
+            'config_name': 'a2j_log',
+            'config_default': sep.join([environ['HOME'], ".log", "a2j", "a2j.log"]),
+            },
+            ]
+
         # Handle the configuration
         self.jacklog_config = pyjackctl.config ()
         self.param_dict = self.jacklog_config.get_as_dict ('ladilog')
-        if 'jackdbus_log' not in self.param_dict:
-            self.param_dict['jackdbus_log'] = jackdbus_log_default, {}
-        if 'lash_log' not in self.param_dict:
-            self.param_dict['lash_log'] = lash_log_default, {}
+
+        for log in self.log_files:
+            if log['config_name'] not in self.param_dict:
+                self.param_dict[log['config_name']] = log['config_default'], {}
+
         if 'max_lines' not in self.param_dict:
             self.param_dict['max_lines'] = max_lines_default, {}
-        self.jackdbus_log, devnull = self.param_dict['jackdbus_log']
-        self.lash_log, devnull = self.param_dict['lash_log']
+
+        for log in self.log_files:
+            log['logfile_path'], devnull = self.param_dict[log['config_name']]
+
         max_lines_text, devnull = self.param_dict['max_lines']
         self.max_lines = int (max_lines_text)
         # Load the glade file
@@ -61,45 +80,38 @@ class ladilog (gtk.glade.XML):
             "on_clear_button_clicked" : self.on_clear_text,
             "on_purge_button_clicked" : self.on_purge}
         self.signal_autoconnect (self.event_dict)
+
         # Create our terminal and display it
-        self.jack_term = vte.Terminal ()
-        self.lash_term = vte.Terminal ()
-        self.jack_tab_label = gtk.Label("JACK")
-        self.lash_tab_label = gtk.Label("LASH")
+
+        for log in self.log_files:
+            log['term'] = vte.Terminal ()
+            log['tab_label'] = gtk.Label(log['name'])
+
         self.logview_notebook = self.get_widget ("ladilog_notebook")
-        self.logview_notebook.append_page (self.jack_term)
-        self.logview_notebook.append_page (self.lash_term)
-        self.logview_notebook.set_tab_label (self.jack_term, self.jack_tab_label)
-        self.logview_notebook.set_tab_label (self.lash_term, self.lash_tab_label)
-        self.jack_term.show ()
-        self.lash_term.show ()
+
+        for log in self.log_files:
+            self.logview_notebook.append_page (log['term'])
+            self.logview_notebook.set_tab_label (log['term'], log['tab_label'])
+            log['term'].show ()
+
         # Make it do something...
         self.tail_cmd = ["/usr/bin/tail", "-"+str (self.max_lines)+"f"]
-        self.jack_term.fork_command (self.tail_cmd[0], self.tail_cmd + [self.jackdbus_log])
-        self.lash_term.fork_command (self.tail_cmd[0], self.tail_cmd + [self.lash_log])
+        for log in self.log_files:
+            log['term'].fork_command (self.tail_cmd[0], self.tail_cmd + [log['logfile_path']])
 
     def on_quit (self, data=None):
+        print "on_quit!!!"
         gtk.main_quit ()
 
     def on_clear_text (self, data=None):
         current_view = self.logview_notebook.get_current_page()
-        if (current_view == 0):
-            term = self.jack_term
-        elif (current_view == 1):
-            term = self.lash_term
-        term.feed ('\033[2J\033[;f')
+        self.log_files[current_view]['term'].feed ('\033[2J\033[;f')
 
     def on_purge (self, data=None):
         current_view = self.logview_notebook.get_current_page()
-        if (current_view == 0):
-            logfile = self.jackdbus_log
-            term = self.jack_term
-        elif (current_view == 1):
-            logfile = self.lash_log
-            term = self.lash_term
         # Opens the file in write anew mode thus clearing the file and close it right away
-        open (logfile, "w+")
-        term.feed ('\033[2J\033[;f')
+        open (self.log_files[current_view]['logfile_path'], "w+")
+        self.log_files[current_view]['term'].feed ('\033[2J\033[;f')
 
     def run (self):
         gtk.main ()
