@@ -24,9 +24,9 @@ from config import config
 # TODO : somehow, we need stock icons. Nothing else can be used for ImageMenuItems
 
 # Default launcher menu :
-menu_default = [("Configure", "/usr/bin/jackconf"),
-    ("Connect", "/usr/bin/patchage"),
-    ("Logs", "/usr/bin/ladilog")]
+menu_default = [("Configure", "jackconf"),
+    ("Connect", "patchage"),
+    ("Logs", "ladilog")]
 
 class jack_menu:
     def __init__(self):
