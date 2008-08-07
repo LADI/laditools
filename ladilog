@@ -17,9 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from os import environ, sep, path
+import os
 import sys
-
+import subprocess
+from signal import SIGTERM
 try:
     from gobject import timeout_add
     import pygtk
@@ -42,17 +43,17 @@ class ladilog (gtk.glade.XML):
             {
             'name': 'JACK',
             'config_name': 'jackdbus_log',
-            'config_default': sep.join([environ['HOME'], ".log", "jack", "jackdbus.log"]),
+            'config_default': os.sep.join([os.environ['HOME'], ".log", "jack", "jackdbus.log"]),
             },
             {
             'name': 'LASH',
             'config_name': 'lash_log',
-            'config_default': sep.join([environ['HOME'], ".log", "lash", "lash.log"]),
+            'config_default': os.sep.join([os.environ['HOME'], ".log", "lash", "lash.log"]),
             },
             {
             'name': 'A2J',
             'config_name': 'a2j_log',
-            'config_default': sep.join([environ['HOME'], ".log", "a2j", "a2j.log"]),
+            'config_default': os.sep.join([os.environ['HOME'], ".log", "a2j", "a2j.log"]),
             },
             ]
 
@@ -97,9 +98,19 @@ class ladilog (gtk.glade.XML):
         # Make it do something...
         self.tail_cmd = ["/usr/bin/tail", "-"+str (self.max_lines)+"f"]
         for log in self.log_files:
-            log['term'].fork_command (self.tail_cmd[0], self.tail_cmd + [log['logfile_path']])
+            try:
+                log["tail_process"] = subprocess.Popen(self.tail_cmd + [log['logfile_path']], stdout = subprocess.PIPE)
+                log["term"].set_pty(log["tail_process"].stdout)
+            except ValueError:
+                print "You called Popen with invalid arguments... dumbass"
+            except:
+                print "Unexpected error:", sys.exc_info()[0]
+                print log["tail_process"].stdout
 
     def on_quit (self, data=None):
+        for log in self.log_files:
+            os.kill(log["tail_process"].pid, SIGTERM)
+            log["tail_process"].poll()
         gtk.main_quit ()
 
     def on_clear_text (self, data=None):
