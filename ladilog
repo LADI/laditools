@@ -19,8 +19,12 @@
 
 import os
 import sys
-import subprocess
+from subprocess import Popen, PIPE
+import pty
 from signal import SIGTERM
+import termios
+import tty
+
 try:
     from gobject import timeout_add
     import pygtk
@@ -36,6 +40,7 @@ except:
 
 # Default configuration
 max_lines_default = 100
+good_term = [11522, 5, 1215, 35387, 15, 15, ['\x03', '\x1c', '\x7f', '\x15', '\x04', '\x00', '\x01', '\xff', '\x11', '\x13', '\x1a', '\xff', '\x12', '\x0f', '\x17', '\x16', '\xff', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00']]
 
 class ladilog (gtk.glade.XML):
     def __init__ (self):
@@ -83,49 +88,52 @@ class ladilog (gtk.glade.XML):
         self.signal_autoconnect (self.event_dict)
 
         # Create our terminal and display it
-
         for log in self.log_files:
             log['term'] = vte.Terminal ()
-            log['tab_label'] = gtk.Label(log['name'])
+            log["tab_label"] = gtk.Label (log["name"])
 
         self.logview_notebook = self.get_widget ("ladilog_notebook")
 
         for log in self.log_files:
-            self.logview_notebook.append_page (log['term'])
-            self.logview_notebook.set_tab_label (log['term'], log['tab_label'])
+            self.logview_notebook.append_page (log["term"])
+            self.logview_notebook.set_tab_label (log["term"], log["tab_label"])
             log['term'].show ()
-
         # Make it do something...
         self.tail_cmd = ["/usr/bin/tail", "-"+str (self.max_lines)+"f"]
         for log in self.log_files:
             try:
-                log["tail_process"] = subprocess.Popen(self.tail_cmd + [log['logfile_path']], stdout = subprocess.PIPE)
-                log["term"].set_pty(log["tail_process"].stdout)
+                log["masterfd"], log["slavefd"] = pty.openpty ()
+                termios.tcsetattr (log["masterfd"], termios.TCSANOW, good_term)
+                termios.tcsetattr (log["slavefd"], termios.TCSANOW, good_term)
+                tty.setcbreak (log["masterfd"], termios.TCSANOW)
+                tty.setcbreak (log["slavefd"], termios.TCSANOW)
+                log["term"].set_pty (log["slavefd"])
+                log["tail_process"] = Popen (self.tail_cmd + [log['logfile_path']], stdout = log["masterfd"])
+
             except ValueError:
                 print "You called Popen with invalid arguments... dumbass"
             except:
-                print "Unexpected error:", sys.exc_info()[0]
-                print log["tail_process"].stdout
+                print "Unexpected error:", sys.exc_info ()[0]
 
     def on_quit (self, data=None):
         for log in self.log_files:
-            os.kill(log["tail_process"].pid, SIGTERM)
-            log["tail_process"].poll()
+            os.kill (log["tail_process"].pid, SIGTERM)
+            log["tail_process"].poll ()
         gtk.main_quit ()
 
     def on_clear_text (self, data=None):
-        current_view = self.logview_notebook.get_current_page()
-        self.log_files[current_view]['term'].feed ('\033[2J\033[;f')
+        current_view = self.logview_notebook.get_current_page ()
+        self.log_files[current_view]["term"].feed ("\033[2J\033[;f")
 
     def on_purge (self, data=None):
-        current_view = self.logview_notebook.get_current_page()
+        current_view = self.logview_notebook.get_current_page ()
         # Opens the file in write anew mode thus clearing the file and close it right away
         open (self.log_files[current_view]['logfile_path'], "w+")
-        self.log_files[current_view]['term'].feed ('\033[2J\033[;f')
+        self.log_files[current_view]["term"].feed ("\033[2J\033[;f")
 
     def run (self):
         gtk.main ()
-        self.jacklog_config.set_as_dict ('ladilog', self.param_dict)
+        self.jacklog_config.set_as_dict ("ladilog", self.param_dict)
         return 0
 
 ladilog ().run ()
