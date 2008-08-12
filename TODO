@@ -1,7 +1,0 @@
-* popup a window when clicking on jacktray to show detailed jack status
-* Display jackconf's options in an "orderly fashion". Right now this gui is a mess.
-* Dynamically render SVG to reflect jack's status (started/stopped/xrun detected mini icons in corners of the bigger jack icon)
-* Add icons to jack_menu
-* Add a simple wizard for initial setup. Or maybe just a prompt for initial driver selection
-* Fix jacktray's behavior in case there is no initial driver selected
-* Add driver selection combobox to jackconf
