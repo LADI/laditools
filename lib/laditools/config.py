@@ -21,7 +21,7 @@ from xml.dom.ext import PrettyPrint
 # Let's make sure we'll place the file in an existing dir
 from os import environ, sep, mkdir
 from os.path import exists
-config_dir = environ['HOME'] + sep + ".config" + sep + "pyjackctl" + sep
+config_dir = environ['HOME'] + sep + ".config" + sep + "laditools" + sep
 config_filename = config_dir + "config.xml"
 if not exists(config_dir):
     mkdir(config_dir, 0755)
