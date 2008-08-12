@@ -21,7 +21,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import gtk.glade
-import pyjackctl
+import laditools
 
 class jackctl_conf(gtk.glade.XML):
     def __init__(self):

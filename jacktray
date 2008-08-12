@@ -21,7 +21,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 from gobject import timeout_add
-import pyjackctl
+import laditools
 
 # Default configuration
 autostart_default = 0

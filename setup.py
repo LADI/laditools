@@ -18,16 +18,16 @@
 
 from distutils.core import setup
 
-setup(name='pyjackctl',
+setup(name='laditools',
     version='1.0',
     description='The pyjackctl controller suite',
     author='Marc-Olivier Barre and Nedko Arnaudov',
     author_email='marco@marcochapeau.org',
-    url='http://www.marcochapeau.org/software/pyjackctl',
-    packages=['pyjackctl'],
-    package_dir={'pyjackctl': 'lib/pyjackctl'},
+    url='http://www.marcochapeau.org/software/laditools'
+    packages=['laditools'],
+    package_dir={'laditools': 'lib/laditools'},
     scripts=['jacktray', 'wmjackctl', 'g15jackmon', 'ladilog', 'jackconf', 'wma2jctl'],
-    data_files=[('share/doc/pyjackctl', ['README', 'COPYING', 'INSTALL', 'TODO']),
+    data_files=[('share/doc/laditools', ['README', 'COPYING', 'INSTALL', 'TODO']),
         ('share/pixmaps', ['data/pyjackctl.svg']),
         ('share/pyjackctl/data', ['data/pyjackctl.svg']),
         ('share/pyjackctl/data', ['data/pyjackctl_logo.svg',

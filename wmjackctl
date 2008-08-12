@@ -20,7 +20,7 @@
 import sys
 import os
 from wmdocklib import wmoo, pywmhelpers
-import pyjackctl
+import laditools
 import time
 
 import pygtk
