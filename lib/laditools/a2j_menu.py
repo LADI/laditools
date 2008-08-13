@@ -1,4 +1,4 @@
-# pyjackctl - The python jackdbus controller suite
+# LADITools - Linux Audio Desktop Integration Tools
 # Copyright (C) 2007-2008, Marc-Olivier Barre and Nedko Arnaudov.
 #
 # This program is free software: you can redistribute it and/or modify

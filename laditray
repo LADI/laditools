@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# LADITools - The python jackdbus controller suite
+# LADITools - Linux Audio Desktop Integration Tools
 # laditray - System tray integration for LADI
 # Copyright (C) 2007-2008, Marc-Olivier Barre and Nedko Arnaudov.
 #
@@ -26,74 +26,74 @@ import laditools
 # Default configuration
 autostart_default = 0
 
-class jacktray(gtk.StatusIcon, pyjackctl.jack_menu):
-    def __init__(self):
+class laditray (gtk.StatusIcon, pyjackctl.jack_menu):
+    def __init__ (self):
         # Handle the configuration
-        self.jacktray_config = pyjackctl.config()
-        self.param_dict = self.jacktray_config.get_as_dict('jacktray')
+        self.jacktray_config = pyjackctl.config ()
+        self.param_dict = self.jacktray_config.get_as_dict ('jacktray')
         if 'autostart' not in self.param_dict:
             self.param_dict['autostart'] = str(autostart_default), {}
         self.autostart, devnull = self.param_dict['autostart']
-        self.autostart = int(self.autostart)
+        self.autostart = int (self.autostart)
         # Build the UI
-        pyjackctl.jack_menu.__init__(self)
-        gtk.StatusIcon.__init__(self)
-        self.jack = pyjackctl.jack_controller()
+        pyjackctl.jack_menu.__init__ (self)
+        gtk.StatusIcon.__init__ (self)
+        self.jack = pyjackctl.jack_controller ()
         if self.autostart:
-            self.jack.start()
+            self.jack.start ()
         # Create the needed pixbufs to manage the status icon's look
-        self.stopped_pixbuf = gtk.gdk.pixbuf_new_from_file("/usr/share/pyjackctl/data/stopped.svg")
-        self.starting_pixbuf = gtk.gdk.pixbuf_new_from_file("/usr/share/pyjackctl/data/starting.svg")
-        self.started_pixbuf = gtk.gdk.pixbuf_new_from_file("/usr/share/pyjackctl/data/started.svg")
-        self.set_from_pixbuf(self.stopped_pixbuf)
+        self.stopped_pixbuf = gtk.gdk.pixbuf_new_from_file ("/usr/share/pyjackctl/data/stopped.svg")
+        self.starting_pixbuf = gtk.gdk.pixbuf_new_from_file ("/usr/share/pyjackctl/data/starting.svg")
+        self.started_pixbuf = gtk.gdk.pixbuf_new_from_file ("/usr/share/pyjackctl/data/started.svg")
+        self.set_from_pixbuf (self.stopped_pixbuf)
         # Get the initial status
-        self.update()
+        self.update ()
         # Add the auto update callback
-        self.auto_updater = timeout_add(250, self.update)
+        self.auto_updater = timeout_add (250, self.update)
         # Make the menu popup when the icon is right clicked
-        self.connect("popup-menu", self.menu_activate)
+        self.connect ("popup-menu", self.menu_activate)
 
-    def menu_activate(self, statusicon, button, activate_time):
-        self.menu.popup(None, None, gtk.status_icon_position_menu, button, activate_time, self)
-        self.menu.reposition()
+    def menu_activate (self, statusicon, button, activate_time):
+        self.menu.popup (None, None, gtk.status_icon_position_menu, button, activate_time, self)
+        self.menu.reposition ()
 
-    def set_starting_status(self):
-        self.set_tooltip("JACK is starting")
-        self.set_from_pixbuf(self.starting_pixbuf)
+    def set_starting_status (self):
+        self.set_tooltip ("JACK is starting")
+        self.set_from_pixbuf (self.starting_pixbuf)
 
-    def update(self):
+    def update (self):
         try:
             if not self.jack:
-                self.jack = pyjackctl.jack_controller()
-            if self.jack.is_started():
+                self.jack = pyjackctl.jack_controller ()
+            if self.jack.is_started ():
                 # Get Realtime status
-                if self.jack.is_realtime():
+                if self.jack.is_realtime ():
                     status_text = "RT | "
                 # Get DSP Load
-                status_text += str(round(float(self.jack.get_load()),1)) + "% | "
+                status_text += str (round (float (self.jack.get_load ()),1)) + "% | "
                 # Get Xruns
-                status_text += str(self.jack.get_xruns())
+                status_text += str (self.jack.get_xruns ())
                 # Set a started status
-                self.set_tooltip(status_text)
-                self.set_from_pixbuf(self.started_pixbuf)
+                self.set_tooltip (status_text)
+                self.set_from_pixbuf (self.started_pixbuf)
             else:
-                self.set_tooltip("JACK is stopped")
-                self.set_from_pixbuf(self.stopped_pixbuf)
+                self.set_tooltip ("JACK is stopped")
+                self.set_from_pixbuf (self.stopped_pixbuf)
         except:
-            self.set_tooltip("JACK is sick")
-            self.set_from_pixbuf(self.stopped_pixbuf)
+            self.set_tooltip ("JACK is sick")
+            self.set_from_pixbuf (self.stopped_pixbuf)
             self.jack = None
         # Take a look at the processes we've started so we don't get any zombies
         for i in self.proc_list:
-            i.poll()
+            i.poll ()
         return True
 
     def run(self):
-        gtk.main()
-        self.jacktray_config.set_as_dict('jacktray', self.param_dict)
+        gtk.main ()
+        self.jacktray_config.set_as_dict ('jacktray', self.param_dict)
         return 0
 
-    def get_controller(self):
+    def get_controller (self):
         return self.jack
 
-jacktray().run()
+laditray ().run ()

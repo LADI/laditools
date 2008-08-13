@@ -1,13 +1,13 @@
-The python JACK dbus controller suite
+Linux Audio Desktop Integration Tools
 
-This project was created to take advantage of Nedko Arnaudov's JACK Audio Connection Kit (improvements) patches, especially the dbus one. Those patches can be found here : http://sharesource.org/project/jack/
+LADITools is a set of tools aiming to achieve the goals of the LADI project to improve desktop integration and user workflow of Linux audio system based on JACK and LASH. Those tools take advantage of the DBus interfaces recently added to JACK and LASH to ease the configuration and use of those two great softwares.
 
 You will find in this suite :
- - The pyjackctl python module
- - jacktray : a system tray icon
+ - The laditools python module
+ - laditray : a system tray icon
  - wmjackctl : a controller as a Window Maker dockapp
  - ladilog : a JACK, LASH and a2jmidid log viewer
- - jackconf : a gui to setup jack's configuration
+ - ladiconf : a gui to setup jack's configuration
  - g15jackmon : a JACK monitor for g15 keyboards
 
 Enjoy !

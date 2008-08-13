@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# pyjackctl - The python jackdbus controller suite
+# LADITools - Linux Audio Desktop Integration Tools
 # g15jackmon - A jack monitor for the g15 keyboard that uses the dbus interface
 # Copyright (C) 2007-2008, Marc-Olivier Barre and Nedko Arnaudov.
 #
