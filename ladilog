@@ -40,7 +40,7 @@ except:
 
 # Default configuration
 max_lines_default = 100
-# good_term = [11522, 5, 1215, 35387, 15, 15, ['\x03', '\x1c', '\x7f', '\x15', '\x04', '\x00', '\x01', '\xff', '\x11', '\x13', '\x1a', '\xff', '\x12', '\x0f', '\x17', '\x16', '\xff', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00']]
+good_term = [11522, 5, 1215, 35387, 15, 15, ['\x03', '\x1c', '\x7f', '\x15', '\x04', '\x00', '\x01', '\xff', '\x11', '\x13', '\x1a', '\xff', '\x12', '\x0f', '\x17', '\x16', '\xff', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00']]
 
 class ladilog (gtk.glade.XML):
     def __init__ (self):
@@ -63,7 +63,7 @@ class ladilog (gtk.glade.XML):
             ]
 
         # Handle the configuration
-        self.jacklog_config = pyjackctl.config ()
+        self.jacklog_config = laditools.config ()
         self.param_dict = self.jacklog_config.get_as_dict ('ladilog')
 
         for log in self.log_files:
@@ -79,7 +79,7 @@ class ladilog (gtk.glade.XML):
         max_lines_text, devnull = self.param_dict['max_lines']
         self.max_lines = int (max_lines_text)
         # Load the glade file
-        gtk.glade.XML.__init__ (self, "/usr/share/pyjackctl/data/ladilog_ui.glade")
+        gtk.glade.XML.__init__ (self, "/usr/share/laditools/data/ladilog_ui.glade")
         # Get the ui ready for action
         self.event_dict = {"on_ladilog_ui_destroy" : self.on_quit,
             "on_close_button_clicked" : self.on_quit,

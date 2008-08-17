@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=LADITray
+Type=Application
+Comment=JACK and LASH control tray application
+Terminal=false
+Exec=laditray
+Icon=laditray
+Categories=GTK;Application;AudioVideo
+GenericName=LADI Trayicon
