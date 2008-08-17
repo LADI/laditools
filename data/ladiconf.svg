@@ -15,8 +15,10 @@
    sodipodi:version="0.32"
    inkscape:version="0.45.1"
    version="1.0"
-   sodipodi:docname="starting.svg"
+   sodipodi:docbase="/usr/src/pyjack/trunk/icons/scalable"
+   sodipodi:docname="ladiconf.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:export-filename="/usr/src/pyjack/trunk/icon-bare.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -190,17 +192,17 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="7.2146989"
-     inkscape:cx="33.113115"
-     inkscape:cy="27.340628"
+     inkscape:zoom="10.203125"
+     inkscape:cx="32"
+     inkscape:cy="32"
      inkscape:document-units="px"
-     inkscape:current-layer="g2227"
+     inkscape:current-layer="layer1"
      width="64px"
      height="64px"
-     inkscape:window-width="1434"
-     inkscape:window-height="850"
-     inkscape:window-x="3"
-     inkscape:window-y="19"
+     inkscape:window-width="1440"
+     inkscape:window-height="853"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:guide-points="false" />
@@ -222,14 +224,6 @@
     <g
        id="g2227"
        transform="matrix(0.1281607,-0.1281256,0.1281607,0.1281256,-2.5906217,54.930395)">
-      <rect
-         style="opacity:1;fill:#c3c3c3;fill-opacity:1;stroke:none;stroke-width:8.48873615;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         id="rect4306"
-         width="353.11008"
-         height="353.20682"
-         x="14.293353"
-         y="-303.15298"
-         transform="matrix(0.7071068,0.7071068,-0.7071068,0.7071068,0,0)" />
       <rect
          y="29.630676"
          x="404.86771"
@@ -282,28 +276,6 @@
          id="path14933"
          d="M 433.40266,22.170651 C 432.89076,22.185754 432.52207,22.582985 431.72141,23.594895 C 430.5283,25.102794 430.43938,24.468681 430.43938,45.755362 C 430.43938,64.943351 430.49335,65.635094 431.87527,67.500405 C 433.15798,69.231798 435.42402,68.403523 440.2892,65.792719 L 440.2892,24.643901 C 437.04273,22.559154 434.02797,21.994278 433.40266,22.170651 z "
          style="color:#000000;fill:url(#radialGradient2246);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:3.5;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
-    </g>
-    <g
-       id="g2649"
-       inkscape:label="Layer 1"
-       transform="matrix(1.0356397,0,0,1.0356397,6.3396427,1.9738489)"
-       style="stroke:#000000;stroke-opacity:1;fill:none;fill-opacity:1;stroke-width:1.57969997;stroke-miterlimit:4;stroke-dasharray:none">
-      <path
-         transform="matrix(3.3392109,0,0,3.3392109,-2.2135452,-3.3401691)"
-         d="M 6.8099396,4.2944784 L 1.1042327,7.5886699 L 1.1042327,1.000287 L 6.8099396,4.2944784 z "
-         inkscape:randomized="0"
-         inkscape:rounded="0"
-         inkscape:flatsided="true"
-         sodipodi:arg2="1.0471976"
-         sodipodi:arg1="0"
-         sodipodi:r2="1.9019023"
-         sodipodi:r1="3.8038046"
-         sodipodi:cy="4.2944784"
-         sodipodi:cx="3.006135"
-         sodipodi:sides="3"
-         id="path6183"
-         style="opacity:1;color:#000000;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.47307583;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-         sodipodi:type="star" />
     </g>
   </g>
 </svg>

@@ -26,25 +26,25 @@ import laditools
 # Default configuration
 autostart_default = 0
 
-class laditray (gtk.StatusIcon, pyjackctl.jack_menu):
+class laditray (gtk.StatusIcon, laditools.jack_menu):
     def __init__ (self):
         # Handle the configuration
-        self.jacktray_config = pyjackctl.config ()
+        self.jacktray_config = laditools.config ()
         self.param_dict = self.jacktray_config.get_as_dict ('jacktray')
         if 'autostart' not in self.param_dict:
             self.param_dict['autostart'] = str(autostart_default), {}
         self.autostart, devnull = self.param_dict['autostart']
         self.autostart = int (self.autostart)
         # Build the UI
-        pyjackctl.jack_menu.__init__ (self)
+        laditools.jack_menu.__init__ (self)
         gtk.StatusIcon.__init__ (self)
-        self.jack = pyjackctl.jack_controller ()
+        self.jack = laditools.jack_controller ()
         if self.autostart:
             self.jack.start ()
         # Create the needed pixbufs to manage the status icon's look
-        self.stopped_pixbuf = gtk.gdk.pixbuf_new_from_file ("/usr/share/pyjackctl/data/stopped.svg")
-        self.starting_pixbuf = gtk.gdk.pixbuf_new_from_file ("/usr/share/pyjackctl/data/starting.svg")
-        self.started_pixbuf = gtk.gdk.pixbuf_new_from_file ("/usr/share/pyjackctl/data/started.svg")
+        self.stopped_pixbuf = gtk.gdk.pixbuf_new_from_file ("/usr/share/laditools/data/stopped.svg")
+        self.starting_pixbuf = gtk.gdk.pixbuf_new_from_file ("/usr/share/laditools/data/starting.svg")
+        self.started_pixbuf = gtk.gdk.pixbuf_new_from_file ("/usr/share/laditools/data/started.svg")
         self.set_from_pixbuf (self.stopped_pixbuf)
         # Get the initial status
         self.update ()
@@ -64,7 +64,7 @@ class laditray (gtk.StatusIcon, pyjackctl.jack_menu):
     def update (self):
         try:
             if not self.jack:
-                self.jack = pyjackctl.jack_controller ()
+                self.jack = laditools.jack_controller ()
             if self.jack.is_started ():
                 # Get Realtime status
                 if self.jack.is_realtime ():

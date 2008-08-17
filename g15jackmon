@@ -116,7 +116,7 @@ class jackctl_g15:
     def update(self):
         try:
             if not self.jack:
-                self.jack = pyjackctl.jack_controller()
+                self.jack = laditools.jack_controller()
 
             status_line = "JACK"
 

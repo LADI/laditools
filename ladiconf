@@ -28,7 +28,7 @@ class ladiconf (gtk.glade.XML):
         # Dbus interface
         self.jack = laditools.jack_configure ()
         # Load the glade file
-        gtk.glade.XML.__init__ (self, "/usr/share/pyjackctl/data/ladiconf_ui.glade")
+        gtk.glade.XML.__init__ (self, "/usr/share/laditools/data/ladiconf_ui.glade")
         # Get the ui ready for action
         self.event_dict = {"on_ladiconf_ui_destroy" : self.on_quit,
             "on_close_button_clicked" : self.on_quit,

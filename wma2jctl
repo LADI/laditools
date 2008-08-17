@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # LADITools - Linux Audio Desktop Integration Tools
-# wmjackctl - Window maker dockapp for jackdbus
+# wma2jctl - Window maker dockapp for jackdbus
 # Copyright (C) 2007-2008, Marc-Olivier Barre and Nedko Arnaudov.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 import sys
 import os
 from wmdocklib import wmoo, pywmhelpers
-import pyjackctl
+import laditools
 import time
 
 import pygtk
-pygtk.require('2.0')
+pygtk.require ('2.0')
 import gtk
 import gobject
 
@@ -32,105 +32,105 @@ import gobject
 autostart_default = 0
 debug = False
 
-class wma2jctl(wmoo.Application, pyjackctl.a2j_menu):
-    def __init__(self):
+class wma2jctl (wmoo.Application, laditools.a2j_menu):
+    def __init__ (self):
         # Handle the configuration
-        self.wma2jctl_config = pyjackctl.config()
-        self.param_dict = self.wma2jctl_config.get_as_dict('wma2jctl')
+        self.wma2jctl_config = laditools.config ()
+        self.param_dict = self.wma2jctl_config.get_as_dict ('wma2jctl')
         if 'autostart' not in self.param_dict:
-            self.param_dict['autostart'] = str(autostart_default), {}
+            self.param_dict['autostart'] = str (autostart_default), {}
         self.autostart, devnull = self.param_dict['autostart']
-        self.autostart = int(self.autostart)
-        self.a2j = pyjackctl.a2j_controller()
+        self.autostart = int (self.autostart)
+        self.a2j = laditools.a2j_controller ()
         if self.autostart:
-            self.a2j.start()
-        wmoo.Application.__init__(
+            self.a2j.start ()
+        wmoo.Application.__init__ (
             self,
             #background = os.path.dirname(sys.argv[0]) + os.sep + "wma2jctl.xpm",
             margin = 2,
             debug = False)
 
-        pyjackctl.a2j_menu.__init__(self)
+        laditools.a2j_menu.__init__ (self)
 
-        self.addCallback(self.on_button_release, 'buttonrelease', area=(0,0,64,64))
+        self.addCallback (self.on_button_release, 'buttonrelease', area=(0,0,64,64))
 
         self.lines = []
-        for i in range(6):
-            self.lines.append("")
-        self.clear()
+        for i in range (6):
+            self.lines.append ("")
+        self.clear ()
         self.started = False
 
-    def get_controller(self):
+    def get_controller (self):
         return self.a2j
     
-    def set_starting_status(self):
-        self.set_line(0, "A2J")
-        self.set_line(1, "Starting")
-        self.clear_line(2)
-        self.clear_line(3)
-        self.clear_line(4)
-        self.clear_line(5)
+    def set_starting_status (self):
+        self.set_line (0, "A2J")
+        self.set_line (1, "Starting")
+        self.clear_line (2)
+        self.clear_line (3)
+        self.clear_line (4)
+        self.clear_line (5)
 
-    def on_button_release(self, event):
+    def on_button_release (self, event):
         if event['button'] == 3:
-            self.menu_activate()
+            self.menu_activate ()
 
-    def set_line(self, line, text):
+    def set_line (self, line, text):
         self.lines[line] = text
-        while len(self.lines[line]) < 9:
+        while len (self.lines[line]) < 9:
             self.lines[line] += ' '
 
-    def clear_line(self, line):
-        self.set_line(line, "")
+    def clear_line (self, line):
+        self.set_line (line, "")
 
-    def clear(self):
-        for i in range(6):
-            self.clear_line(i)
+    def clear (self):
+        for i in range (6):
+            self.clear_line (i)
 
-    def update(self):
+    def update (self):
         try:
             if not self.a2j:
-                self.a2j = pyjackctl.a2j_controller()
+                self.a2j = laditools.a2j_controller ()
 
-            if self.a2j.is_started():
+            if self.a2j.is_started ():
                 self.started = True
-                self.set_line(0, "A2J")
-                self.set_line(1, "started")
+                self.set_line (0, "A2J")
+                self.set_line (1, "started")
             else:
                 self.started = False
-                self.set_line(0, "A2J")
-                self.set_line(1, "stopped")
+                self.set_line (0, "A2J")
+                self.set_line (1, "stopped")
         except Exception, e:
             if debug:
-                print repr(e)
-            self.set_line(0, "A2J")
-            self.set_line(1, "error")
+                print repr (e)
+            self.set_line (0, "A2J")
+            self.set_line (1, "error")
             if self.a2j:
-                self.clear_line(2)
-                self.clear_line(3)
-                self.clear_line(4)
-                self.clear_line(5)
+                self.clear_line (2)
+                self.clear_line (3)
+                self.clear_line (4)
+                self.clear_line (5)
                 self.a2j = None
 
-        self.put_lines(self.lines)
-        wmoo.Application.update(self)
+        self.put_lines (self.lines)
+        wmoo.Application.update (self)
 
-    def put_lines(self, lines):
+    def put_lines (self, lines):
         x = 3
         y = 2
         for line in lines:
-            self.putString(x, y, line)
+            self.putString (x, y, line)
             y += 9
 
-    def do_dockapp(self):
+    def do_dockapp (self):
         """this is called from event loop.  events are examined and if a
         callback has been registered, it is called, passing it the event as
         argument.
         """
-        event = pywmhelpers.getEvent()
+        event = pywmhelpers.getEvent ()
         while not event is None:
             if event['type'] == 'destroynotify':
-                sys.exit(0)
+                sys.exit (0)
 
             for evtype, key, area, callback in self._events:
                 if evtype is not None and evtype != event['type']: continue
@@ -139,30 +139,30 @@ class wma2jctl(wmoo.Application, pyjackctl.a2j_menu):
                     if not area[0] <= event['x'] <= area[2]: continue
                     if not area[1] <= event['y'] <= area[3]: continue
 
-                callback(event)
+                callback (event)
                 
-            event = pywmhelpers.getEvent()
-        self.redraw()
+            event = pywmhelpers.getEvent ()
+        self.redraw ()
         #print "tick"
         return True
 
-    def run_sleep(self):
+    def run_sleep (self):
         self.go = True
         while self.go:
-            while gtk.events_pending():
-                gtk.main_iteration()
-            self.do_dockapp()
-            while gtk.events_pending():
-                gtk.main_iteration()
-            time.sleep(self._sleep)
+            while gtk.events_pending ():
+                gtk.main_iteration ()
+            self.do_dockapp ()
+            while gtk.events_pending ():
+                gtk.main_iteration ()
+            time.sleep (self._sleep)
 
-    def run_gtk(self):
+    def run_gtk (self):
         #print self._sleep
-        gobject.timeout_add(int(self._sleep * 1000), self.do_dockapp)
-        gtk.main()
+        gobject.timeout_add (int(self._sleep * 1000), self.do_dockapp)
+        gtk.main ()
 
-    def run(self):
-        self.run_gtk()
-        self.wma2jctl_config.set_as_dict('wma2jctl', self.param_dict)
+    def run (self):
+        self.run_gtk ()
+        self.wma2jctl_config.set_as_dict ('wma2jctl', self.param_dict)
 
-wma2jctl().run()
+wma2jctl ().run ()

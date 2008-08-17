@@ -6,7 +6,7 @@
     <property name="visible">True</property>
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
     <property name="title" translatable="yes">jackctl - Log viewer</property>
-    <property name="icon">pyjackctl.svg</property>
+    <property name="icon">ladilog.svg</property>
     <signal name="destroy" handler="on_ladilog_ui_destroy"/>
     <child>
       <widget class="GtkVBox" id="ladilog_vbox">
@@ -16,7 +16,7 @@
           <widget class="GtkImage" id="laditools_logo">
             <property name="visible">True</property>
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-            <property name="pixbuf">pyjackctl_logo.svg</property>
+            <property name="pixbuf">laditools_logo.svg</property>
           </widget>
           <packing>
             <property name="expand">False</property>

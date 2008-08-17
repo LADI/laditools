@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# pyjackctl - The python jackdbus controller suite
+# LADITools - Linux Audio Desktop Integration Tools
 # Copyright (C) 2007-2008, Marc-Olivier Barre and Nedko Arnaudov.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@ from distutils.core import setup
 
 setup(name='laditools',
     version='1.0',
-    description='The pyjackctl controller suite',
+    description='Linux Audio Desktop Integration Tools',
     author='Marc-Olivier Barre and Nedko Arnaudov',
     author_email='marco@marcochapeau.org',
     url='http://www.marcochapeau.org/software/laditools',
