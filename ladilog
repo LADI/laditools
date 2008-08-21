@@ -40,7 +40,29 @@ except:
 
 # Default configuration
 max_lines_default = 100
-good_term = [11522, 5, 1215, 35387, 15, 15, ['\x03', '\x1c', '\x7f', '\x15', '\x04', '\x00', '\x01', '\xff', '\x11', '\x13', '\x1a', '\xff', '\x12', '\x0f', '\x17', '\x16', '\xff', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00']]
+
+# Output the last <lines> lines
+def read_last(lfile, lines):
+    chunk_size = lines * 60
+    lfile.seek(0, 2)
+    endpos = lfile.tell()
+    pos = endpos - chunk_size
+    if pos < 0:
+        pos = 0
+    backlog = ''
+    backlog_size = 0
+    lines += 1
+    while pos >= 0 and backlog_size <= lines:
+        lfile.seek(pos, 0)
+        s = lfile.read(chunk_size)
+        pos = pos - 10000
+        backlog_size += s.count("\n")
+        backlog = s + backlog
+    backlog = backlog.strip().split("\n")
+    if len(backlog) > lines:
+        backlog = backlog[-lines:]
+    lfile.seek(endpos, 0)
+    return backlog
 
 class ladilog (gtk.glade.XML):
     def __init__ (self):
@@ -99,27 +121,32 @@ class ladilog (gtk.glade.XML):
             self.logview_notebook.set_tab_label (log["term"], log["tab_label"])
             log['term'].show ()
         # Make it do something...
-        self.tail_cmd = ["/usr/bin/tail", "-"+str (self.max_lines)+"f"]
         for log in self.log_files:
             try:
-                log["masterfd"], log["slavefd"] = pty.openpty ()
-                termios.tcsetattr (log["masterfd"], termios.TCSANOW, good_term)
-                termios.tcsetattr (log["slavefd"], termios.TCSANOW, good_term)
-                tty.setcbreak (log["masterfd"], termios.TCSANOW)
-                tty.setcbreak (log["slavefd"], termios.TCSANOW)
-                log["term"].set_pty (log["slavefd"])
-                log["tail_process"] = Popen (self.tail_cmd + [log['logfile_path']], stdout = PIPE)
-                log["sed_process"] = Popen (["/bin/sed", "-e", "s/$/\\r/"], stdin = log["tail_process"].stdout, stdout = log["masterfd"])
+                log['log_file'] = open(log['logfile_path'], "rb")
+                lines = read_last(log['log_file'], self.max_lines)
+                for line in lines:
+                    line = line.strip('\r\n') + '\r\n'
+                    log["term"].feed(line)
 
             except ValueError:
                 print "You called Popen with invalid arguments... dumbass"
             except:
                 print "Unexpected error:", sys.exc_info ()[0]
 
-    def on_quit (self, data=None):
+        self.auto_updater = timeout_add(250, self.update)
+
+    def update(self):
+        # Append latest output to the buffer
         for log in self.log_files:
-            os.kill (log["tail_process"].pid, SIGTERM)
-            log["tail_process"].poll ()
+            line = log['log_file'].readline()
+            while line:
+                log["term"].feed(line + '\r')
+                line = log['log_file'].readline()
+            log['log_file'].seek(log['log_file'].tell())
+        return True
+
+    def on_quit (self, data=None):
         gtk.main_quit ()
 
     def on_clear_text (self, data=None):
