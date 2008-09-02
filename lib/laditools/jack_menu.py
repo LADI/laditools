@@ -24,7 +24,7 @@ from config import config
 # TODO : somehow, we need stock icons. Nothing else can be used for ImageMenuItems
 
 # Default launcher menu :
-menu_default = [("Configure", "jackconf"),
+menu_default = [("Configure", "ladiconf"),
     ("Connect", "patchage"),
     ("Logs", "ladilog")]
 
