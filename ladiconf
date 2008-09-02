@@ -99,31 +99,85 @@ class driver_parameters_proxy(parameters_proxy):
     def get_short_description(self, name):
         return jack.get_driver_short_description(name)
 
-class ladiconf (gtk.glade.XML):
-    def __init__ (self):
-        # Dbus interface
-        # Load the glade file
-        gtk.glade.XML.__init__ (self, "/usr/share/laditools/data/ladiconf_ui.glade")
-        # Get the ui ready for action
-        self.event_dict = {"on_ladiconf_ui_destroy" : self.on_quit,
-            "on_close_button_clicked" : self.on_quit,
-            "on_apply_button_clicked" : self.on_apply}
-        self.signal_autoconnect (self.event_dict)
-        self.apply_button = self.get_widget ("apply_button")
+class configure_command:
+    def __init__(self):
+        pass
 
-        # Engine tab setup
-        vbox_left = self.get_widget("engine_vbox_left")
-        vbox_right = self.get_widget("engine_vbox_right")
-        self.engine_params = engine_parameters_proxy()
-        self.fill_params(vbox_left, vbox_right, self.engine_params)
+    def get_description(self):
+        pass
 
-        # Driver tab setup
-        vbox_left = self.get_widget("driver_vbox_left")
-        vbox_right = self.get_widget("driver_vbox_right")
-        self.driver_params = driver_parameters_proxy()
-        self.fill_params(vbox_left, vbox_right, self.driver_params)
+    def run(self, arg):
+        pass
 
-        #print self.run_driver_change_dialog()
+class jack_driver_change_command(configure_command):
+    def get_description(self):
+        return 'Select JACK driver'
+
+    def run(self, arg):
+        dlg = gtk.Dialog()
+        dlg.set_title(self.get_description())
+        dlg.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        dlg.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+
+        driver_list = gtk.TreeView()
+        dlg.vbox.pack_start(driver_list, True)
+
+        store = gtk.ListStore(str)
+
+        text_renderer = gtk.CellRendererText()
+
+        column = gtk.TreeViewColumn("Name", text_renderer, text=0)
+        driver_list.append_column(column)
+
+        drivers = jack.get_available_driver()
+        for driver in drivers:
+            store.append([driver])
+
+        driver_list.set_model(store)
+
+        selection = driver_list.get_selection()
+
+        current_driver = jack.get_selected_driver()
+        if current_driver:
+            for row in store:
+                if current_driver == row[0]:
+                    selection.select_iter(row.iter)
+
+        driver_list.connect("row-activated", lambda *x: dlg.response(gtk.RESPONSE_OK))
+
+        driver = None
+
+        dlg.show_all()
+        ret = dlg.run()
+        if ret == gtk.RESPONSE_OK:
+            jack.select_driver(store.get(selection.get_selected()[1], 0)[0])
+        dlg.hide()
+
+class jack_params_configure_command(configure_command):
+    def __init__(self, proxy):
+        self.proxy = proxy
+
+    def run(self, arg):
+        dlg = gtk.Dialog()
+        dlg.set_title(self.get_description())
+        dlg.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        dlg.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+
+        hbox = gtk.HBox()
+        dlg.vbox.pack_start(hbox, True)
+        vbox_left = gtk.VBox()
+        vbox_right = gtk.VBox()
+        hbox.pack_start(vbox_left, True)
+        hbox.pack_start(vbox_right, True)
+
+        self.params = self.proxy()
+        self.fill_params(vbox_left, vbox_right, self.params)
+
+        dlg.show_all()
+        ret = dlg.run()
+        if ret == gtk.RESPONSE_OK:
+            self.on_save()
+        dlg.hide()
 
     def fill_params(self, vbox_left, vbox_right, params):
         widget_map = {
@@ -186,68 +240,51 @@ class ladiconf (gtk.glade.XML):
 
     def on_param_update(self, widget, param):
         param.modified = True
-        self.apply_button.set_sensitive(True)
 
-    def on_apply(self, data=None):
-        for params in self.engine_params, self.driver_params:
-            for param in params:
-                if not param.modified:
-                    continue
-                widget_type = type(param.widget)
-                if widget_type is gtk.CheckButton:
-                    param.set_value(param.widget.get_active())
-                elif widget_type is gtk.SpinButton:
-                    param.set_value(param.widget.get_value())
-                elif widget_type is gtk.Entry:
-                    param.set_value(param.widget.get_text())
-        self.apply_button.set_sensitive(False)
+    def on_save(self, data=None):
+        for param in self.params:
+            if not param.modified:
+                continue
+            widget_type = type(param.widget)
+            if widget_type is gtk.CheckButton:
+                param.set_value(param.widget.get_active())
+            elif widget_type is gtk.SpinButton:
+                param.set_value(param.widget.get_value())
+            elif widget_type is gtk.Entry:
+                param.set_value(param.widget.get_text())
 
-    def on_quit (self, data=None):
-        gtk.main_quit ()
+class jack_engine_params_configure_command(jack_params_configure_command):
+    def __init__(self):
+        jack_params_configure_command.__init__(self, engine_parameters_proxy)
 
-    def run (self):
-        gtk.main ()
-        return 0
+    def get_description(self):
+        return 'JACK engine parameters'
 
-    def run_driver_change_dialog(self):
-        dlg = gtk.Dialog()
-        dlg.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-        dlg.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+class jack_driver_params_configure_command(jack_params_configure_command):
+    def __init__(self):
+        jack_params_configure_command.__init__(self, driver_parameters_proxy)
 
-        driver_list = gtk.TreeView()
-        dlg.vbox.pack_start(driver_list, True)
+    def get_description(self):
+        return 'JACK driver parameters'
 
-        store = gtk.ListStore(str)
+commands = [
+    jack_driver_change_command(),
+    jack_engine_params_configure_command(),
+    jack_driver_params_configure_command(),
+    ]
 
-        text_renderer = gtk.CellRendererText()
+window = gtk.Window()
 
-        column = gtk.TreeViewColumn("Name", text_renderer, text=0)
-        driver_list.append_column(column)
+buttons_widget = gtk.VBox()
 
-        drivers = self.jack.get_available_driver()
-        for driver in drivers:
-            store.append([driver])
+for command in commands:
+    button = gtk.Button(command.get_description())
+    button.connect('released', command.run)
+    buttons_widget.pack_start(button)
 
-        driver_list.set_model(store)
+window.add(buttons_widget)
 
-        selection = driver_list.get_selection()
+window.show_all()
+window.connect('destroy', gtk.main_quit)
 
-        current_driver = self.jack.get_selected_driver()
-        if current_driver:
-            for row in store:
-                if current_driver == row[0]:
-                    selection.select_iter(row.iter)
-
-        driver_list.connect("row-activated", lambda *x: dlg.response(gtk.RESPONSE_OK))
-
-        driver = None
-
-        dlg.show_all()
-        ret = dlg.run()
-        if ret == gtk.RESPONSE_OK:
-            driver = store.get(selection.get_selected()[1], 0)[0]
-        dlg.hide()
-
-        return driver
-
-ladiconf ().run ()
+gtk.main()
