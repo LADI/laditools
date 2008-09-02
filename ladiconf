@@ -106,6 +106,9 @@ class configure_command:
     def get_description(self):
         pass
 
+    def get_window_title(self):
+        return self.get_description();
+
     def run(self, arg):
         pass
 
@@ -115,7 +118,7 @@ class jack_driver_change_command(configure_command):
 
     def run(self, arg):
         dlg = gtk.Dialog()
-        dlg.set_title(self.get_description())
+        dlg.set_title(self.get_window_title())
         dlg.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
         dlg.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
 
@@ -159,7 +162,7 @@ class jack_params_configure_command(configure_command):
 
     def run(self, arg):
         dlg = gtk.Dialog()
-        dlg.set_title(self.get_description())
+        dlg.set_title(self.get_window_title())
         dlg.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
         dlg.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
 
@@ -266,6 +269,9 @@ class jack_driver_params_configure_command(jack_params_configure_command):
 
     def get_description(self):
         return 'JACK driver parameters'
+
+    def get_window_title(self):
+        return 'JACK "%s" driver parameters' % jack.get_selected_driver()
 
 commands = [
     jack_driver_change_command(),
