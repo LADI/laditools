@@ -23,10 +23,73 @@ import gtk
 import gtk.glade
 import laditools
 
+jack = laditools.jack_configure()
+
+class parameter:
+    def __init__(self, name, proxy):
+        self.name = name
+        self.proxy = proxy
+
+    def get_name(self):
+        return self.name
+
+    def get_type(self):
+        return self.proxy.get_type(self.name)
+
+    def get_value(self):
+        return self.proxy.get_value(self.name)
+
+    def get_short_description(self):
+        return self.proxy.get_short_description(self.name)
+
+class parameters_proxy:
+    def __init__(self, get_names_function):
+        self.params = []
+        param_names = get_names_function()
+        for name in param_names:
+            self.params.append(parameter(name, self))
+
+    def __iter__(self):
+        return iter(self.params)
+
+    def get_type(self, name):
+        pass
+
+    def get_value(self, name):
+        pass
+
+    def get_short_description(self, name):
+        pass
+
+class engine_parameters_proxy(parameters_proxy):
+    def __init__(self):
+        parameters_proxy.__init__(self, jack.get_engine_param_names)
+
+    def get_type(self, name):
+        return jack.get_engine_param_type(name)
+
+    def get_value(self, name):
+        return jack.get_engine_param_value(name)
+
+    def get_short_description(self, name):
+        return jack.get_engine_short_description(name)
+
+class driver_parameters_proxy(parameters_proxy):
+    def __init__(self):
+        parameters_proxy.__init__(self, jack.get_driver_param_names)
+
+    def get_type(self, name):
+        return jack.get_driver_param_type(name)
+
+    def get_value(self, name):
+        return jack.get_driver_param_value(name)
+
+    def get_short_description(self, name):
+        return jack.get_driver_short_description(name)
+
 class ladiconf (gtk.glade.XML):
     def __init__ (self):
         # Dbus interface
-        self.jack = laditools.jack_configure ()
         # Load the glade file
         gtk.glade.XML.__init__ (self, "/usr/share/laditools/data/ladiconf_ui.glade")
         # Get the ui ready for action
@@ -34,104 +97,96 @@ class ladiconf (gtk.glade.XML):
             "on_close_button_clicked" : self.on_quit,
             "on_apply_button_clicked" : self.on_apply}
         self.signal_autoconnect (self.event_dict)
-        self.engine_param_dict = {}
-        self.driver_param_dict = {}
-        self.changed_engine_params = []
-        self.changed_driver_params = []
         self.apply_button = self.get_widget ("apply_button")
+
+        # Engine tab setup
+        vbox_left = self.get_widget("engine_vbox_left")
+        vbox_right = self.get_widget("engine_vbox_right")
+        self.engine_params = engine_parameters_proxy()
+        self.fill_params(vbox_left, vbox_right, self.engine_params)
+
         # Driver tab setup
-        self.driver_vbox_left = self.get_widget ("driver_vbox_left")
-        self.driver_vbox_right = self.get_widget ("driver_vbox_right")
-        self.driver_params = self.jack.get_driver_param_names ()
-        for driver_param in self.driver_params:
-            typestr = self.jack.get_driver_param_type(driver_param)
-            isset, default, value = self.jack.get_driver_param_value (driver_param)
-            short_descr = self.jack.get_driver_short_description (driver_param)
-            if typestr == "b":
-                self.driver_vbox_left.pack_start (self.make_checkbox (driver_param, value, short_descr, self.driver_param_dict), False)
-            elif typestr == "s":
-                self.driver_vbox_right.pack_start (self.make_textentry (driver_param, value, short_descr, self.driver_param_dict), False)
-            elif typestr == "u" or typestr == "i":
-                self.driver_vbox_right.pack_start (self.make_spinbutton (driver_param, value, short_descr, self.driver_param_dict), False)
-        #Engine tab setup
-        self.engine_vbox_left = self.get_widget ("engine_vbox_left")
-        self.engine_vbox_right = self.get_widget ("engine_vbox_right")
-        self.engine_params = self.jack.get_engine_param_names ()
-        for engine_param in self.engine_params:
-            typestr = self.jack.get_engine_param_type (engine_param)
-            isset, default, value = self.jack.get_engine_param_value (engine_param)
-            short_descr = self.jack.get_engine_short_description (engine_param)
-            if typestr == "b":
-                self.engine_vbox_left.pack_start (self.make_checkbox(engine_param, value, short_descr, self.engine_param_dict), False)
-            elif typestr == "s":
-                self.engine_vbox_right.pack_start (self.make_textentry(engine_param, value, short_descr, self.engine_param_dict), False)
-            elif typestr == "u" or typestr == "i":
-                self.engine_vbox_right.pack_start (self.make_spinbutton(engine_param, value, short_descr, self.engine_param_dict), False)
+        vbox_left = self.get_widget("driver_vbox_left")
+        vbox_right = self.get_widget("driver_vbox_right")
+        self.driver_params = driver_parameters_proxy()
+        self.fill_params(vbox_left, vbox_right, self.driver_params)
+
+        #print self.run_driver_change_dialog()
+
+    def fill_params(self, vbox_left, vbox_right, params):
+        widget_map = {
+            "b": [self.make_checkbox, vbox_left],
+            "s": [self.make_textentry, vbox_right],
+            "i": [self.make_spinbutton, vbox_right],
+            "u": [self.make_spinbutton, vbox_right],
+            "y": [self.make_textentry, vbox_right],
+            }
+        for param in params:
+            if not widget_map.has_key(param.get_type()):
+                continue
+            mapping = widget_map[param.get_type()]
+            make_function = mapping[0]
+            container = mapping[1]
+            param.widget = make_function(param)
+            param.widget.show_all()
+            param.modified = False
+            container.pack_start(param.widget, False)
     
-    def make_checkbox (self, param_name, value, short_descr, storage_dict):
-        storage_dict[param_name] = gtk.CheckButton (param_name)
-        storage_dict[param_name].set_active (value)
-        storage_dict[param_name].set_tooltip_text (short_descr)
-        storage_dict[param_name].connect ("toggled", self.on_param_update, param_name)
-        storage_dict[param_name].show ()
-        return storage_dict[param_name]
+    def make_checkbox(self, param):
+        widget = gtk.CheckButton(param.get_name())
+        widget.set_active(param.get_value()[2])
+        widget.set_tooltip_text(param.get_short_description())
+        widget.connect("toggled", self.on_param_update, param)
+        return widget
     
-    def make_spinbutton (self, param_name, value, short_descr, storage_dict):
-        storage_dict[param_name] = gtk.SpinButton ()
-        storage_dict[param_name].set_range (0, 100000)
-        storage_dict[param_name].set_increments (1, 1000)
-        storage_dict[param_name].set_value (value)
-        storage_dict[param_name].set_tooltip_text (short_descr)
-        param_label = gtk.Label (param_name)
-        param_label.set_alignment (1, 0.5)
-        param_label.set_padding (10, 0)
-        param_widget = gtk.HBox ()
-        param_widget.set_homogeneous (True)
-        param_widget.pack_start (param_label)
-        param_widget.pack_start (storage_dict[param_name])
-        storage_dict[param_name].connect ("changed", self.on_param_update, param_name)
-        param_widget.show_all ()
+    def make_spinbutton(self, param):
+        widget = gtk.SpinButton ()
+        widget.set_range(0, 100000)
+        widget.set_increments(1, 1000)
+        widget.set_value(param.get_value()[2])
+        widget.set_tooltip_text(param.get_short_description())
+        param_label = gtk.Label(param.get_name())
+        param_label.set_alignment(1, 0.5)
+        param_label.set_padding(10, 0)
+        param_widget = gtk.HBox()
+        param_widget.set_homogeneous(True)
+        param_widget.pack_start(param_label)
+        param_widget.pack_start(widget)
+        widget.connect("changed", self.on_param_update, param)
         return param_widget
 
-    def make_textentry (self, param_name, value, short_descr, storage_dict):
-        storage_dict[param_name] = gtk.Entry ()
-        storage_dict[param_name].set_text (value)
-        storage_dict[param_name].set_tooltip_text (short_descr)
-        param_label = gtk.Label (param_name)
-        param_label.set_alignment (1, 0.5)
-        param_label.set_padding (10, 0)
-        param_widget = gtk.HBox ()
+    def make_textentry(self, param):
+        widget = gtk.Entry()
+        widget.set_text(str(param.get_value()[2]))
+        widget.set_tooltip_text(param.get_short_description())
+        param_label = gtk.Label(param.get_name())
+        param_label.set_alignment(1, 0.5)
+        param_label.set_padding(10, 0)
+        param_widget = gtk.HBox()
         param_widget.set_homogeneous (True)
-        param_widget.pack_start (param_label)
-        param_widget.pack_start (storage_dict[param_name])
-        param_widget.show_all ()
-        storage_dict[param_name].connect ("changed", self.on_param_update, param_name)
+        param_widget.pack_start(param_label)
+        param_widget.pack_start(widget)
+        widget.connect("changed", self.on_param_update, param)
         return param_widget
 
-    def on_param_update (self, widget, param_name):
-        if param_name in self.driver_params and param_name not in self.changed_driver_params:
-            self.changed_driver_params.append (param_name)
-        if param_name in self.engine_params and param_name not in self.changed_engine_params:
-            self.changed_engine_params.append (param_name)
-        self.apply_button.set_sensitive (True)
+    def on_param_update(self, widget, param):
+        param.modified = True
+        self.apply_button.set_sensitive(True)
 
     def on_apply(self, data=None):
-        for changed_driver_param in self.changed_driver_params:
-            widget_type = type (self.driver_param_dict[changed_driver_param])
-            if widget_type is gtk.CheckButton:
-                self.jack.set_driver_param_value (changed_driver_param, self.driver_param_dict[changed_driver_param].get_active ())
-            elif widget_type is gtk.SpinButton:
-                self.jack.set_driver_param_value (changed_driver_param, self.driver_param_dict[changed_driver_param].get_value ())
-            elif widget_type is gtk.Entry:
-                self.jack.set_driver_param_value (changed_driver_param, self.driver_param_dict[changed_driver_param].get_text ())
-        for changed_engine_param in self.changed_engine_params:
-            widget_type = type(self.engine_param_dict[changed_engine_param])
-            if widget_type is gtk.CheckButton:
-                self.jack.set_engine_param_value (changed_engine_param, self.engine_param_dict[changed_engine_param].get_active ())
-            elif widget_type is gtk.SpinButton:
-                self.jack.set_engine_param_value (changed_engine_param, self.engine_param_dict[changed_engine_param].get_value ())
-            elif widget_type is gtk.Entry:
-                self.jack.set_engine_param_value (changed_engine_param, self.engine_param_dict[changed_engine_param].get_text ())
+        for params in self.engine_params, self.driver_params:
+            for param in params:
+                if not param.modified:
+                    continue
+                print param.name
+                continue
+                widget_type = type(self.engine_param_dict[changed_engine_param])
+                if widget_type is gtk.CheckButton:
+                    self.jack.set_engine_param_value (changed_engine_param, self.engine_param_dict[changed_engine_param].get_active ())
+                elif widget_type is gtk.SpinButton:
+                    self.jack.set_engine_param_value (changed_engine_param, self.engine_param_dict[changed_engine_param].get_value ())
+                elif widget_type is gtk.Entry:
+                    self.jack.set_engine_param_value (changed_engine_param, self.engine_param_dict[changed_engine_param].get_text ())
         self.apply_button.set_sensitive (False)
         self.changed_engine_params = []
         self.changed_driver_params = []
@@ -142,5 +197,46 @@ class ladiconf (gtk.glade.XML):
     def run (self):
         gtk.main ()
         return 0
+
+    def run_driver_change_dialog(self):
+        dlg = gtk.Dialog()
+        dlg.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        dlg.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+
+        driver_list = gtk.TreeView()
+        dlg.vbox.pack_start(driver_list, True)
+
+        store = gtk.ListStore(str)
+
+        text_renderer = gtk.CellRendererText()
+
+        column = gtk.TreeViewColumn("Name", text_renderer, text=0)
+        driver_list.append_column(column)
+
+        drivers = self.jack.get_available_driver()
+        for driver in drivers:
+            store.append([driver])
+
+        driver_list.set_model(store)
+
+        selection = driver_list.get_selection()
+
+        current_driver = self.jack.get_selected_driver()
+        if current_driver:
+            for row in store:
+                if current_driver == row[0]:
+                    selection.select_iter(row.iter)
+
+        driver_list.connect("row-activated", lambda *x: dlg.response(gtk.RESPONSE_OK))
+
+        driver = None
+
+        dlg.show_all()
+        ret = dlg.run()
+        if ret == gtk.RESPONSE_OK:
+            driver = store.get(selection.get_selected()[1], 0)[0]
+        dlg.hide()
+
+        return driver
 
 ladiconf ().run ()
