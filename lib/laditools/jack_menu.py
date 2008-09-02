@@ -20,6 +20,7 @@ import gtk
 import gobject
 import subprocess
 from config import config
+from jack_configure import jack_configure
 
 # TODO : somehow, we need stock icons. Nothing else can be used for ImageMenuItems
 
@@ -60,6 +61,12 @@ class jack_menu:
         self.proc_list = []
 
     def on_menu_start(self, widget, data=None):
+        if not jack_configure().get_selected_driver():
+             dlg = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, "JACK has no driver selected. Configure JACK first!")
+             dlg.set_title("Cannot start JACK server")
+             dlg.run()
+             dlg.destroy()
+             return
         self.set_starting_status()
         self.get_controller().start()
 
