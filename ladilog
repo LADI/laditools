@@ -97,6 +97,9 @@ class ladilog (gtk.glade.XML):
 
         for log in self.log_files:
             log['logfile_path'], devnull = self.param_dict[log['config_name']]
+            # skip logfiles that dont exist
+            if not os.access(log['logfile_path'], os.R_OK):
+                self.log_files.remove(log)
 
         max_lines_text, devnull = self.param_dict['max_lines']
         self.max_lines = int (max_lines_text)
