@@ -26,21 +26,17 @@ import laditools
 # Default configuration
 autostart_default = 0
 
-class laditray (gtk.StatusIcon, laditools.jack_menu):
+class laditray (gtk.StatusIcon, laditools.ladi_manager):
     def __init__ (self):
         # Handle the configuration
         self.jacktray_config = laditools.config ()
         self.param_dict = self.jacktray_config.get_as_dict ('jacktray')
         if 'autostart' not in self.param_dict:
             self.param_dict['autostart'] = str(autostart_default), {}
-        self.autostart, devnull = self.param_dict['autostart']
-        self.autostart = int (self.autostart)
+        autostart, devnull = self.param_dict['autostart']
         # Build the UI
-        laditools.jack_menu.__init__ (self)
+        laditools.ladi_manager.__init__(self, int(autostart))
         gtk.StatusIcon.__init__ (self)
-        self.jack = laditools.jack_controller ()
-        if self.autostart:
-            self.jack.start ()
         # Create the needed pixbufs to manage the status icon's look
         self.stopped_pixbuf = gtk.gdk.pixbuf_new_from_file ("/usr/share/laditools/data/stopped.svg")
         self.starting_pixbuf = gtk.gdk.pixbuf_new_from_file ("/usr/share/laditools/data/starting.svg")
@@ -54,8 +50,9 @@ class laditray (gtk.StatusIcon, laditools.jack_menu):
         self.connect ("popup-menu", self.menu_activate)
 
     def menu_activate (self, statusicon, button, activate_time):
-        self.menu.popup (None, None, gtk.status_icon_position_menu, button, activate_time, self)
-        self.menu.reposition ()
+        menu = self.create_menu()
+        menu.popup (None, None, gtk.status_icon_position_menu, button, activate_time, self)
+        menu.reposition ()
 
     def set_starting_status (self):
         self.set_tooltip ("JACK is starting")
@@ -63,26 +60,26 @@ class laditray (gtk.StatusIcon, laditools.jack_menu):
 
     def update (self):
         try:
-            if not self.jack:
-                self.jack = laditools.jack_controller ()
-            if self.jack.is_started ():
+            if self.jack_is_started():
                 # Get Realtime status
-                if self.jack.is_realtime ():
+                if self.jack_is_realtime():
                     status_text = "RT | "
                 # Get DSP Load
-                status_text += str (round (float (self.jack.get_load ()),1)) + "% | "
+                status_text += str (round (float (self.jack_get_load()),1)) + "% | "
                 # Get Xruns
-                status_text += str (self.jack.get_xruns ())
+                status_text += str (self.jack_get_xruns())
                 # Set a started status
                 self.set_tooltip (status_text)
                 self.set_from_pixbuf (self.started_pixbuf)
             else:
                 self.set_tooltip ("JACK is stopped")
                 self.set_from_pixbuf (self.stopped_pixbuf)
-        except:
+            self.clear_diagnose_text()
+        except Exception, e:
             self.set_tooltip ("JACK is sick")
+            self.set_diagnose_text(repr(e))
             self.set_from_pixbuf (self.stopped_pixbuf)
-            self.jack = None
+            self.clear_jack_controller()
         # Take a look at the processes we've started so we don't get any zombies
         for i in self.proc_list:
             i.poll ()
@@ -92,8 +89,5 @@ class laditray (gtk.StatusIcon, laditools.jack_menu):
         gtk.main ()
         self.jacktray_config.set_as_dict ('jacktray', self.param_dict)
         return 0
-
-    def get_controller (self):
-        return self.jack
 
 laditray ().run ()
