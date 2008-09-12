@@ -22,6 +22,8 @@ import subprocess
 from config import config
 from jack_configure import jack_configure
 from jack_controller import jack_controller
+from a2j_controller import a2j_controller
+from lash_controller import lash_controller
 
 # TODO : somehow, we need stock icons. Nothing else can be used for ImageMenuItems
 
@@ -34,6 +36,7 @@ class ladi_manager:
         self.proxy_jack_controller = None
         self.proxy_jack_configure = None
         self.proxy_a2j_controller = None
+        self.proxy_lash_controller = None
         self.diagnose_text = ""
         # Handle the configuration and grab custom menu items
         self.jack_menu_config = config()
@@ -87,6 +90,7 @@ class ladi_manager:
 
     def jack_reactivate(self):
         self.get_jack_controller().kill()
+        self.clear_jack_controller()
 
     def jack_reset_xruns(self):
         self.get_jack_controller().reset_xruns()
@@ -104,7 +108,57 @@ class ladi_manager:
         return self.get_jack_controller().get_xruns()
 
     def get_a2j_controller(self):
-        return None
+        if not self.proxy_a2j_controller:
+            self.proxy_a2j_controller = a2j_controller()
+        return self.proxy_a2j_controller
+
+    def clear_a2j_controller(self):
+        self.proxy_a2j_controller = None
+
+    def a2j_is_available(self):
+        proxy = self.get_a2j_controller()
+        if proxy.is_availalbe():
+            return True
+        self.clear_a2j_controller()
+        return False
+
+    def a2j_is_started(self):
+        self.get_a2j_controller().is_started()
+
+    def a2j_start(self):
+        self.get_a2j_controller().start()
+
+    def a2j_stop(self):
+        self.get_a2j_controller().stop()
+
+    def a2j_reactivate(self):
+        self.get_a2j_controller().kill()
+        self.clear_a2j_controller()
+
+    def get_lash_controller(self):
+        if not self.proxy_lash_controller:
+            self.proxy_lash_controller = lash_controller()
+        return self.proxy_lash_controller
+
+    def clear_lash_controller(self):
+        self.proxy_lash_controller = None
+
+    def lash_is_available(self):
+        proxy = self.get_lash_controller()
+        if proxy.is_availalbe():
+            return True
+        self.clear_lash_controller()
+        return False
+
+    def lash_projects_save_all(self):
+        self.get_lash_controller().projects_save_all()
+
+    def lash_projects_close_all(self):
+        self.get_lash_controller().projects_close_all()
+
+    def lash_reactivate(self):
+        self.get_lash_controller().kill()
+        self.clear_lash_controller()
 
     def on_menu_show_diagnose(self, widget, data=None):
         dlg = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, self.diagnose_text)
@@ -123,6 +177,24 @@ class ladi_manager:
 
     def on_menu_jack_reset_xruns(self, widget, data=None):
         self.jack_reset_xruns()
+
+    def on_menu_a2j_start(self, widget, data=None):
+        self.a2j_start()
+
+    def on_menu_a2j_stop(self, widget, data=None):
+        self.a2j_stop()
+
+    def on_menu_a2j_reactivate(self, widget, data=None):
+        self.a2j_reactivate()
+
+    def on_menu_lash_projects_save_all(self, widget, data=None):
+        self.lash_projects_save_all()
+
+    def on_menu_lash_projects_close_all(self, widget, data=None):
+        self.lash_projects_close_all()
+
+    def on_menu_lash_reactivate(self, widget, data=None):
+        self.lash_reactivate()
 
     def on_menu_destroy(self, widget, data=None):
         gtk.main_quit()
@@ -144,11 +216,24 @@ class ladi_manager:
         menu = gtk.Menu()
         menu_items.append((gtk.SeparatorMenuItem(), None, None))
         if self.jack_is_available():
-            menu_items.append((gtk.ImageMenuItem("Reset Xruns"), self.on_menu_jack_reset_xruns, None))
-            menu_items.append((gtk.ImageMenuItem("Start JACK"), self.on_menu_jack_start, None))
-            menu_items.append((gtk.ImageMenuItem("Stop JACK"), self.on_menu_jack_stop, None))
-            menu_items.append((gtk.SeparatorMenuItem(), None, None))
+            if not self.jack_is_started():
+                menu_items.append((gtk.ImageMenuItem("Start JACK server"), self.on_menu_jack_start, None))
+            else:
+                menu_items.append((gtk.ImageMenuItem("Reset Xruns"), self.on_menu_jack_reset_xruns, None))
+                menu_items.append((gtk.ImageMenuItem("Stop JACK server"), self.on_menu_jack_stop, None))
             menu_items.append((gtk.ImageMenuItem("Reactivate JACK"), self.on_menu_jack_reactivate, None))
+            menu_items.append((gtk.SeparatorMenuItem(), None, None))
+        if self.a2j_is_available():
+            if not self.a2j_is_started():
+                menu_items.append((gtk.ImageMenuItem("Start A2J bridge"), self.on_menu_a2j_start, None))
+            else:
+                menu_items.append((gtk.ImageMenuItem("Stop A2J bridge"), self.on_menu_a2j_stop, None))
+            menu_items.append((gtk.ImageMenuItem("Reactivate A2J"), self.on_menu_a2j_reactivate, None))
+            menu_items.append((gtk.SeparatorMenuItem(), None, None))
+        if self.lash_is_available():
+            menu_items.append((gtk.ImageMenuItem("Save all LASH projects"), self.on_menu_lash_projects_save_all, None))
+            menu_items.append((gtk.ImageMenuItem("Close all LASH projects"), self.on_menu_lash_projects_close_all, None))
+            menu_items.append((gtk.ImageMenuItem("Reactivate LASH"), self.on_menu_lash_reactivate, None))
             menu_items.append((gtk.SeparatorMenuItem(), None, None))
         menu_items.append((gtk.ImageMenuItem("Quit"), self.on_menu_destroy, None))
 

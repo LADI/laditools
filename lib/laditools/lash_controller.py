@@ -14,11 +14,31 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from jack_controller import jack_controller
-from jack_configure import jack_configure
-from jack_menu import ladi_manager
-from a2j_controller import a2j_controller
-from a2j_menu import a2j_menu
-from lash_controller import lash_controller
-# from error import error
-from config import config
+import dbus
+
+name_base = 'org.nongnu.LASH'
+control_interface_name = name_base + '.Control'
+service_name = name_base
+
+class lash_controller:
+    def __init__(self):
+        self.bus = dbus.SessionBus()
+        self.controller = self.bus.get_object(service_name, "/")
+        self.iface = dbus.Interface(self.controller, control_interface_name)
+
+    def is_availalbe(self):
+        try:
+            self.iface.ProjectsGetAvailable()
+            return True
+        except Exception, e:
+            #print repr(e)
+            return False
+
+    def projects_save_all(self):
+        self.iface.ProjectsSaveAll()
+
+    def projects_close_all(self):
+        self.iface.ProjectsCloseAll()
+
+    def kill(self):
+        self.iface.Exit()
