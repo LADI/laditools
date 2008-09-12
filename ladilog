@@ -154,7 +154,7 @@ class ladilog (gtk.glade.XML):
 
     def on_clear_text (self, data=None):
         current_view = self.logview_notebook.get_current_page ()
-#        self.log_files[current_view]["term"].feed ("\033[2J\033[;f")
+        self.log_files[current_view]["term"].feed ("\033[2J\033[;f")
 
 
     def on_purge (self, data=None):
