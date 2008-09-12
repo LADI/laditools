@@ -26,6 +26,13 @@ class jack_controller:
         self.controller = self.bus.get_object(service_name, "/org/jackaudio/Controller")
         self.iface = dbus.Interface(self.controller, controller_interface_name)
 
+    def is_availalbe(self):
+        try:
+            self.iface.IsStarted()
+            return True
+        except:
+            return False
+
     def is_started(self):
         return self.iface.IsStarted()
 
