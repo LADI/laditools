@@ -64,15 +64,16 @@ class ladi_manager:
         self.proxy_jack_controller = None
 
     def get_jack_configure(self):
-        return None
+        if not self.proxy_jack_configure:
+            self.proxy_jack_configure = jack_configure()
+        return self.proxy_jack_configure
 
     def jack_is_available(self):
         proxy = self.get_jack_controller()
         return proxy and proxy.is_availalbe()
 
     def jack_start(self):
-        proxy = self.get_jack_configure()
-        if proxy and not proxy.get_selected_driver():
+        if not self.get_jack_configure().get_selected_driver():
              dlg = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, "JACK has no driver selected. Configure JACK first!")
              dlg.set_title("Cannot start JACK server")
              dlg.run()
