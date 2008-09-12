@@ -28,9 +28,10 @@ class a2j_controller:
 
     def is_availalbe(self):
         try:
-            self.iface.IsStarted()
+            self.iface.is_started()
             return True
-        except:
+        except Exception, e:
+            #print repr(e)
             return False
 
     def is_started(self):
