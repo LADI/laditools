@@ -22,9 +22,11 @@ service_name = name_base + '.service'
 
 class jack_controller:
     def __init__(self):
+        #print "creating jack controller proxy object"
         self.bus = dbus.SessionBus()
         self.controller = self.bus.get_object(service_name, "/org/jackaudio/Controller")
         self.iface = dbus.Interface(self.controller, controller_interface_name)
+        #print(self.controller)
 
     def is_availalbe(self):
         try:

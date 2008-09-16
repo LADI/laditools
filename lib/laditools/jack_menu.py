@@ -62,19 +62,22 @@ class manager:
             
     def get_jack_controller(self):
         if not self.proxy_jack_controller:
+            #print "creating jack proxy"
             self.proxy_jack_controller = jack_controller()
         return self.proxy_jack_controller
 
     def is_jack_controller_available(self):
         return self.proxy_jack_controller != None
 
-    def clear_jack_controller(self):
-        self.proxy_jack_controller = None
-
     def get_jack_configure(self):
         if not self.proxy_jack_configure:
             self.proxy_jack_configure = jack_configure()
         return self.proxy_jack_configure
+
+    def clear_jack_proxies(self):
+        #print "clearing jack proxies"
+        self.proxy_jack_controller = None
+        self.proxy_jack_configure = None
 
     def jack_is_available(self):
         proxy = self.get_jack_controller()
@@ -95,27 +98,33 @@ class manager:
 
     def jack_reactivate(self):
         self.get_jack_controller().kill()
-        self.clear_jack_controller()
+        self.clear_jack_proxies()
 
     def jack_reset_xruns(self):
         self.get_jack_controller().reset_xruns()
 
     def jack_is_started(self):
+        #print "jack_is_started"
         return self.get_jack_controller().is_started()
 
     def jack_is_realtime(self):
+        #print "jack_is_realtime"
         return self.get_jack_controller().is_realtime()
 
     def jack_get_load(self):
+        #print "jack_get_load"
         return self.get_jack_controller().get_load()
 
     def jack_get_xruns(self):
+        #print "jack_get_xruns"
         return self.get_jack_controller().get_xruns()
 
     def jack_get_sample_rate(self):
+        #print "jack_get_sample_rate"
         return self.get_jack_controller().get_sample_rate()
 
     def jack_get_latency(self):
+        #print "jack_get_latency"
         return self.get_jack_controller().get_latency()
 
     def get_a2j_controller(self):

@@ -92,10 +92,13 @@ class wmjackctl (wmoo.Application, laditools.manager):
                     line0 += "   "
 
                 if self.a2j_is_available():
-                    if self.a2j_is_started():
-                        line0 += ' A'
-                    else:
-                        line0 += ' a'
+                    try:
+                        if self.a2j_is_started():
+                            line0 += ' A'
+                        else:
+                            line0 += ' a'
+                    except:
+                        pass
 
                 self.set_line(0, line0)
                 self.set_line(1, "started")
@@ -139,7 +142,7 @@ class wmjackctl (wmoo.Application, laditools.manager):
                 self.clear_line(3)
                 self.clear_line(4)
                 self.clear_line(5)
-                self.clear_jack_controller()
+                self.clear_jack_proxies()
 
         self.put_lines (self.lines)
         wmoo.Application.update (self)
