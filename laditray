@@ -26,7 +26,7 @@ import laditools
 # Default configuration
 autostart_default = 0
 
-class laditray (gtk.StatusIcon, laditools.ladi_manager):
+class laditray (gtk.StatusIcon, laditools.manager):
     def __init__ (self):
         # Handle the configuration
         self.jacktray_config = laditools.config ()
@@ -35,7 +35,7 @@ class laditray (gtk.StatusIcon, laditools.ladi_manager):
             self.param_dict['autostart'] = str(autostart_default), {}
         autostart, devnull = self.param_dict['autostart']
         # Build the UI
-        laditools.ladi_manager.__init__(self, int(autostart))
+        laditools.manager.__init__(self, int(autostart))
         gtk.StatusIcon.__init__ (self)
         # Create the needed pixbufs to manage the status icon's look
         self.stopped_pixbuf = gtk.gdk.pixbuf_new_from_file ("/usr/share/laditools/data/stopped.svg")

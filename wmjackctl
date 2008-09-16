@@ -32,7 +32,7 @@ import gobject
 autostart_default = 0
 debug = False
 
-class wmjackctl (wmoo.Application, laditools.ladi_manager):
+class wmjackctl (wmoo.Application, laditools.manager):
     def __init__ (self):
         # Handle the configuration
         self.wmjackctl_config = laditools.config ()
@@ -46,7 +46,7 @@ class wmjackctl (wmoo.Application, laditools.ladi_manager):
             margin = 2,
             debug = False)
 
-        laditools.ladi_manager.__init__(self, int(autostart))
+        laditools.manager.__init__(self, int(autostart))
 
         self.addCallback (self.on_button_release, 'buttonrelease', area=(0,0,64,64))
 

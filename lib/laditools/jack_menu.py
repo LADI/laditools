@@ -31,7 +31,7 @@ from lash_controller import lash_controller
 menu_default = [("Configure", "ladiconf"),
     ("Logs", "ladilog")]
 
-class ladi_manager:
+class manager:
     def __init__(self, jack_autostart = False):
         self.proxy_jack_controller = None
         self.proxy_jack_configure = None
