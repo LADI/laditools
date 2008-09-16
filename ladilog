@@ -33,8 +33,8 @@ try:
     import gtk.glade
     import vte
     import laditools
-except:
-    error = gtk.MessageDialog (None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Wow dude...\n\nYou really need to get you dependencies right before you run this program. Ask your package maintainer why he didn't do his job properly")
+except Exception, e:
+    error = gtk.MessageDialog (None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Wow dude...\n\nYou really need to get you dependencies right before you run this program. Ask your package maintainer why he didn't do his job properly\n%s" % repr(e))
     error.run ()
     exit (1)
 
@@ -104,7 +104,7 @@ class ladilog (gtk.glade.XML):
         max_lines_text, devnull = self.param_dict['max_lines']
         self.max_lines = int (max_lines_text)
         # Load the glade file
-        gtk.glade.XML.__init__ (self, "/usr/share/laditools/data/ladilog_ui.glade")
+        gtk.glade.XML.__init__(self, laditools.find_data_file("ladilog_ui.glade"))
         # Get the ui ready for action
         self.event_dict = {"on_ladilog_ui_destroy" : self.on_quit,
             "on_close_button_clicked" : self.on_quit,
@@ -168,4 +168,9 @@ class ladilog (gtk.glade.XML):
         self.jacklog_config.set_as_dict ("ladilog", self.param_dict)
         return 0
 
-ladilog ().run ()
+try:
+    ladilog().run()
+except Exception, e:
+    error = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Unexpected error\n\n" + repr(e))
+    error.run()
+    exit(1)

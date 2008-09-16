@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
+import sys
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -258,3 +260,22 @@ class manager:
         menu = self.create_menu()
         menu.popup(None, None, None, 3, 0)
         menu.reposition()
+
+def find_data_file(path):
+    start_dir = os.path.dirname(sys.argv[0])
+
+    if not start_dir:
+        start_dir = "."
+
+    paths = [
+        start_dir + os.sep + "data" + os.sep + path,
+        start_dir + os.sep + ".." + os.sep + "share"+ os.sep + "laditools" + os.sep + "data" + os.sep + path,
+        ]
+
+    for path in paths:
+        #print 'Checking "%s"...' % path
+        if os.path.isfile(path):
+            #print 'Found data file in "%s"' % path
+            return path
+
+    raise Exception('Data file "%s" not found' % path)

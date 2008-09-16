@@ -16,7 +16,7 @@
 
 from jack_controller import jack_controller
 from jack_configure import jack_configure
-from jack_menu import manager
+from jack_menu import manager, find_data_file
 from a2j_controller import a2j_controller
 from a2j_menu import a2j_menu
 from lash_controller import lash_controller
