@@ -137,12 +137,11 @@ class wmjackctl (wmoo.Application, laditools.manager):
                 print repr (e)
             self.set_line(0, "JACK")
             self.set_line(1, "is sick")
-            if self.is_jack_controller_available():
-                self.clear_line(2)
-                self.clear_line(3)
-                self.clear_line(4)
-                self.clear_line(5)
-                self.clear_jack_proxies()
+            self.clear_line(2)
+            self.clear_line(3)
+            self.clear_line(4)
+            self.clear_line(5)
+            self.clear_jack_proxies()
 
         self.put_lines (self.lines)
         wmoo.Application.update (self)
