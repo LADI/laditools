@@ -177,38 +177,13 @@ class manager:
         dlg.run()
         dlg.destroy()
 
-    def on_menu_jack_start(self, widget, data=None):
-        self.jack_start()
-
-    def on_menu_jack_stop(self, widget, data=None):
-        self.jack_stop()
-
-    def on_menu_jack_reactivate(self, widget, data=None):
-        self.jack_reactivate()
-
-    def on_menu_jack_reset_xruns(self, widget, data=None):
-        self.jack_reset_xruns()
-
-    def on_menu_a2j_start(self, widget, data=None):
-        self.a2j_start()
-
-    def on_menu_a2j_stop(self, widget, data=None):
-        self.a2j_stop()
-
-    def on_menu_a2j_reactivate(self, widget, data=None):
-        self.a2j_reactivate()
-
-    def on_menu_lash_projects_save_all(self, widget, data=None):
-        self.lash_projects_save_all()
-
-    def on_menu_lash_projects_close_all(self, widget, data=None):
-        self.lash_projects_close_all()
-
-    def on_menu_lash_reactivate(self, widget, data=None):
-        self.lash_reactivate()
-
-    def on_menu_destroy(self, widget, data=None):
-        gtk.main_quit()
+    def on_menu_command(self, widget, function):
+        try:
+            function()
+        except Exception, e:
+            error = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Error executing " + repr(function) + "Unexpected error\n\n" + repr(e))
+            error.run()
+            error.destroy()
 
     def on_menu_launcher(self, widget, exec_path):
         self.proc_list.append(subprocess.Popen([exec_path, exec_path]))
@@ -228,25 +203,25 @@ class manager:
         menu_items.append((gtk.SeparatorMenuItem(), None, None))
         if self.jack_is_available():
             if not self.jack_is_started():
-                menu_items.append((gtk.ImageMenuItem("Start JACK server"), self.on_menu_jack_start, None))
+                menu_items.append((gtk.ImageMenuItem("Start JACK server"), self.on_menu_command, self.jack_start))
             else:
-                menu_items.append((gtk.ImageMenuItem("Reset Xruns"), self.on_menu_jack_reset_xruns, None))
-                menu_items.append((gtk.ImageMenuItem("Stop JACK server"), self.on_menu_jack_stop, None))
-            menu_items.append((gtk.ImageMenuItem("Reactivate JACK"), self.on_menu_jack_reactivate, None))
+                menu_items.append((gtk.ImageMenuItem("Reset Xruns"), self.on_menu_command, self.jack_reset_xruns))
+                menu_items.append((gtk.ImageMenuItem("Stop JACK server"), self.on_menu_command, self.jack_stop))
+            menu_items.append((gtk.ImageMenuItem("Reactivate JACK"), self.on_menu_command, self.jack_reactivate))
             menu_items.append((gtk.SeparatorMenuItem(), None, None))
         if self.a2j_is_available():
             if not self.a2j_is_started():
-                menu_items.append((gtk.ImageMenuItem("Start A2J bridge"), self.on_menu_a2j_start, None))
+                menu_items.append((gtk.ImageMenuItem("Start A2J bridge"), self.on_menu_command, self.a2j_start))
             else:
-                menu_items.append((gtk.ImageMenuItem("Stop A2J bridge"), self.on_menu_a2j_stop, None))
-            menu_items.append((gtk.ImageMenuItem("Reactivate A2J"), self.on_menu_a2j_reactivate, None))
+                menu_items.append((gtk.ImageMenuItem("Stop A2J bridge"), self.on_menu_command, self.a2j_stop))
+            menu_items.append((gtk.ImageMenuItem("Reactivate A2J"), self.on_menu_command, self.a2j_reactivate))
             menu_items.append((gtk.SeparatorMenuItem(), None, None))
         if self.lash_is_available():
-            menu_items.append((gtk.ImageMenuItem("Save all LASH projects"), self.on_menu_lash_projects_save_all, None))
-            menu_items.append((gtk.ImageMenuItem("Close all LASH projects"), self.on_menu_lash_projects_close_all, None))
-            menu_items.append((gtk.ImageMenuItem("Reactivate LASH"), self.on_menu_lash_reactivate, None))
+            menu_items.append((gtk.ImageMenuItem("Save all LASH projects"), self.on_menu_command, self.lash_projects_save_all))
+            menu_items.append((gtk.ImageMenuItem("Close all LASH projects"), self.on_menu_command, self.lash_projects_close_all))
+            menu_items.append((gtk.ImageMenuItem("Reactivate LASH"), self.on_menu_command, self.lash_reactivate))
             menu_items.append((gtk.SeparatorMenuItem(), None, None))
-        menu_items.append((gtk.ImageMenuItem("Quit"), self.on_menu_destroy, None))
+        menu_items.append((gtk.ImageMenuItem("Quit"), self.on_menu_command, gtk.main_quit))
 
         for menu_tuple in menu_items:
             item, callback, exec_path = menu_tuple
