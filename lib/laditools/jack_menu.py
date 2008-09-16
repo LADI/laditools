@@ -80,7 +80,10 @@ class manager:
         self.proxy_jack_configure = None
 
     def jack_is_available(self):
-        proxy = self.get_jack_controller()
+        try:
+            proxy = self.get_jack_controller()
+        except:
+            return False
         return proxy and proxy.is_availalbe()
 
     def jack_start(self):
@@ -136,7 +139,10 @@ class manager:
         self.proxy_a2j_controller = None
 
     def a2j_is_available(self):
-        proxy = self.get_a2j_controller()
+        try:
+            proxy = self.get_a2j_controller()
+        except:
+            return False
         if proxy.is_availalbe():
             return True
         self.clear_a2j_controller()
@@ -164,7 +170,10 @@ class manager:
         self.proxy_lash_controller = None
 
     def lash_is_available(self):
-        proxy = self.get_lash_controller()
+        try:
+            proxy = self.get_lash_controller()
+        except:
+            return False
         if proxy.is_availalbe():
             return True
         self.clear_lash_controller()
