@@ -136,7 +136,7 @@ class wmjackctl (wmoo.Application, laditools.manager):
             if debug:
                 print repr (e)
             self.set_line(0, "JACK")
-            self.set_line(1, "error")
+            self.set_line(1, "is sick")
             if self.is_jack_controller_available():
                 self.clear_line(2)
                 self.clear_line(3)
