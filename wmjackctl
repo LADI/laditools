@@ -32,25 +32,21 @@ import gobject
 autostart_default = 0
 debug = False
 
-class wmjackctl (wmoo.Application, laditools.jack_menu):
+class wmjackctl (wmoo.Application, laditools.ladi_manager):
     def __init__ (self):
         # Handle the configuration
         self.wmjackctl_config = laditools.config ()
         self.param_dict = self.wmjackctl_config.get_as_dict ('wmjackctl')
         if 'autostart' not in self.param_dict:
             self.param_dict['autostart'] = str (autostart_default), {}
-        self.autostart, devnull = self.param_dict['autostart']
-        self.autostart = int (self.autostart)
-        self.jack = laditools.jack_controller ()
-        if self.autostart:
-            self.jack.start ()
+        autostart, devnull = self.param_dict['autostart']
         wmoo.Application.__init__ (
             self,
             #background = os.path.dirname(sys.argv[0]) + os.sep + "wmjackctl.xpm",
             margin = 2,
             debug = False)
 
-        laditools.jack_menu.__init__ (self)
+        laditools.ladi_manager.__init__(self, int(autostart))
 
         self.addCallback (self.on_button_release, 'buttonrelease', area=(0,0,64,64))
 
@@ -60,9 +56,6 @@ class wmjackctl (wmoo.Application, laditools.jack_menu):
         self.clear ()
         self.started = False
 
-    def get_controller (self):
-        return self.jack
-    
     def set_starting_status (self):
         self.set_line (0, "JACK")
         self.set_line (1, "Starting")
@@ -89,57 +82,57 @@ class wmjackctl (wmoo.Application, laditools.jack_menu):
 
     def update (self):
         try:
-            if not self.jack:
-                self.jack = laditools.jack_controller ()
-
-            if self.jack.is_started ():
+            if self.jack_is_started():
                 self.started = True
-                if self.jack.is_realtime ():
-                    self.set_line (0, "JACK RT")
+
+                if self.jack_is_realtime():
+                    self.set_line(0, "JACK RT")
                 else:
-                    self.set_line (0, "JACK")
+                    self.set_line(0, "JACK")
 
-                self.set_line (1, "started")
+                self.set_line(1, "started")
 
-                self.set_line (2, "%.3f %%" % self.jack.get_load ())
+                self.set_line(2, "%.3f %%" % self.jack_get_load())
 
-                xruns = self.jack.get_xruns ()
+                xruns = self.jack_get_xruns()
                 if xruns == 0:
-                    self.set_line (3, "no xruns")
+                    self.set_line(3, "no xruns")
                 elif xruns == 1:
-                    self.set_line (3, "1 xrun")
+                    self.set_line(3, "1 xrun")
                 elif xruns > 999:
-                    self.set_line (3, "lot xruns")
+                    self.set_line(3, "lot xruns")
                 else:
-                    self.set_line (3, "%s xruns" % xruns)
+                    self.set_line(3, "%s xruns" % xruns)
 
-                rate = self.jack.get_sample_rate ()
+                rate = self.jack_get_sample_rate()
                 if rate % 1000.0 == 0:
-                    self.set_line (4, "%.0f Khz" % (rate / 1000.0))
+                    self.set_line(4, "%.0f Khz" % (rate / 1000.0))
                 else:
-                    self.set_line (4, "%.1f Khz" % (rate / 1000.0))
+                    self.set_line(4, "%.1f Khz" % (rate / 1000.0))
 
-                self.set_line (5, "%.1f ms" % self.jack.get_latency())
+                self.set_line(5, "%.1f ms" % self.jack_get_latency())
             else:
-                self.set_line (0, "JACK")
-                self.set_line (1, "stopped")
+                self.set_line(0, "JACK")
+                self.set_line(1, "stopped")
                 if self.started:
-                    self.clear_line (2)
-                    self.clear_line (3)
-                    self.clear_line (4)
-                    self.clear_line (5)
+                    self.clear_line(2)
+                    self.clear_line(3)
+                    self.clear_line(4)
+                    self.clear_line(5)
                     self.started = False
+            self.clear_diagnose_text()
         except Exception, e:
+            self.set_diagnose_text(repr(e))
             if debug:
                 print repr (e)
-            self.set_line (0, "JACK")
-            self.set_line (1, "error")
-            if self.jack:
-                self.clear_line (2)
-                self.clear_line (3)
-                self.clear_line (4)
-                self.clear_line (5)
-                self.jack = None
+            self.set_line(0, "JACK")
+            self.set_line(1, "error")
+            if self.is_jack_controller_available():
+                self.clear_line(2)
+                self.clear_line(3)
+                self.clear_line(4)
+                self.clear_line(5)
+                self.clear_jack_controller()
 
         self.put_lines (self.lines)
         wmoo.Application.update (self)

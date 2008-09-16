@@ -63,6 +63,9 @@ class ladi_manager:
             self.proxy_jack_controller = jack_controller()
         return self.proxy_jack_controller
 
+    def is_jack_controller_available(self):
+        return self.proxy_jack_controller != None
+
     def clear_jack_controller(self):
         self.proxy_jack_controller = None
 
@@ -106,6 +109,12 @@ class ladi_manager:
 
     def jack_get_xruns(self):
         return self.get_jack_controller().get_xruns()
+
+    def jack_get_sample_rate(self):
+        return self.get_jack_controller().get_sample_rate()
+
+    def jack_get_latency(self):
+        return self.get_jack_controller().get_latency()
 
     def get_a2j_controller(self):
         if not self.proxy_a2j_controller:
