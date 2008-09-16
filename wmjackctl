@@ -85,13 +85,20 @@ class wmjackctl (wmoo.Application, laditools.ladi_manager):
             if self.jack_is_started():
                 self.started = True
 
+                line0 = "JACK"
                 if self.jack_is_realtime():
-                    self.set_line(0, "JACK RT")
+                    line0 += " RT"
                 else:
-                    self.set_line(0, "JACK")
+                    line0 += "   "
 
+                if self.a2j_is_available():
+                    if self.a2j_is_started():
+                        line0 += ' A'
+                    else:
+                        line0 += ' a'
+
+                self.set_line(0, line0)
                 self.set_line(1, "started")
-
                 self.set_line(2, "%.3f %%" % self.jack_get_load())
 
                 xruns = self.jack_get_xruns()
