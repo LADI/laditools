@@ -132,7 +132,7 @@ class ladi_manager:
         return False
 
     def a2j_is_started(self):
-        self.get_a2j_controller().is_started()
+        return self.get_a2j_controller().is_started()
 
     def a2j_start(self):
         self.get_a2j_controller().start()
