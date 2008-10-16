@@ -20,8 +20,8 @@
 import pygtk
 pygtk.require ('2.0')
 import gtk
-import gtk.glade
 import laditools
+import gobject
 
 jack = laditools.jack_configure()
 
@@ -156,6 +156,139 @@ class jack_driver_change_command(configure_command):
             jack.select_driver(store.get(selection.get_selected()[1], 0)[0])
         dlg.hide()
 
+class parameter_store(gobject.GObject):
+    def __init__(self, param):
+        gobject.GObject.__init__(self)
+        self.param = param
+        self.is_set, self.default_value, self.value = self.param.get_value()
+        self.modified = False
+
+    def get_name(self):
+        return self.param.get_name()
+
+    def get_type(self):
+        return self.param.get_type()
+
+    def get_value(self):
+        return self.value
+
+    def set_value(self, value):
+        self.value = value
+        self.modified = True
+
+    def get_short_description(self):
+        return self.param.get_short_description()
+
+    def maybe_save_value(self):
+        if self.modified:
+            self.param.set_value(self.value)
+            self.modified = False
+
+gobject.type_register(parameter_store)
+
+class cell_renderer_param(gtk.GenericCellRenderer):
+    __gproperties__ = { "parameter": (gobject.TYPE_OBJECT, "Parameter", "Parameter", gobject.PARAM_READWRITE) }
+
+    def __init__(self):
+        self.__gobject_init__()
+        self.parameter = None
+        #self.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+        #self.set_property('mode', gtk.CELL_RENDERER_MODE_ACTIVATABLE)
+        self.renderer_text = gtk.CellRendererText()
+        self.renderer_toggle = gtk.CellRendererToggle()
+        self.renderer_combo = gtk.CellRendererCombo()
+        self.renderer_spinbutton = gtk.CellRendererSpin()
+        self.renderer = None
+
+    def do_set_property(self, pspec, value):
+        if pspec.name == 'parameter':
+            if value.get_type() == 'b':
+                self.set_property('mode', gtk.CELL_RENDERER_MODE_ACTIVATABLE)
+            else: 
+                self.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+        else:
+            print pspec.name
+        setattr(self, pspec.name, value)
+
+    def do_get_property(self, pspec):
+        return getattr(self, pspec.name)
+
+    def choose_renderer(self):
+        typechar = self.parameter.get_type()
+        value = self.parameter.get_value()
+
+        if typechar == "b":
+            self.renderer = self.renderer_toggle
+            self.renderer.set_property('activatable', True)
+            self.renderer.set_property('active', value)
+            self.renderer.set_property("xalign", 0.0)
+            return
+
+        # TODO: constraints
+        if typechar == 'u' or typechar == 'i':
+            self.renderer = self.renderer_spinbutton
+            self.renderer.set_property('text', str(value))
+            self.renderer.set_property('editable', True)
+            self.renderer.set_property('adjustment', gtk.Adjustment(value, 0, 100000, 1, 1000))
+            return
+
+        # TODO: constraints
+        if False:#typechar == 'y':
+            self.renderer = self.renderer_combo
+
+            #list store for cell renderer
+            m = gtk.ListStore(gobject.TYPE_STRING)
+            for x in range(1, 5):
+                m.append(["selection %d" % x])
+
+            self.renderer.set_property("model",m)
+            self.renderer.set_property('text-column', 0)
+            self.renderer.set_property('editable', True)
+            self.renderer.set_property('has_entry', False)
+            self.renderer.set_property('text', "selection 3")
+            return
+
+        self.renderer = self.renderer_text
+        self.renderer.set_property('editable', True)
+        self.renderer.set_property('text', self.parameter.get_value())
+
+    def on_render(self, window, widget, background_area, cell_area, expose_area, flags):
+        self.choose_renderer()
+        return self.renderer.render(window, widget, background_area, cell_area, expose_area, flags)
+
+    def on_get_size(self, widget, cell_area=None):
+        self.choose_renderer()
+        return self.renderer.get_size(widget, cell_area)
+
+    def on_activate(self, event, widget, path, background_area, cell_area, flags):
+        self.choose_renderer()
+        if self.parameter.get_type() == 'b':
+            self.parameter.set_value(not self.parameter.get_value())
+        return True
+
+    def on_editing_done(self, widget, parameter):
+        typechar = parameter.get_type()
+        value_str = widget.get_property('text')
+        if typechar == 'u' or typechar == 'i':
+            value = int(value_str)
+        else:
+            value = value_str
+        parameter.set_value(value)
+
+    def on_start_editing(self, event, widget, path, background_area, cell_area, flags):
+        # start_editing throws exception if event is not GdkEvent. Happens when editing is initiated using keyboard.
+        # FIXME: make editing initiated using keyboard work
+        if not event:
+            return None
+
+        self.choose_renderer()
+        ret = self.renderer.start_editing(event, widget, path, background_area, cell_area, flags)
+        if ret:
+            ret.connect("editing-done", self.on_editing_done, self.parameter)
+        return ret
+
+gobject.type_register(cell_renderer_param)
+
 class jack_params_configure_command(configure_command):
     def __init__(self, proxy):
         self.proxy = proxy
@@ -166,95 +299,42 @@ class jack_params_configure_command(configure_command):
         dlg.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
         dlg.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
 
-        hbox = gtk.HBox()
-        dlg.vbox.pack_start(hbox, True)
-        vbox_left = gtk.VBox()
-        vbox_right = gtk.VBox()
-        hbox.pack_start(vbox_left, True)
-        hbox.pack_start(vbox_right, True)
+        #dlg.set_transient_for(window)
+
+        self.liststore = gtk.ListStore(str, parameter_store, str)
+        self.treeview = gtk.TreeView(self.liststore)
+        self.treeview.set_rules_hint(True)
+
+        renderer_text = gtk.CellRendererText()
+        renderer_value = cell_renderer_param()
+
+        self.tvcolumn_parameter = gtk.TreeViewColumn('Parameter', renderer_text, text=0)
+        self.tvcolumn_value = gtk.TreeViewColumn('Value', renderer_value, parameter=1)
+        self.tvcolumn_description = gtk.TreeViewColumn('Description', renderer_text, text=2)
+
+        self.tvcolumn_value.set_resizable(True)
+        self.tvcolumn_value.set_min_width(100)
+
+        self.treeview.append_column(self.tvcolumn_parameter)
+        self.treeview.append_column(self.tvcolumn_value)
+        self.treeview.append_column(self.tvcolumn_description)
+
+        dlg.vbox.pack_start(self.treeview, True)
 
         self.params = self.proxy()
-        self.fill_params(vbox_left, vbox_right, self.params)
+
+        for param in self.params:
+            self.liststore.append([param.get_name(), parameter_store(param), param.get_short_description()])
 
         dlg.show_all()
         ret = dlg.run()
         if ret == gtk.RESPONSE_OK:
-            self.on_save()
+            for row in self.liststore:
+                param = row[1]
+                if param.modified:
+                    #print "%s -> %s" % (param.get_name(), param.get_value())
+                    param.maybe_save_value()
         dlg.hide()
-
-    def fill_params(self, vbox_left, vbox_right, params):
-        widget_map = {
-            "b": [self.make_checkbox, vbox_left],
-            "s": [self.make_textentry, vbox_right],
-            "i": [self.make_spinbutton, vbox_right],
-            "u": [self.make_spinbutton, vbox_right],
-            "y": [self.make_textentry, vbox_right],
-            }
-        for param in params:
-            if not widget_map.has_key(param.get_type()):
-                continue
-            mapping = widget_map[param.get_type()]
-            make_function = mapping[0]
-            container = mapping[1]
-            widget = make_function(param)
-            widget.show_all()
-            param.modified = False
-            container.pack_start(widget, False)
-    
-    def make_checkbox(self, param):
-        widget = gtk.CheckButton(param.get_name())
-        widget.set_active(param.get_value()[2])
-        widget.set_tooltip_text(param.get_short_description())
-        widget.connect("toggled", self.on_param_update, param)
-        param.widget = widget
-        return widget
-    
-    def make_spinbutton(self, param):
-        widget = gtk.SpinButton ()
-        widget.set_range(0, 100000)
-        widget.set_increments(1, 1000)
-        widget.set_value(param.get_value()[2])
-        widget.set_tooltip_text(param.get_short_description())
-        param_label = gtk.Label(param.get_name())
-        param_label.set_alignment(1, 0.5)
-        param_label.set_padding(10, 0)
-        param_widget = gtk.HBox()
-        param_widget.set_homogeneous(True)
-        param_widget.pack_start(param_label)
-        param_widget.pack_start(widget)
-        widget.connect("changed", self.on_param_update, param)
-        param.widget = widget
-        return param_widget
-
-    def make_textentry(self, param):
-        widget = gtk.Entry()
-        widget.set_text(str(param.get_value()[2]))
-        widget.set_tooltip_text(param.get_short_description())
-        param_label = gtk.Label(param.get_name())
-        param_label.set_alignment(1, 0.5)
-        param_label.set_padding(10, 0)
-        param_widget = gtk.HBox()
-        param_widget.set_homogeneous (True)
-        param_widget.pack_start(param_label)
-        param_widget.pack_start(widget)
-        widget.connect("changed", self.on_param_update, param)
-        param.widget = widget
-        return param_widget
-
-    def on_param_update(self, widget, param):
-        param.modified = True
-
-    def on_save(self, data=None):
-        for param in self.params:
-            if not param.modified:
-                continue
-            widget_type = type(param.widget)
-            if widget_type is gtk.CheckButton:
-                param.set_value(param.widget.get_active())
-            elif widget_type is gtk.SpinButton:
-                param.set_value(param.widget.get_value())
-            elif widget_type is gtk.Entry:
-                param.set_value(param.widget.get_text())
 
 class jack_engine_params_configure_command(jack_params_configure_command):
     def __init__(self):
