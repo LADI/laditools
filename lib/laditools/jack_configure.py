@@ -25,6 +25,10 @@ def dbus_type_to_python_type(dbus_value):
         return bool(dbus_value)
     if type(dbus_value) == dbus.Int32 or type(dbus_value) == dbus.UInt32:
         return int(dbus_value)
+    if type(dbus_value) == dbus.String:
+        return str(dbus_value)
+    if type(dbus_value) == dbus.Byte:
+        return str(dbus_value)
     return dbus_value
 
 class jack_configure:
@@ -79,6 +83,32 @@ class jack_configure:
         elif typestr == "u":
             value = dbus.UInt32(value)
         self.iface.SetDriverParameterValue(param, value)
+
+    def driver_param_has_range(self, param):
+        is_range, is_strict, is_fake_value, values = self.iface.GetDriverParameterConstraint(param)
+        return bool(is_range)
+
+    def driver_param_has_enum(self, param):
+        is_range, is_strict, is_fake_value, values = self.iface.GetDriverParameterConstraint(param)
+        return not is_range and len(values) != 0
+
+    def driver_param_is_strict_enum(self, param):
+        is_range, is_strict, is_fake_value, values = self.iface.GetDriverParameterConstraint(param)
+        return is_strict
+
+    def driver_param_is_fake_value(self, param):
+        is_range, is_strict, is_fake_value, values = self.iface.GetDriverParameterConstraint(param)
+        return is_fake_value
+
+    def driver_param_get_enum_values(self, param):
+        is_range, is_strict, is_fake_value, dbus_values = self.iface.GetDriverParameterConstraint(param)
+        values = []
+
+        if not is_range and len(dbus_values) != 0:
+            for dbus_value in dbus_values:
+                values.append([dbus_type_to_python_type(dbus_value[0]), dbus_type_to_python_type(dbus_value[1])])
+
+        return values
 
     def get_engine_param_names(self):
         infos = self.iface.GetEngineParametersInfo()

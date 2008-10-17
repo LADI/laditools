@@ -45,6 +45,21 @@ class parameter:
     def get_short_description(self):
         return self.proxy.get_short_description(self.name)
 
+    def has_range(self):
+        return self.proxy.has_range(self.name)
+
+    def has_enum(self):
+        return self.proxy.has_enum(self.name)
+
+    def is_strict_enum(self):
+        return self.proxy.is_strict_enum(self.name)
+
+    def is_fake_values_enum(self):
+        return self.proxy.is_fake_values_enum(self.name)
+
+    def get_enum_values(self):
+        return self.proxy.get_enum_values(self.name)
+
 class parameters_proxy:
     def __init__(self, get_names_function):
         self.params = []
@@ -66,6 +81,21 @@ class parameters_proxy:
 
     def get_short_description(self, name):
         pass
+
+    def has_range(self, name):
+        return False
+
+    def has_enum(self, name):
+        return False
+
+    def is_strict_enum(self, name):
+        return False
+
+    def is_fake_values_enum(self, name):
+        return False
+
+    def get_enum_values(self, name):
+        return []
 
 class engine_parameters_proxy(parameters_proxy):
     def __init__(self):
@@ -98,6 +128,21 @@ class driver_parameters_proxy(parameters_proxy):
 
     def get_short_description(self, name):
         return jack.get_driver_short_description(name)
+
+    def has_range(self, name):
+        return jack.driver_param_has_range(name)
+
+    def has_enum(self, name):
+        return jack.driver_param_has_enum(name)
+
+    def is_strict_enum(self, name):
+        return jack.driver_param_is_strict_enum(name)
+
+    def is_fake_values_enum(self, name):
+        return jack.driver_param_is_fake_value(name)
+
+    def get_enum_values(self, name):
+        return jack.driver_param_get_enum_values(name)
 
 class configure_command:
     def __init__(self):
@@ -156,15 +201,39 @@ class jack_driver_change_command(configure_command):
             jack.select_driver(store.get(selection.get_selected()[1], 0)[0])
         dlg.hide()
 
+class parameter_enum_value(gobject.GObject):
+    def __init__(self, is_fake_value, value, description):
+        gobject.GObject.__init__(self)
+        self.is_fake_value = is_fake_value
+        self.value = value
+        self.description = description
+
+    def get_description(self):
+        if self.is_fake_value:
+            return self.description
+
+        return str(self.value) + " - " + self.description
+
+gobject.type_register(parameter_enum_value)
+
 class parameter_store(gobject.GObject):
     def __init__(self, param):
         gobject.GObject.__init__(self)
         self.param = param
+        self.name = self.param.get_name()
         self.is_set, self.default_value, self.value = self.param.get_value()
         self.modified = False
+        self.has_range = self.param.has_range()
+        self.is_strict = self.param.is_strict_enum()
+        self.is_fake_value = self.param.is_fake_values_enum()
+
+        self.enum_values = []
+
+        for enum_value in self.param.get_enum_values():
+            self.enum_values.append(parameter_enum_value(self.is_fake_value, enum_value[0], enum_value[1]))
 
     def get_name(self):
-        return self.param.get_name()
+        return self.name
 
     def get_type(self):
         return self.param.get_type()
@@ -173,6 +242,7 @@ class parameter_store(gobject.GObject):
         return self.value
 
     def set_value(self, value):
+        print "%s -> %s" % (self.name, value)
         self.value = value
         self.modified = True
 
@@ -184,7 +254,26 @@ class parameter_store(gobject.GObject):
             self.param.set_value(self.value)
             self.modified = False
 
+    def has_range(self):
+        return self.has_range
+
+    def has_enum(self):
+        return len(self.enum_values) != 0
+
+    def is_strict_enum(self):
+        return self.is_strict
+
+    def get_enum_values(self):
+        return self.enum_values
+
 gobject.type_register(parameter_store)
+
+def combobox_get_active_text(combobox, model_index = 0):
+    model = combobox.get_model()
+    active = combobox.get_active()
+    if active < 0:
+        return None
+    return model[active][model_index]
 
 class cell_renderer_param(gtk.GenericCellRenderer):
     __gproperties__ = { "parameter": (gobject.TYPE_OBJECT, "Parameter", "Parameter", gobject.PARAM_READWRITE) }
@@ -232,20 +321,31 @@ class cell_renderer_param(gtk.GenericCellRenderer):
             self.renderer.set_property('adjustment', gtk.Adjustment(value, 0, 100000, 1, 1000))
             return
 
-        # TODO: constraints
-        if False:#typechar == 'y':
+        if self.parameter.has_enum():
             self.renderer = self.renderer_combo
 
-            #list store for cell renderer
-            m = gtk.ListStore(gobject.TYPE_STRING)
-            for x in range(1, 5):
-                m.append(["selection %d" % x])
+            m = gtk.ListStore(str, parameter_enum_value)
+
+            for value in self.parameter.get_enum_values():
+                m.append([value.get_description(), value])
 
             self.renderer.set_property("model",m)
             self.renderer.set_property('text-column', 0)
             self.renderer.set_property('editable', True)
-            self.renderer.set_property('has_entry', False)
-            self.renderer.set_property('text', "selection 3")
+            self.renderer.set_property('has_entry', not self.parameter.is_strict_enum())
+
+            value = self.parameter.get_value()
+            if self.parameter.is_fake_value:
+                text = "???"
+                for enum_value in self.parameter.get_enum_values():
+                    if enum_value.value == value:
+                        text = enum_value.get_description()
+                        break
+            else:
+                text = str(value)
+
+            self.renderer.set_property('text', text)
+
             return
 
         self.renderer = self.renderer_text
@@ -268,7 +368,17 @@ class cell_renderer_param(gtk.GenericCellRenderer):
 
     def on_editing_done(self, widget, parameter):
         typechar = parameter.get_type()
-        value_str = widget.get_property('text')
+        if type(widget) == gtk.ComboBox:
+            value_str = combobox_get_active_text(widget, 1).value
+        elif type(widget) == gtk.ComboBoxEntry:
+            enum_value = combobox_get_active_text(widget, 1)
+            if enum_value:
+                value_str = enum_value.value
+            else:
+                value_str = widget.get_active_text()
+        else:
+            value_str = widget.get_property('text')
+
         if typechar == 'u' or typechar == 'i':
             value = int(value_str)
         else:
