@@ -242,7 +242,7 @@ class parameter_store(gobject.GObject):
         return self.value
 
     def set_value(self, value):
-        print "%s -> %s" % (self.name, value)
+        #print "%s -> %s" % (self.name, value)
         self.value = value
         self.modified = True
 
