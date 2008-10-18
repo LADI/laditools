@@ -46,7 +46,10 @@ class parameter:
         return self.proxy.get_short_description(self.name)
 
     def get_long_description(self):
-        return self.proxy.get_long_description(self.name)
+        descr = self.proxy.get_long_description(self.name)
+        if not descr:
+            descr = self.get_short_description()
+        return descr
 
     def has_range(self):
         return self.proxy.has_range(self.name)
@@ -121,6 +124,21 @@ class engine_parameters_proxy(parameters_proxy):
 
     def get_long_description(self, name):
         return jack.get_engine_long_description(name)
+
+    def has_range(self, name):
+        return jack.engine_param_has_range(name)
+
+    def has_enum(self, name):
+        return jack.engine_param_has_enum(name)
+
+    def is_strict_enum(self, name):
+        return jack.engine_param_is_strict_enum(name)
+
+    def is_fake_values_enum(self, name):
+        return jack.engine_param_is_fake_value(name)
+
+    def get_enum_values(self, name):
+        return jack.engine_param_get_enum_values(name)
 
 class driver_parameters_proxy(parameters_proxy):
     def __init__(self):

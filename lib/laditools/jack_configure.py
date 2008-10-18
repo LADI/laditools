@@ -147,3 +147,29 @@ class jack_configure:
         elif typestr == "u":
             value = dbus.UInt32(value)
         self.iface.SetEngineParameterValue(param, value)
+
+    def engine_param_has_range(self, param):
+        is_range, is_strict, is_fake_value, values = self.iface.GetEngineParameterConstraint(param)
+        return bool(is_range)
+
+    def engine_param_has_enum(self, param):
+        is_range, is_strict, is_fake_value, values = self.iface.GetEngineParameterConstraint(param)
+        return not is_range and len(values) != 0
+
+    def engine_param_is_strict_enum(self, param):
+        is_range, is_strict, is_fake_value, values = self.iface.GetEngineParameterConstraint(param)
+        return is_strict
+
+    def engine_param_is_fake_value(self, param):
+        is_range, is_strict, is_fake_value, values = self.iface.GetEngineParameterConstraint(param)
+        return is_fake_value
+
+    def engine_param_get_enum_values(self, param):
+        is_range, is_strict, is_fake_value, dbus_values = self.iface.GetEngineParameterConstraint(param)
+        values = []
+
+        if not is_range and len(dbus_values) != 0:
+            for dbus_value in dbus_values:
+                values.append([dbus_type_to_python_type(dbus_value[0]), dbus_type_to_python_type(dbus_value[1])])
+
+        return values
