@@ -45,6 +45,9 @@ class parameter:
     def get_short_description(self):
         return self.proxy.get_short_description(self.name)
 
+    def get_long_description(self):
+        return self.proxy.get_long_description(self.name)
+
     def has_range(self):
         return self.proxy.has_range(self.name)
 
@@ -82,6 +85,9 @@ class parameters_proxy:
     def get_short_description(self, name):
         pass
 
+    def get_long_description(self, name):
+        return self.get_short_description(name)
+
     def has_range(self, name):
         return False
 
@@ -113,6 +119,9 @@ class engine_parameters_proxy(parameters_proxy):
     def get_short_description(self, name):
         return jack.get_engine_short_description(name)
 
+    def get_long_description(self, name):
+        return jack.get_engine_long_description(name)
+
 class driver_parameters_proxy(parameters_proxy):
     def __init__(self):
         parameters_proxy.__init__(self, jack.get_driver_param_names)
@@ -128,6 +137,9 @@ class driver_parameters_proxy(parameters_proxy):
 
     def get_short_description(self, name):
         return jack.get_driver_short_description(name)
+
+    def get_long_description(self, name):
+        return jack.get_driver_long_description(name)
 
     def has_range(self, name):
         return jack.driver_param_has_range(name)
@@ -399,6 +411,22 @@ class cell_renderer_param(gtk.GenericCellRenderer):
 
 gobject.type_register(cell_renderer_param)
 
+class ladiconf_tooltips(laditools.TreeViewTooltips):
+        def __init__(self, name_column):
+            self.name_column = name_column
+            laditools.TreeViewTooltips.__init__(self)
+
+        def location(self, x, y, w, h):
+            return x + 10, y + 10
+
+        def get_tooltip(self, view, column, path):
+            if column is self.name_column:
+                model = view.get_model()
+                tooltip = model[path][3]
+                return tooltip
+
+            return None
+
 class jack_params_configure_command(configure_command):
     def __init__(self, proxy):
         self.proxy = proxy
@@ -411,7 +439,7 @@ class jack_params_configure_command(configure_command):
 
         #dlg.set_transient_for(window)
 
-        self.liststore = gtk.ListStore(str, parameter_store, str)
+        self.liststore = gtk.ListStore(str, parameter_store, str, str)
         self.treeview = gtk.TreeView(self.liststore)
         self.treeview.set_rules_hint(True)
 
@@ -434,7 +462,10 @@ class jack_params_configure_command(configure_command):
         self.params = self.proxy()
 
         for param in self.params:
-            self.liststore.append([param.get_name(), parameter_store(param), param.get_short_description()])
+            self.liststore.append([param.get_name(), parameter_store(param), param.get_short_description(), param.get_long_description()])
+
+        self.tooltips = ladiconf_tooltips(self.tvcolumn_parameter)
+        self.tooltips.add_view(self.treeview)
 
         dlg.show_all()
         ret = dlg.run()

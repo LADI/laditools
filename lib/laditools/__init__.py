@@ -22,3 +22,4 @@ from a2j_menu import a2j_menu
 from lash_controller import lash_controller
 # from error import error
 from config import config
+from TreeViewTooltips import TreeViewTooltips
