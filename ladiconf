@@ -431,10 +431,9 @@ class cell_renderer_param(gtk.GenericCellRenderer):
         parameter.set_value(value)
 
     def on_start_editing(self, event, widget, path, background_area, cell_area, flags):
-        # start_editing throws exception if event is not GdkEvent. Happens when editing is initiated using keyboard.
-        # FIXME: make editing initiated using keyboard work
+        # this happens when edit requested using keyboard
         if not event:
-            return None
+            event = gtk.gdk.Event(gtk.gdk.NOTHING)
 
         self.choose_renderer()
         ret = self.renderer.start_editing(event, widget, path, background_area, cell_area, flags)
