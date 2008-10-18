@@ -539,7 +539,7 @@ buttons_widget = gtk.VBox()
 
 for command in commands:
     button = gtk.Button(command.get_description())
-    button.connect('released', command.run)
+    button.connect('clicked', command.run)
     buttons_widget.pack_start(button)
 
 window.add(buttons_widget)
