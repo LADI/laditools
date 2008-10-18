@@ -88,6 +88,14 @@ class jack_configure:
         is_range, is_strict, is_fake_value, values = self.iface.GetDriverParameterConstraint(param)
         return bool(is_range)
 
+    def driver_param_get_range(self, param):
+        is_range, is_strict, is_fake_value, values = self.iface.GetDriverParameterConstraint(param)
+
+        if not is_range or len(values) != 2:
+            return -1, -1
+
+        return dbus_type_to_python_type(values[0][0]), dbus_type_to_python_type(values[1][0])
+
     def driver_param_has_enum(self, param):
         is_range, is_strict, is_fake_value, values = self.iface.GetDriverParameterConstraint(param)
         return not is_range and len(values) != 0
@@ -151,6 +159,14 @@ class jack_configure:
     def engine_param_has_range(self, param):
         is_range, is_strict, is_fake_value, values = self.iface.GetEngineParameterConstraint(param)
         return bool(is_range)
+
+    def engine_param_get_range(self, param):
+        is_range, is_strict, is_fake_value, values = self.iface.GetEngineParameterConstraint(param)
+
+        if not is_range or len(values) != 2:
+            return -1, -1
+
+        return dbus_type_to_python_type(values[0][0]), dbus_type_to_python_type(values[1][0])
 
     def engine_param_has_enum(self, param):
         is_range, is_strict, is_fake_value, values = self.iface.GetEngineParameterConstraint(param)

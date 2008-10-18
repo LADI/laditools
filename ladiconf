@@ -54,6 +54,9 @@ class parameter:
     def has_range(self):
         return self.proxy.has_range(self.name)
 
+    def get_range(self):
+        return self.proxy.get_range(self.name)
+
     def has_enum(self):
         return self.proxy.has_enum(self.name)
 
@@ -94,6 +97,9 @@ class parameters_proxy:
     def has_range(self, name):
         return False
 
+    def get_range(self, name):
+        return -1, -1
+
     def has_enum(self, name):
         return False
 
@@ -127,6 +133,9 @@ class engine_parameters_proxy(parameters_proxy):
 
     def has_range(self, name):
         return jack.engine_param_has_range(name)
+
+    def get_range(self, name):
+        return jack.engine_param_get_range(name)
 
     def has_enum(self, name):
         return jack.engine_param_has_enum(name)
@@ -257,10 +266,13 @@ class parameter_store(gobject.GObject):
         self.is_strict = self.param.is_strict_enum()
         self.is_fake_value = self.param.is_fake_values_enum()
 
-        self.enum_values = []
+        if self.has_range:
+            self.range_min, self.range_max = self.param.get_range()
+        else:
+            self.enum_values = []
 
-        for enum_value in self.param.get_enum_values():
-            self.enum_values.append(parameter_enum_value(self.is_fake_value, enum_value[0], enum_value[1]))
+            for enum_value in self.param.get_enum_values():
+                self.enum_values.append(parameter_enum_value(self.is_fake_value, enum_value[0], enum_value[1]))
 
     def get_name(self):
         return self.name
@@ -284,8 +296,8 @@ class parameter_store(gobject.GObject):
             self.param.set_value(self.value)
             self.modified = False
 
-    def has_range(self):
-        return self.has_range
+    def get_range(self):
+        return self.range_min, self.range_max
 
     def has_enum(self):
         return len(self.enum_values) != 0
@@ -343,12 +355,15 @@ class cell_renderer_param(gtk.GenericCellRenderer):
             self.renderer.set_property("xalign", 0.0)
             return
 
-        # TODO: constraints
         if typechar == 'u' or typechar == 'i':
             self.renderer = self.renderer_spinbutton
             self.renderer.set_property('text', str(value))
             self.renderer.set_property('editable', True)
-            self.renderer.set_property('adjustment', gtk.Adjustment(value, 0, 100000, 1, 1000))
+            if self.parameter.has_range:
+                range_min, range_max = self.parameter.get_range()
+                self.renderer.set_property('adjustment', gtk.Adjustment(value, range_min, range_max, 1, abs(int((range_max - range_min) / 10))))
+            else:
+                self.renderer.set_property('adjustment', gtk.Adjustment(value, 0, 100000, 1, 1000))
             return
 
         if self.parameter.has_enum():
