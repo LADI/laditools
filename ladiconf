@@ -42,6 +42,9 @@ class parameter:
     def set_value(self, value):
         jack.set_param_value(self.path, value)
 
+    def reset_value(self):
+        jack.reset_param_value(self.path)
+
     def get_short_description(self):
         return jack.get_param_short_description(self.path)
 
@@ -168,6 +171,16 @@ class parameter_store(gobject.GObject):
 
     def get_value(self):
         return self.value
+
+    def get_default_value(self):
+        if not self.is_fake_value:
+            return str(self.default_value)
+
+        for enum_value in self.get_enum_values():
+            if enum_value.value == self.default_value:
+                return enum_value.get_description()
+
+        return "???"
 
     def set_value(self, value):
         #print "%s -> %s" % (self.name, value)
@@ -330,8 +343,9 @@ class cell_renderer_param(gtk.GenericCellRenderer):
 gobject.type_register(cell_renderer_param)
 
 class ladiconf_tooltips(laditools.TreeViewTooltips):
-        def __init__(self, name_column):
+        def __init__(self, name_column, is_set_column):
             self.name_column = name_column
+            self.is_set_column = is_set_column
             laditools.TreeViewTooltips.__init__(self)
 
         def location(self, x, y, w, h):
@@ -343,11 +357,29 @@ class ladiconf_tooltips(laditools.TreeViewTooltips):
                 tooltip = model[path][3]
                 return tooltip
 
+            if column is self.is_set_column:
+                model = view.get_model()
+                param = model[path][1]
+                is_set = model[path][4]
+
+                if is_set == "default":
+                    return None
+
+                if is_set == "reset":
+                    return "Value will be reset to %s" % param.get_default_value()
+
+                return "Double-click to schedule reset of value to %s" % param.get_default_value()
+
             return None
 
 class jack_params_configure_command(configure_command):
     def __init__(self, path):
         self.path = path
+
+    def on_row_activated(self, treeview, path, view_column):
+        if view_column == self.tvcolumn_is_set:
+            tviter = self.liststore.get_iter(path)
+            self.liststore.set(tviter, 4, "reset")
 
     def run(self, arg):
         dlg = gtk.Dialog()
@@ -357,14 +389,16 @@ class jack_params_configure_command(configure_command):
 
         #dlg.set_transient_for(window)
 
-        self.liststore = gtk.ListStore(str, parameter_store, str, str)
+        self.liststore = gtk.ListStore(str, parameter_store, str, str, str)
         self.treeview = gtk.TreeView(self.liststore)
         self.treeview.set_rules_hint(True)
 
         renderer_text = gtk.CellRendererText()
+        renderer_toggle = gtk.CellRendererToggle()
         renderer_value = cell_renderer_param()
 
         self.tvcolumn_parameter = gtk.TreeViewColumn('Parameter', renderer_text, text=0)
+        self.tvcolumn_is_set = gtk.TreeViewColumn('Is set', renderer_text, text=4)
         self.tvcolumn_value = gtk.TreeViewColumn('Value', renderer_value, parameter=1)
         self.tvcolumn_description = gtk.TreeViewColumn('Description', renderer_text, text=2)
 
@@ -372,6 +406,7 @@ class jack_params_configure_command(configure_command):
         self.tvcolumn_value.set_min_width(100)
 
         self.treeview.append_column(self.tvcolumn_parameter)
+        self.treeview.append_column(self.tvcolumn_is_set)
         self.treeview.append_column(self.tvcolumn_value)
         self.treeview.append_column(self.tvcolumn_description)
 
@@ -380,9 +415,16 @@ class jack_params_configure_command(configure_command):
         param_names = jack.get_param_names(self.path)
         for name in param_names:
             param = parameter(self.path + [name])
-            self.liststore.append([name, parameter_store(param), param.get_short_description(), param.get_long_description()])
+            store = parameter_store(param)
+            if store.is_set:
+                is_set = "yes"
+            else:
+                is_set = "default"
+            self.liststore.append([name, store, param.get_short_description(), param.get_long_description(), is_set])
 
-        self.tooltips = ladiconf_tooltips(self.tvcolumn_parameter)
+        self.treeview.connect("row-activated", self.on_row_activated)
+
+        self.tooltips = ladiconf_tooltips(self.tvcolumn_parameter, self.tvcolumn_is_set)
         self.tooltips.add_view(self.treeview)
 
         dlg.show_all()
@@ -390,9 +432,14 @@ class jack_params_configure_command(configure_command):
         if ret == gtk.RESPONSE_OK:
             for row in self.liststore:
                 param = row[1]
-                if param.modified:
-                    #print "%s -> %s" % (param.get_name(), param.get_value())
-                    param.maybe_save_value()
+                reset = row[4] == "reset"
+                if reset:
+                    #print "%s -> reset" % param.get_name()
+                    param.param.reset_value()
+                else:
+                    if param.modified:
+                        #print "%s -> %s" % (param.get_name(), param.get_value())
+                        param.maybe_save_value()
         dlg.hide()
 
 class jack_engine_params_configure_command(jack_params_configure_command):

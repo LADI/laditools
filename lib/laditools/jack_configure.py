@@ -96,6 +96,9 @@ class jack_configure:
             value = dbus.UInt32(value)
         self.iface.SetParameterValue(path, value)
 
+    def reset_param_value(self, path):
+        self.iface.ResetParameterValue(path)
+
     def param_has_range(self, path):
         is_range, is_strict, is_fake_value, values = self.iface.GetParameterConstraint(path)
         return bool(is_range)
