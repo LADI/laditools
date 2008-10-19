@@ -26,100 +26,48 @@ import gobject
 jack = laditools.jack_configure()
 
 class parameter:
-    def __init__(self, name, proxy):
-        self.name = name
-        self.proxy = proxy
+    def __init__(self, path):
+        self.path = path
+        self.name = path[-1:]
 
     def get_name(self):
         return self.name
 
     def get_type(self):
-        return self.proxy.get_type(self.name)
+        return jack.get_param_type(self.path)
 
     def get_value(self):
-        return self.proxy.get_value(self.name)
+        return jack.get_param_value(self.path)
 
     def set_value(self, value):
-        return self.proxy.set_value(self.name, value)
+        jack.set_param_value(self.path, value)
 
     def get_short_description(self):
-        return self.proxy.get_short_description(self.name)
+        return jack.get_param_short_description(self.path)
 
     def get_long_description(self):
-        descr = self.proxy.get_long_description(self.name)
+        descr = jack.get_param_long_description(self.path)
         if not descr:
             descr = self.get_short_description()
         return descr
 
     def has_range(self):
-        return self.proxy.has_range(self.name)
+        return jack.param_has_range(self.path)
 
     def get_range(self):
-        return self.proxy.get_range(self.name)
+        return jack.param_get_range(self.path)
 
     def has_enum(self):
-        return self.proxy.has_enum(self.name)
+        return jack.param_has_enum(self.path)
 
     def is_strict_enum(self):
-        return self.proxy.is_strict_enum(self.name)
+        return jack.param_is_strict_enum(self.path)
 
     def is_fake_values_enum(self):
-        return self.proxy.is_fake_values_enum(self.name)
+        return jack.param_is_fake_value(self.path)
 
     def get_enum_values(self):
-        return self.proxy.get_enum_values(self.name)
-
-class parameters_proxy:
-    def __init__(self, path):
-        self.path = path
-        self.params = []
-        param_names = jack.get_param_names(path)
-        for name in param_names:
-            self.params.append(parameter(name, self))
-
-    def __iter__(self):
-        return iter(self.params)
-
-    def get_type(self, name):
-        return jack.get_param_type(self.path + [name])
-
-    def get_value(self, name):
-        return jack.get_param_value(self.path + [name])
-
-    def set_value(self, name, value):
-        jack.set_param_value(self.path + [name], value)
-
-    def get_short_description(self, name):
-        return jack.get_param_short_description(self.path + [name])
-
-    def get_long_description(self, name):
-        return jack.get_param_long_description(self.path + [name])
-
-    def has_range(self, name):
-        return jack.param_has_range(self.path + [name])
-
-    def get_range(self, name):
-        return jack.param_get_range(self.path + [name])
-
-    def has_enum(self, name):
-        return jack.param_has_enum(self.path + [name])
-
-    def is_strict_enum(self, name):
-        return jack.param_is_strict_enum(self.path + [name])
-
-    def is_fake_values_enum(self, name):
-        return jack.param_is_fake_value(self.path + [name])
-
-    def get_enum_values(self, name):
-        return jack.param_get_enum_values(self.path + [name])
-
-class engine_parameters_proxy(parameters_proxy):
-    def __init__(self):
-        parameters_proxy.__init__(self, ['engine'])
-
-class driver_parameters_proxy(parameters_proxy):
-    def __init__(self):
-        parameters_proxy.__init__(self, ['driver'])
+        return jack.param_get_enum_values(self.path)
 
 class configure_command:
     def __init__(self):
@@ -398,8 +346,8 @@ class ladiconf_tooltips(laditools.TreeViewTooltips):
             return None
 
 class jack_params_configure_command(configure_command):
-    def __init__(self, proxy):
-        self.proxy = proxy
+    def __init__(self, path):
+        self.path = path
 
     def run(self, arg):
         dlg = gtk.Dialog()
@@ -429,10 +377,10 @@ class jack_params_configure_command(configure_command):
 
         dlg.vbox.pack_start(self.treeview, True)
 
-        self.params = self.proxy()
-
-        for param in self.params:
-            self.liststore.append([param.get_name(), parameter_store(param), param.get_short_description(), param.get_long_description()])
+        param_names = jack.get_param_names(self.path)
+        for name in param_names:
+            param = parameter(self.path + [name])
+            self.liststore.append([name, parameter_store(param), param.get_short_description(), param.get_long_description()])
 
         self.tooltips = ladiconf_tooltips(self.tvcolumn_parameter)
         self.tooltips.add_view(self.treeview)
@@ -449,14 +397,14 @@ class jack_params_configure_command(configure_command):
 
 class jack_engine_params_configure_command(jack_params_configure_command):
     def __init__(self):
-        jack_params_configure_command.__init__(self, engine_parameters_proxy)
+        jack_params_configure_command.__init__(self, ['engine'])
 
     def get_description(self):
         return 'JACK engine parameters'
 
 class jack_driver_params_configure_command(jack_params_configure_command):
     def __init__(self):
-        jack_params_configure_command.__init__(self, driver_parameters_proxy)
+        jack_params_configure_command.__init__(self, ['driver'])
 
     def get_description(self):
         return 'JACK driver parameters'
