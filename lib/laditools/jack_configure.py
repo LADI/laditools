@@ -17,7 +17,7 @@
 import dbus
 
 name_base = 'org.jackaudio'
-controller_interface_name = name_base + '.JackConfigure'
+controller_interface_name = name_base + '.Configure'
 service_name = name_base + '.service'
 
 def dbus_type_to_python_type(dbus_value):
@@ -38,42 +38,47 @@ class jack_configure:
         self.iface = dbus.Interface(self.controller, controller_interface_name)
 
     def get_available_driver(self):
-        return self.iface.GetAvailableDrivers()
+        is_range, is_strict, is_fake_values, values = self.iface.GetParameterConstraint(['engine', 'driver'])
+        drivers = []
+        for value in values:
+            drivers.append(value[1])
+        return drivers
 
     def get_selected_driver(self):
-        return self.iface.GetSelectedDriver()
+        isset, default, value = self.iface.GetParameterValue(['engine', 'driver'])
+        return value
     
     def select_driver(self, driver):
-        self.iface.SelectDriver(driver)
+        self.iface.SetParameterValue(['engine', 'driver'], driver)
 
-    def get_driver_param_names(self):
-        infos = self.iface.GetDriverParametersInfo()
-        names = []
-        for info in infos:
-            names.append(info[1])
-        return names
+    def get_param_names(self, path):
+        is_leaf, children = self.iface.ReadContainer(path)
+        if not is_leaf:
+            return []
 
-    def get_driver_short_description(self, param):
-        type_char, name, short_descr, long_descr = self.iface.GetDriverParameterInfo(param)
+        return children
+
+    def get_param_short_description(self, path):
+        type_char, name, short_descr, long_descr = self.iface.GetParameterInfo(path)
         return short_descr
 
-    def get_driver_long_description(self, param):
-        type_char, name, short_descr, long_descr = self.iface.GetDriverParameterInfo(param)
+    def get_param_long_description(self, path):
+        type_char, name, short_descr, long_descr = self.iface.GetParameterInfo(path)
         return long_descr
 
-    def get_driver_param_type(self, param):
-        type_char, name, short_descr, long_descr = self.iface.GetDriverParameterInfo(param)
+    def get_param_type(self, path):
+        type_char, name, short_descr, long_descr = self.iface.GetParameterInfo(path)
         return str(type_char)
 
-    def get_driver_param_value(self, param):
-        isset, default, value = self.iface.GetDriverParameterValue(param)
+    def get_param_value(self, path):
+        isset, default, value = self.iface.GetParameterValue(path)
         isset = bool(isset)
         default = dbus_type_to_python_type(default)
         value = dbus_type_to_python_type(value)
         return isset, default, value
 
-    def set_driver_param_value(self, param, value):
-        typestr = self.get_driver_param_type(param)
+    def set_param_value(self, path, value):
+        typestr = self.get_param_type(path)
         if typestr == "b":
             value = dbus.Boolean(value)
         elif typestr == "y":
@@ -82,110 +87,110 @@ class jack_configure:
             value = dbus.Int32(value)	
         elif typestr == "u":
             value = dbus.UInt32(value)
-        self.iface.SetDriverParameterValue(param, value)
+        self.iface.SetParameterValue(path, value)
+
+    def param_has_range(self, path):
+        is_range, is_strict, is_fake_value, values = self.iface.GetParameterConstraint(path)
+        return bool(is_range)
+
+    def param_get_range(self, path):
+        is_range, is_strict, is_fake_value, values = self.iface.GetParameterConstraint(path)
+
+        if not is_range or len(values) != 2:
+            return -1, -1
+
+        return dbus_type_to_python_type(values[0][0]), dbus_type_to_python_type(values[1][0])
+
+    def param_has_enum(self, path):
+        is_range, is_strict, is_fake_value, values = self.iface.GetParameterConstraint(path)
+        return not is_range and len(values) != 0
+
+    def param_is_strict_enum(self, path):
+        is_range, is_strict, is_fake_value, values = self.iface.GetParameterConstraint(path)
+        return is_strict
+
+    def param_is_fake_value(self, path):
+        is_range, is_strict, is_fake_value, values = self.iface.GetParameterConstraint(path)
+        return is_fake_value
+
+    def param_get_enum_values(self, path):
+        is_range, is_strict, is_fake_value, dbus_values = self.iface.GetParameterConstraint(path)
+        values = []
+
+        if not is_range and len(dbus_values) != 0:
+            for dbus_value in dbus_values:
+                values.append([dbus_type_to_python_type(dbus_value[0]), dbus_type_to_python_type(dbus_value[1])])
+
+        return values
+
+    def get_driver_param_names(self):
+        return self.get_param_names(['driver'])
+
+    def get_driver_short_description(self, param):
+        return self.get_param_short_description(['driver', param])
+
+    def get_driver_long_description(self, param):
+        return self.get_param_long_description(['driver', param])
+
+    def get_driver_param_type(self, param):
+        return self.get_param_type(['driver', param])
+
+    def get_driver_param_value(self, param):
+        return self.get_param_value(['driver', param])
+
+    def set_driver_param_value(self, param, value):
+        self.set_param_value(['driver', param], value)
 
     def driver_param_has_range(self, param):
-        is_range, is_strict, is_fake_value, values = self.iface.GetDriverParameterConstraint(param)
-        return bool(is_range)
+        return self.param_has_range(['driver', param])
 
     def driver_param_get_range(self, param):
-        is_range, is_strict, is_fake_value, values = self.iface.GetDriverParameterConstraint(param)
-
-        if not is_range or len(values) != 2:
-            return -1, -1
-
-        return dbus_type_to_python_type(values[0][0]), dbus_type_to_python_type(values[1][0])
+        return self.param_get_range(['driver', param])
 
     def driver_param_has_enum(self, param):
-        is_range, is_strict, is_fake_value, values = self.iface.GetDriverParameterConstraint(param)
-        return not is_range and len(values) != 0
+        return self.param_has_enum(['driver', param])
 
     def driver_param_is_strict_enum(self, param):
-        is_range, is_strict, is_fake_value, values = self.iface.GetDriverParameterConstraint(param)
-        return is_strict
+        return self.param_is_strict_enum(['driver', param])
 
     def driver_param_is_fake_value(self, param):
-        is_range, is_strict, is_fake_value, values = self.iface.GetDriverParameterConstraint(param)
-        return is_fake_value
+        return self.param_is_fake_value(['driver', param])
 
     def driver_param_get_enum_values(self, param):
-        is_range, is_strict, is_fake_value, dbus_values = self.iface.GetDriverParameterConstraint(param)
-        values = []
-
-        if not is_range and len(dbus_values) != 0:
-            for dbus_value in dbus_values:
-                values.append([dbus_type_to_python_type(dbus_value[0]), dbus_type_to_python_type(dbus_value[1])])
-
-        return values
+        return self.param_get_enum_values(['driver', param])
 
     def get_engine_param_names(self):
-        infos = self.iface.GetEngineParametersInfo()
-        names = []
-        for info in infos:
-            names.append(info[1])
-        return names
+        return self.get_param_names(['engine'])
 
     def get_engine_short_description(self, param):
-        type_char, name, short_descr, long_descr = self.iface.GetEngineParameterInfo(param)
-        return short_descr
+        return self.get_param_short_description(['engine', param])
 
     def get_engine_long_description(self, param):
-        type_char, name, short_descr, long_descr = self.iface.GetEngineParameterInfo(param)
-        return long_descr
+        return self.get_param_long_description(['engine', param])
 
     def get_engine_param_type(self, param):
-        type_char, name, short_descr, long_descr = self.iface.GetEngineParameterInfo(param)
-        return str(type_char)
+        return self.get_param_type(['engine', param])
 
     def get_engine_param_value(self, param):
-        isset, default, value = self.iface.GetEngineParameterValue(param)
-        isset = bool(isset)
-        default = dbus_type_to_python_type(default)
-        value = dbus_type_to_python_type(value)
-        return isset, default, value
+        return self.get_param_value(['engine', param])
 
     def set_engine_param_value(self, param, value):
-        typestr = self.get_engine_param_type(param)
-        if typestr == "b":
-            value = dbus.Boolean(value)
-        elif typestr == "y":
-            value = dbus.Byte(value)
-        elif typestr == "i":
-            value = dbus.Int32(value)
-        elif typestr == "u":
-            value = dbus.UInt32(value)
-        self.iface.SetEngineParameterValue(param, value)
+        self.set_param_value(['engine', param], value)
 
     def engine_param_has_range(self, param):
-        is_range, is_strict, is_fake_value, values = self.iface.GetEngineParameterConstraint(param)
-        return bool(is_range)
+        return self.param_has_range(['engine', param])
 
     def engine_param_get_range(self, param):
-        is_range, is_strict, is_fake_value, values = self.iface.GetEngineParameterConstraint(param)
-
-        if not is_range or len(values) != 2:
-            return -1, -1
-
-        return dbus_type_to_python_type(values[0][0]), dbus_type_to_python_type(values[1][0])
+        return self.param_get_range(['engine', param])
 
     def engine_param_has_enum(self, param):
-        is_range, is_strict, is_fake_value, values = self.iface.GetEngineParameterConstraint(param)
-        return not is_range and len(values) != 0
+        return self.param_has_enum(['engine', param])
 
     def engine_param_is_strict_enum(self, param):
-        is_range, is_strict, is_fake_value, values = self.iface.GetEngineParameterConstraint(param)
-        return is_strict
+        return self.param_is_strict_enum(['engine', param])
 
     def engine_param_is_fake_value(self, param):
-        is_range, is_strict, is_fake_value, values = self.iface.GetEngineParameterConstraint(param)
-        return is_fake_value
+        return self.param_is_fake_value(['engine', param])
 
     def engine_param_get_enum_values(self, param):
-        is_range, is_strict, is_fake_value, dbus_values = self.iface.GetEngineParameterConstraint(param)
-        values = []
-
-        if not is_range and len(dbus_values) != 0:
-            for dbus_value in dbus_values:
-                values.append([dbus_type_to_python_type(dbus_value[0]), dbus_type_to_python_type(dbus_value[1])])
-
-        return values
+        return self.param_get_enum_values(['engine', param])
