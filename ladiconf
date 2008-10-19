@@ -70,9 +70,10 @@ class parameter:
         return self.proxy.get_enum_values(self.name)
 
 class parameters_proxy:
-    def __init__(self, get_names_function):
+    def __init__(self, path):
+        self.path = path
         self.params = []
-        param_names = get_names_function()
+        param_names = jack.get_param_names(path)
         for name in param_names:
             self.params.append(parameter(name, self))
 
@@ -80,108 +81,45 @@ class parameters_proxy:
         return iter(self.params)
 
     def get_type(self, name):
-        pass
+        return jack.get_param_type(self.path + [name])
 
     def get_value(self, name):
-        pass
+        return jack.get_param_value(self.path + [name])
 
     def set_value(self, name, value):
-        pass
+        jack.set_param_value(self.path + [name], value)
 
     def get_short_description(self, name):
-        pass
+        return jack.get_param_short_description(self.path + [name])
 
     def get_long_description(self, name):
-        return self.get_short_description(name)
+        return jack.get_param_long_description(self.path + [name])
 
     def has_range(self, name):
-        return False
+        return jack.param_has_range(self.path + [name])
 
     def get_range(self, name):
-        return -1, -1
+        return jack.param_get_range(self.path + [name])
 
     def has_enum(self, name):
-        return False
+        return jack.param_has_enum(self.path + [name])
 
     def is_strict_enum(self, name):
-        return False
+        return jack.param_is_strict_enum(self.path + [name])
 
     def is_fake_values_enum(self, name):
-        return False
+        return jack.param_is_fake_value(self.path + [name])
 
     def get_enum_values(self, name):
-        return []
+        return jack.param_get_enum_values(self.path + [name])
 
 class engine_parameters_proxy(parameters_proxy):
     def __init__(self):
-        parameters_proxy.__init__(self, jack.get_engine_param_names)
-
-    def get_type(self, name):
-        return jack.get_engine_param_type(name)
-
-    def get_value(self, name):
-        return jack.get_engine_param_value(name)
-
-    def set_value(self, name, value):
-        jack.set_engine_param_value(name, value)
-
-    def get_short_description(self, name):
-        return jack.get_engine_short_description(name)
-
-    def get_long_description(self, name):
-        return jack.get_engine_long_description(name)
-
-    def has_range(self, name):
-        return jack.engine_param_has_range(name)
-
-    def get_range(self, name):
-        return jack.engine_param_get_range(name)
-
-    def has_enum(self, name):
-        return jack.engine_param_has_enum(name)
-
-    def is_strict_enum(self, name):
-        return jack.engine_param_is_strict_enum(name)
-
-    def is_fake_values_enum(self, name):
-        return jack.engine_param_is_fake_value(name)
-
-    def get_enum_values(self, name):
-        return jack.engine_param_get_enum_values(name)
+        parameters_proxy.__init__(self, ['engine'])
 
 class driver_parameters_proxy(parameters_proxy):
     def __init__(self):
-        parameters_proxy.__init__(self, jack.get_driver_param_names)
-
-    def get_type(self, name):
-        return jack.get_driver_param_type(name)
-
-    def get_value(self, name):
-        return jack.get_driver_param_value(name)
-
-    def set_value(self, name, value):
-        jack.set_driver_param_value(name, value)
-
-    def get_short_description(self, name):
-        return jack.get_driver_short_description(name)
-
-    def get_long_description(self, name):
-        return jack.get_driver_long_description(name)
-
-    def has_range(self, name):
-        return jack.driver_param_has_range(name)
-
-    def has_enum(self, name):
-        return jack.driver_param_has_enum(name)
-
-    def is_strict_enum(self, name):
-        return jack.driver_param_is_strict_enum(name)
-
-    def is_fake_values_enum(self, name):
-        return jack.driver_param_is_fake_value(name)
-
-    def get_enum_values(self, name):
-        return jack.driver_param_get_enum_values(name)
+        parameters_proxy.__init__(self, ['driver'])
 
 class configure_command:
     def __init__(self):
