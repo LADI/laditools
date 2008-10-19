@@ -412,11 +412,22 @@ class jack_driver_params_configure_command(jack_params_configure_command):
     def get_window_title(self):
         return 'JACK "%s" driver parameters' % jack.get_selected_driver()
 
+class jack_internal_params_configure_command(jack_params_configure_command):
+    def __init__(self, name):
+        self.name = name
+        jack_params_configure_command.__init__(self, ['internals', name])
+
+    def get_description(self):
+        return 'JACK "%s" parameters' % self.name
+
 commands = [
     jack_driver_change_command(),
     jack_engine_params_configure_command(),
     jack_driver_params_configure_command(),
     ]
+
+for internal in jack.read_container(['internals']):
+    commands.append(jack_internal_params_configure_command(internal))
 
 window = gtk.Window()
 

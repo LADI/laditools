@@ -51,6 +51,13 @@ class jack_configure:
     def select_driver(self, driver):
         self.iface.SetParameterValue(['engine', 'driver'], driver)
 
+    def read_container(self, path):
+        is_leaf, children = self.iface.ReadContainer(path)
+        if is_leaf:
+            return []
+
+        return children
+
     def get_param_names(self, path):
         is_leaf, children = self.iface.ReadContainer(path)
         if not is_leaf:
