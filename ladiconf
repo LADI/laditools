@@ -308,9 +308,10 @@ class cell_renderer_param(gtk.GenericCellRenderer):
         self.choose_renderer()
         if self.parameter.get_type() == 'b':
             self.parameter.set_value(not self.parameter.get_value())
+            widget.get_model()[path][4] = "modified"
         return True
 
-    def on_editing_done(self, widget, parameter):
+    def on_editing_done(self, widget, model, path, parameter):
         typechar = parameter.get_type()
         if type(widget) == gtk.ComboBox:
             value_str = combobox_get_active_text(widget, 1).value
@@ -328,6 +329,7 @@ class cell_renderer_param(gtk.GenericCellRenderer):
         else:
             value = value_str
         parameter.set_value(value)
+        model[path][4] = "modified"
 
     def on_start_editing(self, event, widget, path, background_area, cell_area, flags):
         # this happens when edit requested using keyboard
@@ -337,7 +339,7 @@ class cell_renderer_param(gtk.GenericCellRenderer):
         self.choose_renderer()
         ret = self.renderer.start_editing(event, widget, path, background_area, cell_area, flags)
         if ret:
-            ret.connect("editing-done", self.on_editing_done, self.parameter)
+            ret.connect("editing-done", self.on_editing_done, widget.get_model(), path, self.parameter)
         return ret
 
 gobject.type_register(cell_renderer_param)
@@ -378,8 +380,9 @@ class jack_params_configure_command(configure_command):
 
     def on_row_activated(self, treeview, path, view_column):
         if view_column == self.tvcolumn_is_set:
-            tviter = self.liststore.get_iter(path)
-            self.liststore.set(tviter, 4, "reset")
+            self.liststore[path][4] = "reset"
+            param = self.liststore[path][1]
+            param.set_value(param.default_value)
 
     def run(self, arg):
         dlg = gtk.Dialog()
@@ -398,7 +401,7 @@ class jack_params_configure_command(configure_command):
         renderer_value = cell_renderer_param()
 
         self.tvcolumn_parameter = gtk.TreeViewColumn('Parameter', renderer_text, text=0)
-        self.tvcolumn_is_set = gtk.TreeViewColumn('Is set', renderer_text, text=4)
+        self.tvcolumn_is_set = gtk.TreeViewColumn('Status', renderer_text, text=4)
         self.tvcolumn_value = gtk.TreeViewColumn('Value', renderer_value, parameter=1)
         self.tvcolumn_description = gtk.TreeViewColumn('Description', renderer_text, text=2)
 
@@ -417,7 +420,7 @@ class jack_params_configure_command(configure_command):
             param = parameter(self.path + [name])
             store = parameter_store(param)
             if store.is_set:
-                is_set = "yes"
+                is_set = "set"
             else:
                 is_set = "default"
             self.liststore.append([name, store, param.get_short_description(), param.get_long_description(), is_set])
