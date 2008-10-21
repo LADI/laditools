@@ -344,7 +344,7 @@ class cell_renderer_param(gtk.GenericCellRenderer):
         # this happens when edit requested using keyboard
         if not event:
             event = gtk.gdk.Event(gtk.gdk.NOTHING)
-    
+
         self.choose_renderer()
         ret = self.renderer.start_editing(event, widget, path, background_area, cell_area, flags)
         self.edit_widget = ret
