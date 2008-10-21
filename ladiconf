@@ -401,41 +401,65 @@ class jack_params_configure_command(configure_command):
             self.reset_value(path)
             
     def on_key_press_event(self, tree, event):
+        cur = self.treeview.get_cursor()
+        row_path = cur[0][0]
+
         if event.state == 0 and event.keyval == gtk.keysyms.Delete:
-            print event.keyval
-            cur = self.treeview.get_cursor()
-            self.reset_value(cur[0][0])
+            self.reset_value(row_path)
             tree.queue_draw()
-        elif event.string >= " ":    # >= " " to prevent ESC from activating the editor
-            cur = self.treeview.get_cursor()
-            param = self.liststore[cur[0][0]][1]
-            if param.get_type() in ('i', 'u', 's'):
-                deselect = False
-                find = False
-                if param.get_type() in ('i', 'u'):
-                    try:
-                        param.set_value(float(event.string))
-                    except:
-                        return True
-                self.treeview.set_cursor_on_cell(cur[0], self.tvcolumn_value, self.renderer_value.renderer, True)
-                if self.renderer_value.edit_widget == None:
-                    return
-                widget = self.renderer_value.edit_widget
-                if type(widget) in (gtk.Entry, gtk.ComboBoxEntry):
-                    sl = len(event.string)
-                    widget.set_text(event.string)
-                    widget.select_region(sl, sl)
-                elif type(self.renderer_value.edit_widget) == gtk.ComboBox:
-                    model = widget.get_model()
-                    item = -1
-                    iter = model.get_iter_root()
-                    while iter != None:
-                        if model.get_value(iter, 0).startswith(event.string):
-                            item = model.get_path(iter)[0]
-                            break
-                        iter = model.iter_next(iter)
-                    widget.set_active(item)
+            return True
+
+        # prevent ESC from activating the editor
+        if event.string < " ":
+            return False
+
+        param = self.liststore[row_path][1]
+
+        # we don't care about booleans
+        if param.get_type() == 'b':
+            return False
+
+        deselect = False
+        find = False
+
+        # for integers try to set spinboxe value
+        if param.get_type() in ('i', 'u'):
+            try:
+                param.set_value(float(event.string))
+            except:
                 return True
+
+        # Start cell editing
+        # MAYBE: call a specially crafted cell_renderer_param method for this
+        self.treeview.set_cursor_on_cell(cur[0], self.tvcolumn_value, self.renderer_value.renderer, True)
+
+        # cell_renderer_param::on_start_editing() should set edit_widget.
+        # if something went wrong, cancel try to be smart
+        # MAYBE: call a specially crafted cell_renderer_param method to do this check
+        if self.renderer_value.edit_widget == None:
+            return
+
+        widget = self.renderer_value.edit_widget
+
+        if type(widget) in (gtk.Entry, gtk.ComboBoxEntry):
+            sl = len(event.string)
+            widget.set_text(event.string)
+            widget.select_region(sl, sl)
+            return True
+
+        if type(self.renderer_value.edit_widget) == gtk.ComboBox:
+            model = widget.get_model()
+            item = -1
+            iter = model.get_iter_root()
+            while iter != None:
+                if model.get_value(iter, 0).startswith(event.string):
+                    item = model.get_path(iter)[0]
+                    break
+                iter = model.iter_next(iter)
+            widget.set_active(item)
+            return True
+
+        return False
         
     def on_cursor_changed(self, tree):
         cur = self.treeview.get_cursor()
