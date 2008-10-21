@@ -401,7 +401,8 @@ class jack_params_configure_command(configure_command):
             self.reset_value(path)
             
     def on_key_press_event(self, tree, event):
-        if event.state == 0 and gtk.gdk.keyval_name(event.keyval) == "Delete":
+        if event.state == 0 and event.keyval == gtk.keysyms.Delete:
+            print event.keyval
             cur = self.treeview.get_cursor()
             self.reset_value(cur[0][0])
             tree.queue_draw()
