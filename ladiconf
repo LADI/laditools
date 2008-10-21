@@ -333,7 +333,18 @@ class cell_renderer_param(gtk.GenericCellRenderer):
             value_str = widget.get_property('text')
 
         if typechar == 'u' or typechar == 'i':
-            value = int(value_str)
+            try:
+                value = int(value_str)
+            except ValueError, e:
+                # Hide the widget (because it may display something else than what user typed in)
+                widget.hide()
+                # Display the error
+                mdlg = gtk.MessageDialog(buttons = gtk.BUTTONS_OK, message_format = "Invalid value. Please enter an integer number.")
+                mdlg.run()
+                mdlg.hide()
+                # Return the focus back to the tree to prevent buttons from stealing it
+                self.edit_tree.grab_focus()
+                return
         else:
             value = value_str
         parameter.set_value(value)
@@ -404,6 +415,7 @@ class jack_params_configure_command(configure_command):
         cur = self.treeview.get_cursor()
         row_path = cur[0][0]
 
+        # if Delete was pressed, reset the value
         if event.state == 0 and event.keyval == gtk.keysyms.Delete:
             self.reset_value(row_path)
             tree.queue_draw()
@@ -413,41 +425,52 @@ class jack_params_configure_command(configure_command):
         if event.string < " ":
             return False
 
+        # single-key data entry: if the control is a text entry, spin button or combo box/combo box entry,
+        # then edit the current and set the text value to what user has already typed in
+        cur = self.treeview.get_cursor()
         param = self.liststore[row_path][1]
+        ptype = param.get_type()
 
         # we don't care about booleans
-        if param.get_type() == 'b':
+        if ptype == 'b':
             return False
 
-        deselect = False
-        find = False
-
-        # for integers try to set spinboxe value
-        if param.get_type() in ('i', 'u'):
-            try:
-                param.set_value(float(event.string))
-            except:
-                return True
+        # accept only digits for integer input (or a minus, but only if it's a signed field)
+        if ptype in ('i', 'u'):
+            if not (event.string.isdigit() or (event.string == "-" and ptype == 'i')):
+                return False
 
         # Start cell editing
         # MAYBE: call a specially crafted cell_renderer_param method for this
         self.treeview.set_cursor_on_cell(cur[0], self.tvcolumn_value, self.renderer_value.renderer, True)
 
         # cell_renderer_param::on_start_editing() should set edit_widget.
-        # if something went wrong, cancel try to be smart
+        # if edit operation has failed (didn't create a widget), pass the key on
         # MAYBE: call a specially crafted cell_renderer_param method to do this check
         if self.renderer_value.edit_widget == None:
             return
 
         widget = self.renderer_value.edit_widget
-
         if type(widget) in (gtk.Entry, gtk.ComboBoxEntry):
+            # (combo or plain) text entry - set the content and move the cursor to the end
             sl = len(event.string)
             widget.set_text(event.string)
             widget.select_region(sl, sl)
             return True
 
+        if type(self.renderer_value.edit_widget) == gtk.SpinButton:
+            # spin button - set the value and move the cursor to the end
+            if event.string == "-":
+                # special case for minus sign (which can't be converted to float)
+                widget.set_text(event.string)
+            else:
+                widget.set_value(float(event.string))
+            sl = len(widget.get_text())
+            widget.select_region(sl, sl)
+            return True
+            
         if type(self.renderer_value.edit_widget) == gtk.ComboBox:
+            # combo box - select the first item that starts with typed character
             model = widget.get_model()
             item = -1
             iter = model.get_iter_root()
@@ -524,6 +547,7 @@ class jack_params_configure_command(configure_command):
         self.tooltips = ladiconf_tooltips(self.tvcolumn_parameter, self.tvcolumn_is_set)
         self.tooltips.add_view(self.treeview)
         if len(param_names):
+            # move cursor to first row and 'value' column
             self.treeview.set_cursor((0,), self.tvcolumn_value)
 
         dlg.show_all()
