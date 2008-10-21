@@ -189,7 +189,6 @@ class parameter_store(gobject.GObject):
 
     def reset_value(self):
         self.value = self.default_value
-        self.modified = False
 
     def get_short_description(self):
         return self.param.get_short_description()
@@ -391,18 +390,20 @@ class jack_params_configure_command(configure_command):
         self.path = path
         self.is_setting = False
 
+    def reset_value(self, row_path):
+        row = self.liststore[row_path]
+        param = row[1]
+        param.reset_value()
+        row[4] = "reset"
+
     def on_row_activated(self, treeview, path, view_column):
         if view_column == self.tvcolumn_is_set:
-            self.liststore[path][4] = "reset"
-            param = self.liststore[path][1]
-            param.set_value(param.default_value)
+            self.reset_value(path)
             
     def on_key_press_event(self, tree, event):
         if event.state == 0 and gtk.gdk.keyval_name(event.keyval) == "Delete":
             cur = self.treeview.get_cursor()
-            param = self.liststore[cur[0][0]][1]
-            param.reset_value()
-            self.liststore[cur[0][0]][4] = "default"
+            self.reset_value(cur[0][0])
             tree.queue_draw()
         elif event.string >= " ":    # >= " " to prevent ESC from activating the editor
             cur = self.treeview.get_cursor()
