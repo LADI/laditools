@@ -187,6 +187,10 @@ class parameter_store(gobject.GObject):
         self.value = value
         self.modified = True
 
+    def reset_value(self):
+        self.value = self.default_value
+        self.modified = False
+
     def get_short_description(self):
         return self.param.get_short_description()
 
@@ -229,6 +233,7 @@ class cell_renderer_param(gtk.GenericCellRenderer):
         self.renderer_combo = gtk.CellRendererCombo()
         self.renderer_spinbutton = gtk.CellRendererSpin()
         self.renderer = None
+        self.edit_widget = None
 
     def do_set_property(self, pspec, value):
         if pspec.name == 'parameter':
@@ -312,9 +317,13 @@ class cell_renderer_param(gtk.GenericCellRenderer):
         return True
 
     def on_editing_done(self, widget, model, path, parameter):
+        self.edit_widget = None
         typechar = parameter.get_type()
         if type(widget) == gtk.ComboBox:
-            value_str = combobox_get_active_text(widget, 1).value
+            value = combobox_get_active_text(widget, 1)
+            if value == None:
+                return
+            value_str = value.value
         elif type(widget) == gtk.ComboBoxEntry:
             enum_value = combobox_get_active_text(widget, 1)
             if enum_value:
@@ -330,14 +339,17 @@ class cell_renderer_param(gtk.GenericCellRenderer):
             value = value_str
         parameter.set_value(value)
         model[path][4] = "modified"
+        self.edit_tree.grab_focus()
 
     def on_start_editing(self, event, widget, path, background_area, cell_area, flags):
         # this happens when edit requested using keyboard
         if not event:
             event = gtk.gdk.Event(gtk.gdk.NOTHING)
-
+    
         self.choose_renderer()
         ret = self.renderer.start_editing(event, widget, path, background_area, cell_area, flags)
+        self.edit_widget = ret
+        self.edit_tree = widget
         if ret:
             ret.connect("editing-done", self.on_editing_done, widget.get_model(), path, self.parameter)
         return ret
@@ -377,28 +389,83 @@ class ladiconf_tooltips(laditools.TreeViewTooltips):
 class jack_params_configure_command(configure_command):
     def __init__(self, path):
         self.path = path
+        self.is_setting = False
 
     def on_row_activated(self, treeview, path, view_column):
         if view_column == self.tvcolumn_is_set:
             self.liststore[path][4] = "reset"
             param = self.liststore[path][1]
             param.set_value(param.default_value)
+            
+    def on_key_press_event(self, tree, event):
+        if event.state == 0 and gtk.gdk.keyval_name(event.keyval) == "Delete":
+            cur = self.treeview.get_cursor()
+            param = self.liststore[cur[0][0]][1]
+            param.reset_value()
+            self.liststore[cur[0][0]][4] = "default"
+            tree.queue_draw()
+        elif event.string >= " ":    # >= " " to prevent ESC from activating the editor
+            cur = self.treeview.get_cursor()
+            param = self.liststore[cur[0][0]][1]
+            if param.get_type() in ('i', 'u', 's'):
+                deselect = False
+                find = False
+                if param.get_type() in ('i', 'u'):
+                    try:
+                        param.set_value(float(event.string))
+                    except:
+                        return True
+                self.treeview.set_cursor_on_cell(cur[0], self.tvcolumn_value, self.renderer_value.renderer, True)
+                if self.renderer_value.edit_widget == None:
+                    return
+                widget = self.renderer_value.edit_widget
+                if type(widget) in (gtk.Entry, gtk.ComboBoxEntry):
+                    sl = len(event.string)
+                    widget.set_text(event.string)
+                    widget.select_region(sl, sl)
+                elif type(self.renderer_value.edit_widget) == gtk.ComboBox:
+                    model = widget.get_model()
+                    item = -1
+                    iter = model.get_iter_root()
+                    while iter != None:
+                        if model.get_value(iter, 0).startswith(event.string):
+                            item = model.get_path(iter)[0]
+                            break
+                        iter = model.iter_next(iter)
+                    widget.set_active(item)
+                return True
+        
+    def on_cursor_changed(self, tree):
+        cur = self.treeview.get_cursor()
+        if not self.is_setting and cur[1] != None and cur[1].get_title() != self.tvcolumn_value.get_title():
+            self.is_setting = True
+            try:
+                self.treeview.set_cursor_on_cell(cur[0], self.tvcolumn_value)
+            finally:
+                self.is_setting = False
+
+    def ok_clicked(self, dlg):
+        if self.renderer_value.edit_widget:
+            self.renderer_value.edit_widget.editing_done()
 
     def run(self, arg):
         dlg = gtk.Dialog()
         dlg.set_title(self.get_window_title())
         dlg.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-        dlg.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        dlg.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK).connect("clicked", self.ok_clicked)
 
         #dlg.set_transient_for(window)
 
         self.liststore = gtk.ListStore(str, parameter_store, str, str, str)
         self.treeview = gtk.TreeView(self.liststore)
         self.treeview.set_rules_hint(True)
+        self.treeview.set_enable_search(False)
 
         renderer_text = gtk.CellRendererText()
         renderer_toggle = gtk.CellRendererToggle()
         renderer_value = cell_renderer_param()
+        self.renderer_text = renderer_text
+        self.renderer_value = renderer_value
 
         self.tvcolumn_parameter = gtk.TreeViewColumn('Parameter', renderer_text, text=0)
         self.tvcolumn_is_set = gtk.TreeViewColumn('Status', renderer_text, text=4)
@@ -426,9 +493,13 @@ class jack_params_configure_command(configure_command):
             self.liststore.append([name, store, param.get_short_description(), param.get_long_description(), is_set])
 
         self.treeview.connect("row-activated", self.on_row_activated)
+        self.treeview.connect("cursor-changed", self.on_cursor_changed)
+        self.treeview.connect("key-press-event", self.on_key_press_event)
 
         self.tooltips = ladiconf_tooltips(self.tvcolumn_parameter, self.tvcolumn_is_set)
         self.tooltips.add_view(self.treeview)
+        if len(param_names):
+            self.treeview.set_cursor((0,), self.tvcolumn_value)
 
         dlg.show_all()
         ret = dlg.run()
