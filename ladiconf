@@ -490,8 +490,7 @@ class jack_params_configure_command(configure_command):
         renderer_text = gtk.CellRendererText()
         renderer_toggle = gtk.CellRendererToggle()
         renderer_value = cell_renderer_param()
-        self.renderer_text = renderer_text
-        self.renderer_value = renderer_value
+        self.renderer_value = renderer_value # save for use in event handler methods
 
         self.tvcolumn_parameter = gtk.TreeViewColumn('Parameter', renderer_text, text=0)
         self.tvcolumn_is_set = gtk.TreeViewColumn('Status', renderer_text, text=4)
