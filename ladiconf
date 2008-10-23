@@ -233,6 +233,8 @@ class cell_renderer_param(gtk.GenericCellRenderer):
         self.renderer_toggle = gtk.CellRendererToggle()
         self.renderer_combo = gtk.CellRendererCombo()
         self.renderer_spinbutton = gtk.CellRendererSpin()
+        for r in (self.renderer_text, self.renderer_combo, self.renderer_spinbutton):
+            r.connect("edited", self.on_edited)
         self.renderer = None
         self.edit_widget = None
 
@@ -317,7 +319,10 @@ class cell_renderer_param(gtk.GenericCellRenderer):
             widget.get_model()[path][4] = "modified"
         return True
 
-    def on_editing_done(self, widget, model, path, parameter):
+    def on_edited(self, renderer, path, value_str):
+        parameter = self.edit_parameter
+        widget = self.edit_widget
+        model = self.edit_tree.get_model()
         self.edit_widget = None
         typechar = parameter.get_type()
         if type(widget) == gtk.ComboBox:
@@ -331,8 +336,6 @@ class cell_renderer_param(gtk.GenericCellRenderer):
                 value_str = enum_value.value
             else:
                 value_str = widget.get_active_text()
-        else:
-            value_str = widget.get_property('text')
 
         if typechar == 'u' or typechar == 'i':
             try:
@@ -362,8 +365,7 @@ class cell_renderer_param(gtk.GenericCellRenderer):
         ret = self.renderer.start_editing(event, widget, path, background_area, cell_area, flags)
         self.edit_widget = ret
         self.edit_tree = widget
-        if ret:
-            ret.connect("editing-done", self.on_editing_done, widget.get_model(), path, self.parameter)
+        self.edit_parameter = self.parameter
         return ret
 
 gobject.type_register(cell_renderer_param)
