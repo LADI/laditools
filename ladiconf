@@ -415,6 +415,15 @@ class jack_params_configure_command(configure_command):
         if view_column == self.tvcolumn_is_set:
             self.reset_value(path)
             
+    def on_button_press_event(self, tree, event):
+        if event.type != gtk.gdk._2BUTTON_PRESS:
+            return False
+        # this is needed for proper double-click handling in the list; don't ask me why, I don't know
+        # it's probably because _2BUTTON_PRESS event is still delivered to tree view, automatically deactivating
+        # the newly created edit widget (which gets created on second BUTTON_PRESS but before _2BUTTON_PRESS)
+        # deactivating the widget causes it to be deleted
+        return True
+
     def on_key_press_event(self, tree, event):
         cur = self.treeview.get_cursor()
         row_path = cur[0][0]
@@ -547,6 +556,7 @@ class jack_params_configure_command(configure_command):
         self.treeview.connect("row-activated", self.on_row_activated)
         self.treeview.connect("cursor-changed", self.on_cursor_changed)
         self.treeview.connect("key-press-event", self.on_key_press_event)
+        self.treeview.connect("button-press-event", self.on_button_press_event)
 
         self.tooltips = ladiconf_tooltips(self.tvcolumn_parameter, self.tvcolumn_is_set)
         self.tooltips.add_view(self.treeview)
