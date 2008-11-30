@@ -1,2 +1,2 @@
-recursive-include data *.svg *.glade
+recursive-include data *.svg *.glade *.desktop
 include INSTALL COPYING
