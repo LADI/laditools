@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=LADIConf
+Type=Application
+Comment=JACK and LASH control application configuration
+Terminal=false
+Exec=ladiconf
+Icon=laditray
+Categories=GTK;Settings
+GenericName=LADI Configuration
