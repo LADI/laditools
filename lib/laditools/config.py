@@ -16,7 +16,6 @@
 
 import xml.dom
 from xml.dom.minidom import parse, getDOMImplementation
-from xml.dom.ext import PrettyPrint
 
 # Let's make sure we'll place the file in an existing dir
 from os import environ, sep, mkdir
@@ -130,4 +129,4 @@ class config:
     # Use this when you want to write the config file to disk
     def save(self):
         config_file = open(config_filename, 'w')
-        PrettyPrint(self.doc, config_file)
+        config_file.write(self.doc.toprettyxml())
