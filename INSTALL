@@ -11,3 +11,5 @@ If you want to know about more options you might want to try either
 python setup.py --help
  - or -
 python setup.py --help-commands
+
+If you're a package maintainer and need help with packaging you might want to ask on #jack or #LAD to either MarcOChapeau or nedko.
