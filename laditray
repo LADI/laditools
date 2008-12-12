@@ -42,8 +42,6 @@ class laditray (gtk.StatusIcon, laditools.manager):
         self.starting_pixbuf = gtk.gdk.pixbuf_new_from_file(laditools.find_data_file("starting.svg"))
         self.started_pixbuf = gtk.gdk.pixbuf_new_from_file(laditools.find_data_file("started.svg"))
         self.set_from_pixbuf (self.stopped_pixbuf)
-	self.icon_status = "unknown"
-	print "setting status to unknown"
         # Get the initial status
         self.update ()
         # Add the auto update callback
@@ -57,13 +55,12 @@ class laditray (gtk.StatusIcon, laditools.manager):
         menu.reposition ()
 
     def set_starting_status (self):
-        self.icon_status = "starting"
         self.set_tooltip ("JACK is starting")
         self.set_from_pixbuf (self.starting_pixbuf)
 
     def update (self):
         try:
-            if self.jack_is_started() & self.icon_status != "started":
+            if self.jack_is_started():
                 # Get Realtime status
                 if self.jack_is_realtime():
                     status_text = "RT | "
@@ -74,13 +71,9 @@ class laditray (gtk.StatusIcon, laditools.manager):
                 # Set a started status
                 self.set_tooltip (status_text)
                 self.set_from_pixbuf (self.started_pixbuf)
-		self.icon_status = "started"
-		print "setting status to started"
-            elif self.icon_status != "stopped":
+            else:
                 self.set_tooltip ("JACK is stopped")
                 self.set_from_pixbuf (self.stopped_pixbuf)
-		self.icon_status = "stopped"
-		print "setting status to stopped"
             self.clear_diagnose_text()
         except Exception, e:
             self.set_tooltip ("JACK is sick")
