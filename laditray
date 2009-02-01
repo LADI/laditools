@@ -37,11 +37,13 @@ class laditray (gtk.StatusIcon, laditools.manager):
         # Build the UI
         laditools.manager.__init__(self, int(autostart))
         gtk.StatusIcon.__init__ (self)
+        self.icon_state = ""
+        self.last_status_text = ""
         # Create the needed pixbufs to manage the status icon's look
         self.stopped_pixbuf = gtk.gdk.pixbuf_new_from_file(laditools.find_data_file("stopped.svg"))
         self.starting_pixbuf = gtk.gdk.pixbuf_new_from_file(laditools.find_data_file("starting.svg"))
         self.started_pixbuf = gtk.gdk.pixbuf_new_from_file(laditools.find_data_file("started.svg"))
-        self.set_from_pixbuf (self.stopped_pixbuf)
+        self.set_icon ("stopped")
         # Get the initial status
         self.update ()
         # Add the auto update callback
@@ -55,8 +57,21 @@ class laditray (gtk.StatusIcon, laditools.manager):
         menu.reposition ()
 
     def set_starting_status (self):
-        self.set_tooltip ("JACK is starting")
-        self.set_from_pixbuf (self.starting_pixbuf)
+        self.set_tooltip_safe ("JACK is starting")
+        self.set_icon ("starting")
+
+    def set_icon (self, newstate):
+        if self.icon_state == newstate:
+            return
+        self.icon_state = newstate
+        if newstate == "stopped": self.set_from_pixbuf (self.stopped_pixbuf)
+        if newstate == "started": self.set_from_pixbuf (self.started_pixbuf)
+        if newstate == "starting": self.set_from_pixbuf (self.starting_pixbuf)
+
+    def set_tooltip_safe (self, text):
+        if text != self.last_status_text:
+            self.set_tooltip (text)
+            self.last_status_text = text
 
     def update (self):
         try:
@@ -69,16 +84,16 @@ class laditray (gtk.StatusIcon, laditools.manager):
                 # Get Xruns
                 status_text += str (self.jack_get_xruns())
                 # Set a started status
-                self.set_tooltip (status_text)
-                self.set_from_pixbuf (self.started_pixbuf)
+                self.set_tooltip_safe (status_text)
+                self.set_icon ("started")
             else:
-                self.set_tooltip ("JACK is stopped")
-                self.set_from_pixbuf (self.stopped_pixbuf)
+                self.set_tooltip_safe ("JACK is stopped")
+                self.set_icon ("stopped")
             self.clear_diagnose_text()
         except Exception, e:
-            self.set_tooltip ("JACK is sick")
+            self.set_tooltip_safe ("JACK is sick")
             self.set_diagnose_text(repr(e))
-            self.set_from_pixbuf (self.stopped_pixbuf)
+            self.set_icon ("stopped")
             self.clear_jack_proxies()
         # Take a look at the processes we've started so we don't get any zombies
         for i in self.proc_list:
