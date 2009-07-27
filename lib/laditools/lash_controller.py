@@ -16,7 +16,7 @@
 
 import dbus
 
-name_base = 'org.nongnu.LASH'
+name_base = 'org.ladish'
 control_interface_name = name_base + '.Control'
 service_name = name_base
 
