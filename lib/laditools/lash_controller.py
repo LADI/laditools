@@ -18,17 +18,18 @@ import dbus
 
 name_base = 'org.ladish'
 control_interface_name = name_base + '.Control'
+control_object_path = "/org/ladish/Control"
 service_name = name_base
 
 class lash_controller:
     def __init__(self):
         self.bus = dbus.SessionBus()
-        self.controller = self.bus.get_object(service_name, "/")
+        self.controller = self.bus.get_object(service_name, control_object_path)
         self.iface = dbus.Interface(self.controller, control_interface_name)
 
     def is_availalbe(self):
         try:
-            self.iface.ProjectsGetAvailable()
+            self.iface.IsStudioLoaded()
             return True
         except Exception, e:
             #print repr(e)

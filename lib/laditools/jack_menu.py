@@ -235,8 +235,8 @@ class manager:
             menu_items.append((gtk.ImageMenuItem("Reactivate A2J"), self.on_menu_command, self.a2j_reactivate))
             menu_items.append((gtk.SeparatorMenuItem(), None, None))
         if self.lash_is_available():
-            menu_items.append((gtk.ImageMenuItem("Save all projects"), self.on_menu_command, self.lash_projects_save_all))
-            menu_items.append((gtk.ImageMenuItem("Close all projects"), self.on_menu_command, self.lash_projects_close_all))
+            #menu_items.append((gtk.ImageMenuItem("Save all projects"), self.on_menu_command, self.lash_projects_save_all))
+            #menu_items.append((gtk.ImageMenuItem("Close all projects"), self.on_menu_command, self.lash_projects_close_all))
             menu_items.append((gtk.ImageMenuItem("Reactivate ladish"), self.on_menu_command, self.lash_reactivate))
             menu_items.append((gtk.SeparatorMenuItem(), None, None))
         menu_items.append((gtk.ImageMenuItem("Quit"), self.on_menu_command, gtk.main_quit))
