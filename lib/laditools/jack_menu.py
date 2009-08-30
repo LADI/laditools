@@ -30,8 +30,8 @@ from lash_controller import ladish_proxy
 # TODO : somehow, we need stock icons. Nothing else can be used for ImageMenuItems
 
 # Default launcher menu :
-menu_default = [("Configure", "ladiconf"),
-    ("Logs", "ladilog")]
+menu_default = [("Configure...", "ladiconf"),
+    ("Logs...", "ladilog")]
 
 class manager:
     def __init__(self, jack_autostart = False):
@@ -300,7 +300,7 @@ class manager:
         menu = gtk.Menu()
         menu_items.append((gtk.SeparatorMenuItem(),))
         if self.ladish_is_available():
-            menu_items.append((gtk.ImageMenuItem("New studio"), self.on_menu_command, self.studio_new))
+            menu_items.append((gtk.ImageMenuItem("New studio..."), self.on_menu_command, self.studio_new))
             menu_items.append((gtk.ImageMenuItem("Load studio"), self.studio_list_fill, self.studio_load))
             if self.studio_is_loaded():
                 menu_items.append((gtk.SeparatorMenuItem(), None, None))
@@ -308,7 +308,7 @@ class manager:
                 menu_items.append((gtk.ImageMenuItem("Stop studio"), self.on_menu_command, self.studio_stop))
             menu_items.append((gtk.SeparatorMenuItem(), None, None))
             if self.studio_is_loaded():
-                menu_items.append((gtk.ImageMenuItem("Rename studio"), self.on_menu_command, self.studio_rename))
+                menu_items.append((gtk.ImageMenuItem("Rename studio..."), self.on_menu_command, self.studio_rename))
                 menu_items.append((gtk.ImageMenuItem("Save studio"), self.on_menu_command, self.studio_save))
                 menu_items.append((gtk.ImageMenuItem("Unload studio"), self.on_menu_command, self.studio_unload))
             menu_items.append((gtk.ImageMenuItem("Delete studio"), self.studio_list_fill, self.studio_delete))
