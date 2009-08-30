@@ -1,5 +1,5 @@
 # LADITools - Linux Audio Desktop Integration Tools
-# Copyright (C) 2007-2008, Marc-Olivier Barre and Nedko Arnaudov.
+# Copyright (C) 2007, 2008, 2009, Marc-Olivier Barre and Nedko Arnaudov.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ from jack_configure import jack_configure
 from jack_menu import manager, find_data_file
 from a2j_controller import a2j_controller
 from a2j_menu import a2j_menu
-from lash_controller import lash_controller
+from lash_controller import ladish_proxy
 # from error import error
 from config import config
 from TreeViewTooltips import TreeViewTooltips

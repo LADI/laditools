@@ -1,5 +1,5 @@
 # LADITools - Linux Audio Desktop Integration Tools
-# Copyright (C) 2007-2008, Marc-Olivier Barre and Nedko Arnaudov.
+# Copyright (C) 2007, 2008, 2009, Marc-Olivier Barre and Nedko Arnaudov.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ from config import config
 from jack_configure import jack_configure
 from jack_controller import jack_controller
 from a2j_controller import a2j_controller
-from lash_controller import lash_controller
+from lash_controller import ladish_proxy
 
 # TODO : somehow, we need stock icons. Nothing else can be used for ImageMenuItems
 
@@ -38,7 +38,7 @@ class manager:
         self.proxy_jack_controller = None
         self.proxy_jack_configure = None
         self.proxy_a2j_controller = None
-        self.proxy_lash_controller = None
+        self.proxy_ladish_controller = None
         self.diagnose_text = ""
         # Handle the configuration and grab custom menu items
         self.jack_menu_config = config()
@@ -161,33 +161,88 @@ class manager:
         self.get_a2j_controller().kill()
         self.clear_a2j_controller()
 
-    def get_lash_controller(self):
-        if not self.proxy_lash_controller:
-            self.proxy_lash_controller = lash_controller()
-        return self.proxy_lash_controller
+    def get_ladish_controller(self):
+        if not self.proxy_ladish_controller:
+            self.proxy_ladish = ladish_proxy()
+        return self.proxy_ladish
 
-    def clear_lash_controller(self):
-        self.proxy_lash_controller = None
+    def clear_ladish_controller(self):
+        self.proxy_ladish_controller = None
 
-    def lash_is_available(self):
+    def ladish_is_available(self):
         try:
-            proxy = self.get_lash_controller()
+            proxy = self.get_ladish_controller()
         except:
             return False
         if proxy.is_availalbe():
             return True
-        self.clear_lash_controller()
+        self.clear_ladish_controller()
         return False
 
-    def lash_projects_save_all(self):
-        self.get_lash_controller().projects_save_all()
+    def studio_is_loaded(self):
+        return self.get_ladish_controller().studio_is_loaded()
 
-    def lash_projects_close_all(self):
-        self.get_lash_controller().projects_close_all()
+    def studio_new(self):
+        accept, name = self.name_dialog("New studio", "Studio name", "")
+        if accept:
+            self.get_ladish_controller().studio_new(name)
 
-    def lash_reactivate(self):
-        self.get_lash_controller().kill()
-        self.clear_lash_controller()
+    def studio_load(self, item, event, studio):
+        self.get_ladish_controller().studio_load(studio)
+
+    def studio_start(self):
+        self.get_ladish_controller().studio_start()
+
+    def studio_stop(self):
+        self.get_ladish_controller().studio_stop()
+
+    def name_dialog(self, title, label, text):
+        dlg = gtk.Dialog(
+            title,
+            None,
+            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+            (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
+             gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
+
+        hbox = gtk.HBox()
+        hbox.pack_start(gtk.Label(label))
+        entry = gtk.Entry()
+        entry.set_text(text)
+        hbox.pack_start(entry)
+        dlg.vbox.pack_start(hbox)
+        dlg.show_all()
+        #entry.set_activates_default(True)
+        #dlg.set_default_response(gtk.RESPONSE_OK)
+        ret = dlg.run()
+        dlg.destroy()
+        if ret == gtk.RESPONSE_ACCEPT:
+            return True, entry.get_text()
+        else:
+            return False, text
+
+    def studio_rename(self):
+        accept, name = self.name_dialog("Rename studio", "Studio name", self.get_ladish_controller().studio_name())
+        if accept:
+            self.get_ladish_controller().studio_rename(name)
+
+    def studio_save(self):
+        self.get_ladish_controller().studio_save()
+
+    def studio_unload(self):
+        self.get_ladish_controller().studio_unload()
+
+    def studio_delete(self, item, event, studio):
+        dlg = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_YES_NO, "")
+        dlg.set_markup("<b><big>Confirm studio delete</big></b>")
+        dlg.format_secondary_text("Studio \"%s\" will be deleted. Are you sure?" % studio)
+        ret = dlg.run()
+        dlg.destroy()
+        if ret == gtk.RESPONSE_YES:
+            self.get_ladish_controller().studio_delete(studio)
+
+    def ladish_reactivate(self):
+        self.get_ladish_controller().kill()
+        self.clear_ladish_controller()
 
     def on_menu_show_diagnose(self, widget, data=None):
         dlg = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, self.diagnose_text)
@@ -206,6 +261,31 @@ class manager:
     def on_menu_launcher(self, widget, exec_path):
         self.proc_list.append(subprocess.Popen([exec_path, exec_path]))
 
+    def menu_clear(self, menu):
+        menu.foreach(lambda item: menu.remove(item))
+
+    def studio_list_fill(self, widget, function):
+        menu = widget.get_submenu()
+        self.menu_clear(menu)
+        try:
+            for studio in self.get_ladish_controller().studio_list():
+                item = gtk.MenuItem(studio)
+                item.show()
+                menu.append(item)
+                item.connect("button-release-event", function, studio) # "activate" is not used because of focus bug in pygtk
+        except Exception, e:
+            print e
+            self.menu_clear(menu)
+            item = gtk.MenuItem("Error obtaining studio list")
+            item.set_sensitive(False)
+            item.show()
+            menu.append(item)
+        if not menu.get_children():
+            item = gtk.MenuItem("Empty studio list")
+            item.set_sensitive(False)
+            item.show()
+            menu.append(item)
+
     def create_menu(self):
         menu_items = []
 
@@ -218,13 +298,30 @@ class manager:
             menu_items.append((gtk.ImageMenuItem(attrib_dict['name']), self.on_menu_launcher, path))
 
         menu = gtk.Menu()
-        menu_items.append((gtk.SeparatorMenuItem(), None, None))
+        menu_items.append((gtk.SeparatorMenuItem(),))
+        if self.ladish_is_available():
+            menu_items.append((gtk.ImageMenuItem("New studio"), self.on_menu_command, self.studio_new))
+            menu_items.append((gtk.ImageMenuItem("Load studio"), self.studio_list_fill, self.studio_load))
+            if self.studio_is_loaded():
+                menu_items.append((gtk.SeparatorMenuItem(), None, None))
+                menu_items.append((gtk.ImageMenuItem("Start studio"), self.on_menu_command, self.studio_start))
+                menu_items.append((gtk.ImageMenuItem("Stop studio"), self.on_menu_command, self.studio_stop))
+            menu_items.append((gtk.SeparatorMenuItem(), None, None))
+            if self.studio_is_loaded():
+                menu_items.append((gtk.ImageMenuItem("Rename studio"), self.on_menu_command, self.studio_rename))
+                menu_items.append((gtk.ImageMenuItem("Save studio"), self.on_menu_command, self.studio_save))
+                menu_items.append((gtk.ImageMenuItem("Unload studio"), self.on_menu_command, self.studio_unload))
+            menu_items.append((gtk.ImageMenuItem("Delete studio"), self.studio_list_fill, self.studio_delete))
+            menu_items.append((gtk.ImageMenuItem("Reactivate ladish"), self.on_menu_command, self.ladish_reactivate))
+            menu_items.append((gtk.SeparatorMenuItem(), None, None))
         if self.jack_is_available():
             if not self.jack_is_started():
-                menu_items.append((gtk.ImageMenuItem("Start JACK server"), self.on_menu_command, self.jack_start))
+                if not self.ladish_is_available():
+                    menu_items.append((gtk.ImageMenuItem("Start JACK server"), self.on_menu_command, self.jack_start))
             else:
                 menu_items.append((gtk.ImageMenuItem("Reset Xruns"), self.on_menu_command, self.jack_reset_xruns))
-                menu_items.append((gtk.ImageMenuItem("Stop JACK server"), self.on_menu_command, self.jack_stop))
+                if not self.ladish_is_available():
+                    menu_items.append((gtk.ImageMenuItem("Stop JACK server"), self.on_menu_command, self.jack_stop))
             menu_items.append((gtk.ImageMenuItem("Reactivate JACK"), self.on_menu_command, self.jack_reactivate))
             menu_items.append((gtk.SeparatorMenuItem(), None, None))
         if self.a2j_is_available():
@@ -234,17 +331,17 @@ class manager:
                 menu_items.append((gtk.ImageMenuItem("Stop A2J bridge"), self.on_menu_command, self.a2j_stop))
             menu_items.append((gtk.ImageMenuItem("Reactivate A2J"), self.on_menu_command, self.a2j_reactivate))
             menu_items.append((gtk.SeparatorMenuItem(), None, None))
-        if self.lash_is_available():
-            #menu_items.append((gtk.ImageMenuItem("Save all projects"), self.on_menu_command, self.lash_projects_save_all))
-            #menu_items.append((gtk.ImageMenuItem("Close all projects"), self.on_menu_command, self.lash_projects_close_all))
-            menu_items.append((gtk.ImageMenuItem("Reactivate ladish"), self.on_menu_command, self.lash_reactivate))
-            menu_items.append((gtk.SeparatorMenuItem(), None, None))
         menu_items.append((gtk.ImageMenuItem("Quit"), self.on_menu_command, gtk.main_quit))
 
         for menu_tuple in menu_items:
-            item, callback, exec_path = menu_tuple
+            item = menu_tuple[0]
+            if len(menu_tuple) > 1:
+                callback = menu_tuple[1]
+                exec_path = menu_tuple[2]
             menu.append(item)
             if type(item) is not gtk.SeparatorMenuItem:
+                if callback == self.studio_list_fill:
+                    item.set_submenu(gtk.Menu())
                 item.connect("activate", callback, exec_path)
         menu.show_all()
         return menu
