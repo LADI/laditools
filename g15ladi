@@ -112,40 +112,81 @@ class jackctl_g15:
         self.jack = None
         self.g15 = g15composer(pipe_filename, False)
         self.started = False
+        self.ladish = None
+
+    def get_jack_info(self):
+        if not self.jack:
+            self.jack = laditools.jack_controller()
+
+        if not self.jack.is_started():
+            return False, None, None, None, None, None
+
+        realtime = self.jack.is_realtime()
+        load = self.jack.get_load()
+
+        xruns = self.jack.get_xruns()
+        if xruns == 0:
+            xruns_line = "no xruns"
+        elif xruns == 1:
+            xruns_line = "1 xrun"
+        else:
+            xruns_line = "%u xruns" % xruns
+
+        rate = self.jack.get_sample_rate()
+        if rate % 1000.0 == 0:
+            rate_line = "Sample rate: %.0f Khz" % (rate / 1000.0)
+        else:
+            rate_line = "Sample rate: %.1f Khz" % (rate / 1000.0)
+        latency_line = "Latency: %.1f ms" % self.jack.get_latency()
+
+        return True, realtime, load, xruns_line, rate_line, latency_line
 
     def update(self):
         try:
-            if not self.jack:
-                self.jack = laditools.jack_controller()
+            studio_name = None
+            if not self.ladish:
+                try:
+                    self.ladish = laditools.ladish_proxy()
+                except:
+                    pass
+            try:
+                studio_name = self.ladish.studio_name()
+            except:
+                pass
 
-            status_line = "JACK"
+            started, realtime, load, xruns_line, rate_line, latency_line = self.get_jack_info()
 
-            if self.jack.is_started():
+            if started:
                 self.started = True
-                if self.jack.is_realtime():
-                    status_line += " started in realtime mode"
+            elif self.started:
+                self.g15.clear(False)
+                self.started = False
+
+            if self.ladish:
+                if studio_name:
+                    status_line = '"' + studio_name + '"'
+                    if started:
+                        status_line += " started"
+                        if realtime:
+                            status_line += " (RT)"
+                    else:
+                        status_line += " stopped"
                 else:
-                    status_line += " started in non-realtime mode"
-                load = self.jack.get_load()
-                xruns = self.jack.get_xruns()
-                if xruns == 0:
-                    xruns_line = "no xruns"
-                elif xruns == 1:
-                    xruns_line = "1 xrun"
-                else:
-                    xruns_line = "%u xruns" % xruns
-                rate = self.jack.get_sample_rate()
-                if rate % 1000.0 == 0:
-                    rate_line = "Sample rate: %.0f Khz" % (rate / 1000.0)
-                else:
-                    rate_line = "Sample rate: %.1f Khz" % (rate / 1000.0)
-                latency_line = "Latency: %.1f ms" % self.jack.get_latency()
+                    if started:
+                        status_line = "ladish is sick, jack started w/o studio"
+                    else:
+                        status_line = "No studio loaded"
             else:
-                status_line += " stopped"
-                if self.started:
-                    self.g15.clear(False)
-                    self.started = False
-        except:
+                status_line = "JACK"
+                if started:
+                    if realtime:
+                        status_line += " started in realtime mode"
+                    else:
+                        status_line += " started in non-realtime mode"
+                else:
+                    status_line += " stopped"
+        except Exception, e:
+            print repr(e)
             status_line = "JACK cannot be connected"
             if self.jack:
                 self.g15.clear(False)
