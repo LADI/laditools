@@ -73,9 +73,9 @@ class ladilog (gtk.glade.XML):
             'config_default': os.sep.join([os.environ['HOME'], ".log", "jack", "jackdbus.log"]),
             },
             {
-            'name': 'LASH',
-            'config_name': 'lash_log',
-            'config_default': os.sep.join([os.environ['HOME'], ".log", "lash", "lash.log"]),
+            'name': 'LADISH',
+            'config_name': 'ladish_log',
+            'config_default': os.sep.join([os.environ['HOME'], ".log", "ladish", "ladish.log"]),
             },
             {
             'name': 'A2J',
