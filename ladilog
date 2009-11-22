@@ -123,9 +123,8 @@ class ladilog (gtk.glade.XML):
         self.logview_notebook = self.get_widget ("ladilog_notebook")
 
         for log in self.log_files:
-            self.logview_notebook.append_page (log["term"])
-            self.logview_notebook.set_tab_label (log["term"], log["tab_label"])
             log['term'].show ()
+
         # Make it do something...
         for log in self.log_files:
             try:
@@ -139,6 +138,10 @@ class ladilog (gtk.glade.XML):
                 print "You called Popen with invalid arguments... dumbass"
             except:
                 print "Unexpected error:", sys.exc_info ()[0]
+
+        for log in self.log_files:
+            self.logview_notebook.append_page (log["term"])
+            self.logview_notebook.set_tab_label (log["term"], log["tab_label"])
 
         self.auto_updater = timeout_add(250, self.update)
 
