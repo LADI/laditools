@@ -100,6 +100,9 @@ class ladilog (gtk.glade.XML):
             # skip logfiles that dont exist
             if not os.access(log['logfile_path'], os.R_OK):
                 self.log_files.remove(log)
+                print "Skipping '%s' because it does not exist" % log['logfile_path']
+            else:
+                print "Watching '%s'" % log['logfile_path']
 
         max_lines_text, devnull = self.param_dict['max_lines']
         self.max_lines = int (max_lines_text)
