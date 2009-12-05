@@ -24,8 +24,32 @@ pygtk.require ('2.0')
 import gtk
 import laditools
 import gobject
+import sys
 
 jack = laditools.jack_configure()
+
+def check_ladish():
+    try:
+        proxy = laditools.ladish_proxy()
+    except:
+        return
+
+    if proxy.is_availalbe():
+        return
+
+    if proxy.studio_is_loaded():
+        if not proxy.studio_is_started():
+            return
+        else:
+            msg = "Studio must be stopped because JACK settings that will be eventually saved are fetched on studio start."
+    else:
+        msg = "There is no studio to configure."
+
+    # studio is not loaded or loaded and started
+    mdlg = gtk.MessageDialog(type = gtk.MESSAGE_ERROR, buttons = gtk.BUTTONS_CLOSE, message_format = msg)
+    mdlg.run()
+    mdlg.hide()
+    sys.exit(0)
 
 class parameter:
     def __init__(self, path):
@@ -603,6 +627,8 @@ class jack_internal_params_configure_command(jack_params_configure_command):
 
     def get_description(self):
         return 'JACK "%s" parameters' % self.name
+
+check_ladish()
 
 commands = [
     jack_driver_change_command(),

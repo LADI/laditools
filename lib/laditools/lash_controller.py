@@ -77,3 +77,6 @@ class ladish_proxy:
 
     def studio_name(self):
         return self.studio_iface.GetName()
+
+    def studio_is_started(self):
+        return self.studio_iface.IsStarted()
