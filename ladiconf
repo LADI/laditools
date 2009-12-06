@@ -32,13 +32,16 @@ def check_ladish():
     try:
         proxy = laditools.ladish_proxy()
     except:
+        print "ladish proxy creation failed"
         return
 
-    if proxy.is_availalbe():
+    if not proxy.is_availalbe():
+        print "ladish is not available"
         return
 
     if proxy.studio_is_loaded():
         if not proxy.studio_is_started():
+            print "ladish studio is loaded and not started"
             return
         else:
             msg = "Studio must be stopped because JACK settings that will be eventually saved are fetched on studio start."
