@@ -3,7 +3,7 @@
 # LADITools - Linux Audio Desktop Integration Tools
 # ladiconf - A configuration GUI for your Linux Audio Desktop
 # Copyright (C) 2007-2008, Marc-Olivier Barre
-# Copyright (C) 2007-2008, Nedko Arnaudov <nedko@arnaudov.name>
+# Copyright (C) 2007-2009, Nedko Arnaudov <nedko@arnaudov.name>
 # Copyright (C) 2008, Krzysztof Foltman <wdev@foltman.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -39,17 +39,22 @@ def check_ladish():
         print "ladish is not available"
         return
 
+    msg = "JACK can only be configured with a loaded or newly created studio in stopped state.\n\n"
+
     if proxy.studio_is_loaded():
         if not proxy.studio_is_started():
             print "ladish studio is loaded and not started"
             return
         else:
-            msg = "Studio must be stopped because JACK settings that will be eventually saved are fetched on studio start."
+            msg += "Please stop your studio first."
+            title = "Studio is running"
     else:
-        msg = "There is no studio to configure."
+        msg += "Please load or create a studio first."
+        title = "No studio present"
 
     # studio is not loaded or loaded and started
     mdlg = gtk.MessageDialog(type = gtk.MESSAGE_ERROR, buttons = gtk.BUTTONS_CLOSE, message_format = msg)
+    mdlg.set_title(title)
     mdlg.run()
     mdlg.hide()
     sys.exit(0)
