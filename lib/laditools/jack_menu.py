@@ -312,7 +312,7 @@ class manager:
                 menu_items.append((gtk.ImageMenuItem("Save studio"), self.on_menu_command, self.studio_save))
                 menu_items.append((gtk.ImageMenuItem("Unload studio"), self.on_menu_command, self.studio_unload))
             menu_items.append((gtk.ImageMenuItem("Delete studio"), self.studio_list_fill, self.studio_delete))
-            menu_items.append((gtk.ImageMenuItem("Reactivate ladish"), self.on_menu_command, self.ladish_reactivate))
+            menu_items.append((gtk.ImageMenuItem("Reactivate ladishd"), self.on_menu_command, self.ladish_reactivate))
             menu_items.append((gtk.SeparatorMenuItem(), None, None))
         if self.jack_is_available():
             if not self.jack_is_started():
