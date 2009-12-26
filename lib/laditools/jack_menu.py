@@ -293,6 +293,9 @@ class manager:
             menu_items.append((gtk.ImageMenuItem("Diagnose"), self.on_menu_show_diagnose, None))
             menu_items.append((gtk.SeparatorMenuItem(), None, None))
 
+        if self.ladish_is_available():
+            menu_items.append((gtk.ImageMenuItem("Start gladish"), self.on_menu_launcher, "gladish"))
+
         # Add the laucher entries at the beginning of the menu
         for path, attrib_dict in self.menu_array:
             menu_items.append((gtk.ImageMenuItem(attrib_dict['name']), self.on_menu_launcher, path))
