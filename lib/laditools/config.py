@@ -1,5 +1,5 @@
 # LADITools - Linux Audio Desktop Integration Tools
-# Copyright (C) 2007-2008, Marc-Olivier Barre and Nedko Arnaudov.
+# Copyright (C) 2007-2009, Marc-Olivier Barre and Nedko Arnaudov.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -129,4 +129,4 @@ class config:
     # Use this when you want to write the config file to disk
     def save(self):
         config_file = open(config_filename, 'w')
-        self.doc.writexml(config_file)
+        self.doc.writexml(config_file, "", "  ", "\n", "UTF-8")
