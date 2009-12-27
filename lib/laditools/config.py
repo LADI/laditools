@@ -17,7 +17,6 @@
 try:
     import xml.dom
     from xml.dom.minidom import parse, getDOMImplementation
-    from xml.dom.ext import PrettyPrint
     xml_avalable = True
 except:
     xml_avalable = False
@@ -148,4 +147,4 @@ class config:
         if not xml_avalable:
             return
         config_file = open(config_filename, 'w')
-        PrettyPrint(self.doc, config_file)
+        self.doc.writexml(config_file)

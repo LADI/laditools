@@ -29,8 +29,8 @@ autostart_default = 0
 class laditray (gtk.StatusIcon, laditools.manager):
     def __init__ (self):
         # Handle the configuration
-        self.jacktray_config = laditools.config ()
-        self.param_dict = self.jacktray_config.get_as_dict ('jacktray')
+        self.laditray_config = laditools.config ()
+        self.param_dict = self.laditray_config.get_as_dict ('laditray')
         if 'autostart' not in self.param_dict:
             self.param_dict['autostart'] = str(autostart_default), {}
         autostart, devnull = self.param_dict['autostart']
@@ -102,7 +102,7 @@ class laditray (gtk.StatusIcon, laditools.manager):
 
     def run(self):
         gtk.main ()
-        self.jacktray_config.set_as_dict ('jacktray', self.param_dict)
+        self.laditray_config.set_as_dict ('laditray', self.param_dict)
         return 0
 
 try:

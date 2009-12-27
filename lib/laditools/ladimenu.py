@@ -41,13 +41,13 @@ class manager:
         self.proxy_ladish_controller = None
         self.diagnose_text = ""
         # Handle the configuration and grab custom menu items
-        self.jack_menu_config = config()
-        self.menu_array = self.jack_menu_config.get_as_array('jack_menu')
+        self.ladimenu_config = config()
+        self.menu_array = self.ladimenu_config.get_as_array('ladimenu')
         # Add some defaults if we don't already have a menu
         if self.menu_array == []:
             for name, path in menu_default:
                 self.menu_array.append((path, {'name' : name}))
-            self.jack_menu_config.set_as_array('jack_menu', self.menu_array, 'menuitem')
+            self.ladimenu_config.set_as_array('ladimenu', self.menu_array, 'menuitem')
 
         self.proc_list = []
 
