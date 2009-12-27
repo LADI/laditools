@@ -14,12 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-try:
-    import xml.dom
-    from xml.dom.minidom import parse, getDOMImplementation
-    xml_avalable = True
-except:
-    xml_avalable = False
+import xml.dom
+from xml.dom.minidom import parse, getDOMImplementation
 
 # Let's make sure we'll place the file in an existing dir
 from os import environ, sep, mkdir
@@ -32,8 +28,6 @@ if not exists(config_dir):
 class config:
     def __init__(self):
         self.app = {}
-        if not xml_avalable:
-            return
         try:
             self.doc = parse(config_filename)
             for child in self.doc.documentElement.childNodes:
@@ -45,8 +39,6 @@ class config:
 
     # This will clear an app node from it's children parameters
     def cleanup(self, app_name):
-        if not xml_avalable:
-            return
         replacement = self.doc.createElement(app_name)
         self.doc.documentElement.replaceChild(replacement, self.app[app_name])
         self.app[app_name] = replacement
@@ -55,8 +47,6 @@ class config:
     # You can add remove any parameters you wish from it, it'll get saved magically
     def get_as_dict(self, app_name):
         param_dict = {}
-        if not xml_avalable:
-            return param_dict
         if app_name in self.app:
             for child in self.app[app_name].childNodes:
                 if child.nodeType == child.ELEMENT_NODE:
@@ -80,8 +70,6 @@ class config:
     # You can add remove any parameters you wish from it, it'll get saved magically
     def get_as_array(self, app_name):
         param_array = []
-        if not xml_avalable:
-            return param_array
         if app_name in self.app:
             for child in self.app[app_name].childNodes:
                 if child.nodeType == child.ELEMENT_NODE:
@@ -103,8 +91,6 @@ class config:
 
     # Use this when you want to update the xml doc with the content of the dictionary
     def set_as_dict(self, app_name, param_dict):
-        if not xml_avalable:
-            return
         # Full cleanup to avoid keeping deprecated entries in the xml file
         self.cleanup(app_name)
         # Fill in the current list of parametters
@@ -124,8 +110,6 @@ class config:
 
     # Use this when you want to update the xml doc with the content of the array
     def set_as_array(self, app_name, param_array, element_name):
-        if not xml_avalable:
-            return
         # Full cleanup to avoid keeping deprecated entries in the xml file
         self.cleanup(app_name)
         # Fill in the current list of parametters
@@ -144,7 +128,5 @@ class config:
 
     # Use this when you want to write the config file to disk
     def save(self):
-        if not xml_avalable:
-            return
         config_file = open(config_filename, 'w')
         self.doc.writexml(config_file)
