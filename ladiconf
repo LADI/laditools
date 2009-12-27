@@ -39,17 +39,15 @@ def check_ladish():
         print "ladish is not available"
         return
 
-    msg = "JACK can only be configured with a loaded or newly created studio in stopped state.\n\n"
-
     if proxy.studio_is_loaded():
         if not proxy.studio_is_started():
             print "ladish studio is loaded and not started"
             return
         else:
-            msg += "Please stop your studio first."
+            msg = "JACK can only be configured with a stopped studio. Please stop your studio first."
             title = "Studio is running"
     else:
-        msg += "Please load or create a studio first."
+        msg = "JACK can only be configured with a loaded and stopped studio. Please create a new studio or load and stop an existing one."
         title = "No studio present"
 
     # studio is not loaded or loaded and started
