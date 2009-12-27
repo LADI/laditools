@@ -19,7 +19,7 @@
 from distutils.core import setup
 
 setup(name='laditools',
-    version='1.0-rc1',
+    version='1.0-rc2',
     description='Linux Audio Desktop Integration Tools',
     author='Marc-Olivier Barre and Nedko Arnaudov',
     author_email='marco@marcochapeau.org',

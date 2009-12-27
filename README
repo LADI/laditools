@@ -9,9 +9,9 @@ You will find in this suite :
  - The laditools python module (no interest for the end users)
  - laditray : a system tray icon that allows you to start, stop and monitor
    JACK, as well as start some JACK related apps (log viewer, connections...) 
- - wmjackctl : a controller as a Window Maker dockapp. Uses the same menu as laditray
+ - wmladi : a controller as a Window Maker dockapp. Uses the same menu as laditray
  - ladilog : a JACK, LASH and a2jmidid log viewer
  - ladiconf : a GUI to setup JACK's configuration
- - g15jackmon : a JACK monitor for g15 keyboards
+ - g15ladi : a JACK monitor for g15 keyboards
 
 Enjoy !
