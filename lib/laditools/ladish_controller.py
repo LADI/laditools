@@ -31,7 +31,7 @@ class ladish_proxy:
         self.studio_object = self.bus.get_object(service_name, studio_object_path)
         self.studio_iface = dbus.Interface(self.studio_object, studio_interface_name)
 
-    def is_availalbe(self):
+    def is_available(self):
         try:
             self.control_iface.IsStudioLoaded()
             return True

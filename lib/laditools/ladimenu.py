@@ -25,7 +25,7 @@ from config import config
 from jack_configure import jack_configure
 from jack_controller import jack_controller
 from a2j_controller import a2j_controller
-from lash_controller import ladish_proxy
+from ladish_controller import ladish_proxy
 
 # TODO : somehow, we need stock icons. Nothing else can be used for ImageMenuItems
 
@@ -81,7 +81,7 @@ class manager:
             proxy = self.get_jack_controller()
         except:
             return False
-        return proxy and proxy.is_availalbe()
+        return proxy and proxy.is_available()
 
     def jack_start(self):
         if not self.get_jack_configure().get_selected_driver():
@@ -134,7 +134,7 @@ class manager:
             proxy = self.get_a2j_controller()
         except:
             return False
-        if proxy.is_availalbe():
+        if proxy.is_available():
             return True
         self.clear_a2j_controller()
         return False
@@ -165,7 +165,7 @@ class manager:
             proxy = self.get_ladish_controller()
         except:
             return False
-        if proxy.is_availalbe():
+        if proxy.is_available():
             return True
         self.clear_ladish_controller()
         return False
