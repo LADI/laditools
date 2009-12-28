@@ -2,7 +2,7 @@ This should be enough for now :
 
 known dependencies : 
 - pygtk-2.12
-- pyxml (0.8.4 is known to work, earlyier might also...)
+- pyYaml
 - a recent glade and it's python bindings
 
 python setup.py install
@@ -12,4 +12,4 @@ python setup.py --help
  - or -
 python setup.py --help-commands
 
-If you're a package maintainer and need help with packaging you might want to ask on #jack or #LAD to either MarcOChapeau or nedko.
+If you're a package maintainer and need help with packaging you might want to ask on #jack or #LADI to either MarcOChapeau or nedko.
