@@ -24,7 +24,7 @@ from gobject import timeout_add
 import laditools
 
 # Default configuration
-autostart_default = 0
+autostart_default = False
 
 class laditray (gtk.StatusIcon, laditools.manager):
     def __init__ (self):
@@ -32,10 +32,10 @@ class laditray (gtk.StatusIcon, laditools.manager):
         self.laditray_config = laditools.config ()
         self.param_dict = self.laditray_config.get_as_dict ('laditray')
         if 'autostart' not in self.param_dict:
-            self.param_dict['autostart'] = str(autostart_default), {}
-        autostart, devnull = self.param_dict['autostart']
+            self.param_dict['autostart'] = autostart_default
+        autostart = self.param_dict['autostart']
         # Build the UI
-        laditools.manager.__init__(self, int(autostart))
+        laditools.manager.__init__(self, autostart)
         gtk.StatusIcon.__init__ (self)
         self.icon_state = ""
         self.last_status_text = ""
@@ -105,9 +105,9 @@ class laditray (gtk.StatusIcon, laditools.manager):
         self.laditray_config.set_as_dict ('laditray', self.param_dict)
         return 0
 
-try:
-    laditray().run()
-except Exception, e:
-    error = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Unexpected error\n\n" + repr(e))
-    error.run()
-    exit(1)
+#try:
+laditray().run()
+#except Exception, e:
+#    error = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Unexpected error\n\n" + repr(e))
+#    error.run()
+#    exit(1)

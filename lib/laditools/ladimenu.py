@@ -45,8 +45,8 @@ class manager:
         self.menu_array = self.ladimenu_config.get_as_array('ladimenu')
         # Add some defaults if we don't already have a menu
         if self.menu_array == []:
-            for name, path in menu_default:
-                self.menu_array.append((path, {'name' : name}))
+            for element in menu_default:
+                self.menu_array.append(element)
             self.ladimenu_config.set_as_array('ladimenu', self.menu_array, 'menuitem')
 
         self.proc_list = []

@@ -54,8 +54,8 @@ class config:
         self.save()
 
     # Use this when you want to update the yaml config with the content of the array
-    def set_as_array(self, app_name, param_array, element_name):
-        self.appdict[app_name] = param_array, element_name
+    def set_as_array(self, app_name, param_array):
+        self.appdict[app_name] = param_array
         self.save()
 
     # Use this when you want to write the config file to disk
