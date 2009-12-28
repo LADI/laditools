@@ -21,44 +21,34 @@ from os import environ, sep, mkdir
 from os.path import exists
 config_dir = environ['HOME'] + sep + ".config" + sep + "laditools" + sep
 config_filename = config_dir + "laditools.conf"
-if not exists(config_dir):
-    mkdir(config_dir, 0755)
+if not exists (config_dir):
+    mkdir (config_dir, 0755)
 
+# Note to users of the config class. Only applications should create an instance
+# of the config object. The ladimenu is *NOT* an application...
 class config:
-    def __init__(self):
+    def __init__ (self):
         try:
-            self.appdict = yaml.load(config_filename)
+	    config_file = open (config_filename)
+            self.appdict = yaml.load (config_file)
+	    config_file.close ()
         except:
-            self.appdict = {}
+	    print "Config file doesn't exist, creating a new one..."
+            self.appdict = dict ()
 
-    # Use this to create the dictionary that you'll use in your application
-    # You can add remove any parameters you wish from it, it'll get saved magically
-    def get_as_dict(self, app_name):
+    # Returns the section named <app_name> from the global config
+    def get_config_section (self, app_name):
         if app_name in self.appdict:
             return self.appdict[app_name]
         else:
-            return {}
+            return None
 
-    # Use this to create the array that you'll use in your application
-    # The array is used when you want to take into account the order the items are listed in the file
-    # You can add remove any parameters you wish from it, it'll get saved magically
-    def get_as_array(self, app_name):
-        if app_name in self.appdict:
-            return self.appdict[app_name]
-        else:
-            return []
-
-    # Use this when you want to update the yaml config with the content of the dictionary
-    def set_as_dict(self, app_name, param_dict):
+    # Saves the section named <app_name> into the global config
+    def set_config_section (self, app_name, param_dict):
 	self.appdict[app_name] = param_dict
-        self.save()
 
-    # Use this when you want to update the yaml config with the content of the array
-    def set_as_array(self, app_name, param_array):
-        self.appdict[app_name] = param_array
-        self.save()
-
-    # Use this when you want to write the config file to disk
-    def save(self):
-        config_file = open(config_filename, 'w')
-        yaml.dump(self.appdict, config_file)
+    # This writes the config file to the disk
+    def save (self):
+        config_file = open (config_filename, 'w')
+        yaml.dump (self.appdict, config_file)
+	config_file.close ()

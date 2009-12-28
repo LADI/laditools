@@ -34,7 +34,7 @@ try:
     import vte
     import laditools
 except Exception, e:
-    error = gtk.MessageDialog (None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Wow dude...\n\nYou really need to get you dependencies right before you run this program. Ask your package maintainer why he didn't do his job properly\n%s" % repr(e))
+    error = gtk.MessageDialog (None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "You need to get you dependencies right before you run this program. Ask your package maintainer why this is happening to you\n%s" % repr(e))
     error.run ()
     exit (1)
 
@@ -85,18 +85,22 @@ class ladilog (gtk.glade.XML):
             ]
 
         # Handle the configuration
-        self.jacklog_config = laditools.config ()
-        self.param_dict = self.jacklog_config.get_as_dict ('ladilog')
+        self.global_config = laditools.config ()
+        self.param_dict = self.global_config.get_config_section ('ladilog')
 
-        for log in self.log_files:
-            if log['config_name'] not in self.param_dict:
-                self.param_dict[log['config_name']] = log['config_default'], {}
+	for log in self.log_files:
+            if self.param_dict != None:
+	        if log['config_name'] not in self.param_dict:
+                    self.param_dict[log['config_name']] = log['config_default']
+            else:
+	        self.param_dict = {}
+	        self.param_dict[log['config_name']] = log['config_default']
 
         if 'max_lines' not in self.param_dict:
-            self.param_dict['max_lines'] = max_lines_default, {}
+            self.param_dict['max_lines'] = max_lines_default
 
         for log in self.log_files:
-            log['logfile_path'], devnull = self.param_dict[log['config_name']]
+            log['logfile_path'] = self.param_dict[log['config_name']]
             # skip logfiles that dont exist
             if not os.access(log['logfile_path'], os.R_OK):
                 self.log_files.remove(log)
@@ -104,7 +108,7 @@ class ladilog (gtk.glade.XML):
             else:
                 print "Watching '%s'" % log['logfile_path']
 
-        max_lines_text, devnull = self.param_dict['max_lines']
+        max_lines_text = self.param_dict['max_lines']
         self.max_lines = int (max_lines_text)
         # Load the glade file
         gtk.glade.XML.__init__(self, laditools.find_data_file("ladilog_ui.glade"))
@@ -171,7 +175,8 @@ class ladilog (gtk.glade.XML):
 
     def run (self):
         gtk.main ()
-        self.jacklog_config.set_as_dict ("ladilog", self.param_dict)
+        self.global_config.set_config_section ("ladilog", self.param_dict)
+	self.global_config.save ()
         return 0
 
 try:

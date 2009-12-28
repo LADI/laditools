@@ -34,25 +34,24 @@ menu_default = [("Configure...", "ladiconf"),
     ("Logs...", "ladilog")]
 
 class manager:
-    def __init__(self, jack_autostart = False):
+    def __init__(self, menu_config_array, jack_autostart = False):
         self.proxy_jack_controller = None
         self.proxy_jack_configure = None
         self.proxy_a2j_controller = None
         self.proxy_ladish_controller = None
         self.diagnose_text = ""
         # Handle the configuration and grab custom menu items
-        self.ladimenu_config = config()
-        self.menu_array = self.ladimenu_config.get_as_array('ladimenu')
+	self.menu_array = menu_config_array
         # Add some defaults if we don't already have a menu
-        if self.menu_array == []:
+        if self.menu_array == None:
+	    self.menu_array = []
             for element in menu_default:
                 self.menu_array.append(element)
-            self.ladimenu_config.set_as_array('ladimenu', self.menu_array, 'menuitem')
 
         self.proc_list = []
 
         if jack_autostart:
-            self.jack_start()
+            self.jack_start ()
 
     def set_diagnose_text(self, text):
         self.diagnose_text = text
@@ -62,7 +61,6 @@ class manager:
             
     def get_jack_controller(self):
         if not self.proxy_jack_controller:
-            #print "creating jack proxy"
             self.proxy_jack_controller = jack_controller()
         return self.proxy_jack_controller
 
@@ -75,7 +73,6 @@ class manager:
         return self.proxy_jack_configure
 
     def clear_jack_proxies(self):
-        #print "clearing jack proxies"
         self.proxy_jack_controller = None
         self.proxy_jack_configure = None
 
@@ -107,27 +104,21 @@ class manager:
         self.get_jack_controller().reset_xruns()
 
     def jack_is_started(self):
-        #print "jack_is_started"
         return self.get_jack_controller().is_started()
 
     def jack_is_realtime(self):
-        #print "jack_is_realtime"
         return self.get_jack_controller().is_realtime()
 
     def jack_get_load(self):
-        #print "jack_get_load"
         return self.get_jack_controller().get_load()
 
     def jack_get_xruns(self):
-        #print "jack_get_xruns"
         return self.get_jack_controller().get_xruns()
 
     def jack_get_sample_rate(self):
-        #print "jack_get_sample_rate"
         return self.get_jack_controller().get_sample_rate()
 
     def jack_get_latency(self):
-        #print "jack_get_latency"
         return self.get_jack_controller().get_latency()
 
     def get_a2j_controller(self):
@@ -297,8 +288,8 @@ class manager:
             menu_items.append((gtk.ImageMenuItem("Start gladish"), self.on_menu_launcher, "gladish"))
 
         # Add the laucher entries at the beginning of the menu
-        for path, attrib_dict in self.menu_array:
-            menu_items.append((gtk.ImageMenuItem(attrib_dict['name']), self.on_menu_launcher, path))
+        for menu_label, path in self.menu_array:
+            menu_items.append((gtk.ImageMenuItem(menu_label), self.on_menu_launcher, path))
 
         menu = gtk.Menu()
         menu_items.append((gtk.SeparatorMenuItem(),))

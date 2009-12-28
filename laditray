@@ -29,13 +29,13 @@ autostart_default = False
 class laditray (gtk.StatusIcon, laditools.manager):
     def __init__ (self):
         # Handle the configuration
-        self.laditray_config = laditools.config ()
-        self.param_dict = self.laditray_config.get_as_dict ('laditray')
-        if 'autostart' not in self.param_dict:
-            self.param_dict['autostart'] = autostart_default
-        autostart = self.param_dict['autostart']
+        self.global_config = laditools.config ()
+        self.laditray_param_dict = self.global_config.get_config_section ('laditray')
+        if 'autostart' not in self.laditray_param_dict:
+            self.laditray_param_dict['autostart'] = autostart_default
+        autostart = self.laditray_param_dict['autostart']
         # Build the UI
-        laditools.manager.__init__(self, autostart)
+        laditools.manager.__init__(self, self.global_config.get_config_section ('ladimenu'), autostart)
         gtk.StatusIcon.__init__ (self)
         self.icon_state = ""
         self.last_status_text = ""
@@ -102,12 +102,16 @@ class laditray (gtk.StatusIcon, laditools.manager):
 
     def run(self):
         gtk.main ()
-        self.laditray_config.set_as_dict ('laditray', self.param_dict)
+	# Some default config might need to be injected in the config file,
+	# we handle all that before we quit.
+        self.global_config.set_config_section ('ladimenu', self.menu_array)
+	self.global_config.set_config_section ('laditray', self.laditray_param_dict)
+	self.global_config.save ()
         return 0
 
-#try:
-laditray().run()
-#except Exception, e:
-#    error = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Unexpected error\n\n" + repr(e))
-#    error.run()
-#    exit(1)
+try:
+    laditray().run()
+except Exception, e:
+    error = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Unexpected error\n\n" + repr(e))
+    error.run()
+    exit(1)
