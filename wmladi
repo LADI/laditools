@@ -198,6 +198,7 @@ class wmladi (wmoo.Application, laditools.manager):
     def run (self):
         self.run_gtk ()
         self.global_config.set_config_section ('wmladi', self.param_dict)
+	self.global_config.set_config_section ('ladimenu', self.menu_array)
 	self.global_config.save ()
 
 wmladi ().run ()
