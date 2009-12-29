@@ -31,8 +31,12 @@ class laditray (gtk.StatusIcon, laditools.manager):
         # Handle the configuration
         self.global_config = laditools.config ()
         self.laditray_param_dict = self.global_config.get_config_section ('laditray')
-        if 'autostart' not in self.laditray_param_dict:
-            self.laditray_param_dict['autostart'] = autostart_default
+        if self.param_dict != None:
+            if 'autostart' not in self.param_dict:
+                self.param_dict['autostart'] = str (autostart_default)
+        else:
+            self.param_dict = {}
+            self.param_dict['autostart'] = str (autostart_default)
         autostart = self.laditray_param_dict['autostart']
         # Build the UI
         laditools.manager.__init__(self, self.global_config.get_config_section ('ladimenu'), autostart)

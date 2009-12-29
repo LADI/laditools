@@ -37,8 +37,12 @@ class wmladi (wmoo.Application, laditools.manager):
         # Handle the configuration
         self.global_config = laditools.config ()
         self.param_dict = self.global_config.get_config_section ('wmladi')
-        if 'autostart' not in self.param_dict:
-            self.param_dict['autostart'] = str (autostart_default)
+	if self.param_dict != None:
+	    if 'autostart' not in self.param_dict:
+	       self.param_dict['autostart'] = str (autostart_default)
+        else:
+	    self.param_dict = {}
+	    self.param_dict['autostart'] = str (autostart_default)
         autostart = self.param_dict['autostart']
         wmoo.Application.__init__ (
             self,
