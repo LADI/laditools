@@ -27,8 +27,6 @@ from jack_controller import jack_controller
 from a2j_controller import a2j_controller
 from ladish_controller import ladish_proxy
 
-# TODO : somehow, we need stock icons. Nothing else can be used for ImageMenuItems
-
 # Default launcher menu :
 menu_default = [("Configure...", "ladiconf"),
     ("Logs...", "ladilog")]
