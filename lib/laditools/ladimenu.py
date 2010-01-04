@@ -1,5 +1,7 @@
 # LADITools - Linux Audio Desktop Integration Tools
-# Copyright (C) 2007, 2008, 2009, Marc-Olivier Barre and Nedko Arnaudov.
+# Copyright (C) 2007-2010:
+# * Marc-Olivier Barre <marco@marcochapeau.org>
+# * Nedko Arnaudov <nedko@arnaudov.name>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,8 +30,8 @@ from a2j_controller import a2j_controller
 from ladish_controller import ladish_proxy
 
 # Default launcher menu :
-menu_default = [("Configure...", "ladiconf"),
-    ("Logs...", "ladilog")]
+menu_default = [{"Configure": "ladiconf"},
+    {"Logs": "ladilog"}]
 
 class manager:
     def __init__(self, menu_config_array, jack_autostart = False):
@@ -286,7 +288,8 @@ class manager:
             menu_items.append((gtk.ImageMenuItem("Start gladish"), self.on_menu_launcher, "gladish"))
 
         # Add the laucher entries at the beginning of the menu
-        for menu_label, path in self.menu_array:
+        for items in self.menu_array:
+            menu_label
             menu_items.append((gtk.ImageMenuItem(menu_label), self.on_menu_launcher, path))
 
         menu = gtk.Menu()

@@ -1,5 +1,7 @@
 # LADITools - Linux Audio Desktop Integration Tools
-# Copyright (C) 2007, 2008, 2009, Marc-Olivier Barre and Nedko Arnaudov.
+# Copyright (C) 2007-2010:
+# * Marc-Olivier Barre <marco@marcochapeau.org>
+# * Nedko Arnaudov <nedko@arnaudov.name>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

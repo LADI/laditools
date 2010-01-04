@@ -2,7 +2,7 @@
 
 # LADITools - Linux Audio Desktop Integration Tools
 # laditray - System tray integration for LADI
-# Copyright (C) 2007-2008, Marc-Olivier Barre and Nedko Arnaudov.
+# Copyright (C) 2007-2010, Marc-Olivier Barre <marco@marcochapeau.org>, Nedko Arnaudov <nedko@arnaudov.name>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,12 +31,12 @@ class laditray (gtk.StatusIcon, laditools.manager):
         # Handle the configuration
         self.global_config = laditools.config ()
         self.laditray_param_dict = self.global_config.get_config_section ('laditray')
-        if self.param_dict != None:
-            if 'autostart' not in self.param_dict:
-                self.param_dict['autostart'] = str (autostart_default)
+        if self.laditray_param_dict != None:
+            if 'autostart' not in self.laditray_param_dict:
+                self.laditray_param_dict['autostart'] = str (autostart_default)
         else:
-            self.param_dict = {}
-            self.param_dict['autostart'] = str (autostart_default)
+            self.laditray_param_dict = {}
+            self.laditray_param_dict['autostart'] = str (autostart_default)
         autostart = self.laditray_param_dict['autostart']
         # Build the UI
         laditools.manager.__init__(self, self.global_config.get_config_section ('ladimenu'), autostart)
@@ -113,9 +113,9 @@ class laditray (gtk.StatusIcon, laditools.manager):
 	self.global_config.save ()
         return 0
 
-try:
-    laditray().run()
-except Exception, e:
-    error = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Unexpected error\n\n" + repr(e))
-    error.run()
-    exit(1)
+#try:
+laditray().run()
+#except Exception, e:
+#    error = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Unexpected error\n\n" + repr(e))
+#    error.run()
+#    exit(1)
