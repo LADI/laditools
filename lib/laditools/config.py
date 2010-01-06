@@ -52,5 +52,5 @@ class config:
     # This writes the config file to the disk
     def save (self):
         config_file = open (config_filename, 'w')
-        yaml.dump (self.appdict, config_file)
+        yaml.dump (self.appdict, config_file, default_flow_style=False)
 	config_file.close ()
