@@ -28,7 +28,7 @@ class jack_controller:
         self.iface = dbus.Interface(self.controller, controller_interface_name)
         #print(self.controller)
 
-    def is_availalbe(self):
+    def is_available(self):
         try:
             self.iface.IsStarted()
             return True

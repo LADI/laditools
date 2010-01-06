@@ -35,7 +35,7 @@ def check_ladish():
         print "ladish proxy creation failed"
         return
 
-    if not proxy.is_availalbe():
+    if not proxy.is_available():
         print "ladish is not available"
         return
 

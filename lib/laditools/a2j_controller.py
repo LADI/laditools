@@ -26,7 +26,7 @@ class a2j_controller:
         self.controller = self.bus.get_object(service_name, "/")
         self.iface = dbus.Interface(self.controller, control_interface_name)
 
-    def is_availalbe(self):
+    def is_available(self):
         try:
             self.iface.is_started()
             return True
