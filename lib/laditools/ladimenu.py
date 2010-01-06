@@ -90,7 +90,8 @@ class manager:
              dlg.run()
              dlg.destroy()
              return
-        self.set_starting_status()
+# This has nothing to do here... I suppose
+#        self.set_starting_status()
         self.get_jack_controller().start()
 
     def jack_stop(self):
@@ -289,8 +290,8 @@ class manager:
 
         # Add the laucher entries at the beginning of the menu
         for items in self.menu_array:
-            menu_label = items.keys()
-            path = items.values()
+            menu_label = items.keys()[0]
+            path = items.values()[0]
             menu_items.append((gtk.ImageMenuItem(menu_label), self.on_menu_launcher, path))
 
         menu = gtk.Menu()

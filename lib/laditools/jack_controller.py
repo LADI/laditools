@@ -23,12 +23,12 @@ controller_interface_name = name_base + '.JackControl'
 service_name = name_base + '.service'
 
 class jack_controller:
-    def __init__ (self, mainloop):
+    def __init__ (self):
         # Connect to the bus
-        self.bus = dbus.SessionBus (mainloop)
+        self.bus = dbus.SessionBus ()
         self.controller = self.bus.get_object (service_name, "/org/jackaudio/Controller")
         self.iface = dbus.Interface (self.controller, controller_interface_name)
-        self.bus.add_signal_receiver (self.name_owner_changed, dbus_interface = controller_interface_name, signal_name = "NameOwnerChanged")
+#        self.bus.add_signal_receiver (self.name_owner_changed, dbus_interface = controller_interface_name, signal_name = "NameOwnerChanged")
 
     def name_owner_changed (name = None, old_owner = None, new_owner = None):
         print "Name changed : %r" % name

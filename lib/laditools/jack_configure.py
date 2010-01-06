@@ -35,12 +35,12 @@ def dbus_type_to_python_type (dbus_value):
     return dbus_value
 
 class jack_configure:
-    def __init__ (self, mainloop):
+    def __init__ (self):
         # Connect to the bus
-        self.bus = dbus.SessionBus (mainloop)
+        self.bus = dbus.SessionBus ()
         self.controller = self.bus.get_object (service_name, "/org/jackaudio/Controller")
         self.iface = dbus.Interface (self.controller, controller_interface_name)
-        self.bus.add_signal_receiver (self.name_owner_changed, dbus_interface = controller_interface_name, signal_name = "NameOwnerChanged")
+#        self.bus.add_signal_receiver (self.name_owner_changed, dbus_interface = controller_interface_name, signal_name = "NameOwnerChanged")
 
     def name_owner_changed (name = None, old_owner = None, new_owner = None):
         print "Name changed : %r" % name

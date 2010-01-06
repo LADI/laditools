@@ -70,20 +70,19 @@ class ladilog (gtk.glade.XML):
             {
             'name': 'JACK',
             'config_name': 'jackdbus_log',
-            'config_default': os.sep.join([os.environ['HOME'], ".log", "jack", "jackdbus.log"]),
+            'config_default': os.sep.join([os.environ['HOME'], ".log", "jack", "jackdbus.log"])
             },
             {
             'name': 'LADISH',
             'config_name': 'ladish_log',
-            'config_default': os.sep.join([os.environ['HOME'], ".log", "ladish", "ladish.log"]),
+            'config_default': os.sep.join([os.environ['HOME'], ".log", "ladish", "ladish.log"])
             },
             {
             'name': 'A2J',
             'config_name': 'a2j_log',
-            'config_default': os.sep.join([os.environ['HOME'], ".log", "a2j", "a2j.log"]),
-            },
+            'config_default': os.sep.join([os.environ['HOME'], ".log", "a2j", "a2j.log"])
+            }
             ]
-
         # Handle the configuration
         self.global_config = laditools.config ()
         self.param_dict = self.global_config.get_config_section ('ladilog')
