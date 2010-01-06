@@ -25,7 +25,7 @@ from config import config
 from jack_configure import jack_configure
 from jack_controller import jack_controller
 from a2j_controller import a2j_controller
-from lash_controller import ladish_proxy
+from ladish_controller import ladish_proxy
 
 # TODO : somehow, we need stock icons. Nothing else can be used for ImageMenuItems
 
