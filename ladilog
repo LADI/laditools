@@ -98,7 +98,7 @@ class ladilog (gtk.glade.XML):
         if 'max_lines' not in self.param_dict:
             self.param_dict['max_lines'] = max_lines_default
 
-        for log in self.log_files:
+        for log in self.log_files[:]:
             log['logfile_path'] = self.param_dict[log['config_name']]
             # skip logfiles that dont exist
             if not os.access(log['logfile_path'], os.R_OK):
