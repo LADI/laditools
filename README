@@ -2,16 +2,19 @@ Linux Audio Desktop Integration Tools
 
 LADITools is a set of tools aiming to achieve the goals of the LADI project to 
 improve desktop integration and user workflow of Linux audio system based on 
-JACK and LASH. Those tools take advantage of the DBus interfaces recently added
-to JACK and LASH to ease the configuration and use of those two great softwares.
+JACK and LADISH. Those tools take advantage of the DBus interfaces of JACK 2 and LADISH
+to ease the configuration and use of your software studio.
+
+In a near future, it should also be possible to use laditools to control JACK through
+an OSC interface.
 
 You will find in this suite :
  - The laditools python module (no interest for the end users)
  - laditray : a system tray icon that allows you to start, stop and monitor
    JACK, as well as start some JACK related apps (log viewer, connections...) 
- - wmladi : a controller as a Window Maker dockapp. Uses the same menu as laditray
- - ladilog : a JACK, LASH and a2jmidid log viewer
- - ladiconf : a GUI to setup JACK's configuration
+ - wmladi : a controller as a Window Maker dockapp which uses a menu similar to laditray's
+ - ladilog : a JACK, LADISH and a2jmidid log viewer
+ - ladiconf : a GUI to setup JACK's and laditools' configuration
  - g15ladi : a JACK monitor for g15 keyboards
 
 Enjoy !

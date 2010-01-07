@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 # LADITools - Linux Audio Desktop Integration Tools
-# Copyright (C) 2007-2008, Marc-Olivier Barre and Nedko Arnaudov.
+# setup.py - Setup script for the LADITools suite
+# Copyright (C) 2007-2008, Marc-Olivier Barre <marco@marcochapeau.org>
+# Copyright (C) 2007-2008, Nedko Arnaudov <nedko@arnaudov.name>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
