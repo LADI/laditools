@@ -290,7 +290,7 @@ class manager:
 
         # Add the laucher entries at the beginning of the menu
         for items in self.menu_array:
-            menu_label = items.keys()[0]
+            menu_label = items.keys()[0] + "..."
             path = items.values()[0]
             menu_items.append((gtk.ImageMenuItem(menu_label), self.on_menu_launcher, path))
 
