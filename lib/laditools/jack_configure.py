@@ -44,19 +44,9 @@ class jack_configure:
     def name_owner_changed (name = None, old_owner = None, new_owner = None):
         print "Name changed : %r" % name
 
-    def get_available_driver (self):
-        is_range, is_strict, is_fake_values, values = self.iface.GetParameterConstraint (['engine', 'driver'])
-        drivers = []
-        for value in values:
-            drivers.append (value[1])
-        return drivers
-
     def get_selected_driver (self):
         isset, default, value = self.iface.GetParameterValue (['engine', 'driver'])
         return value
-    
-    def select_driver (self, driver):
-        self.iface.SetParameterValue (['engine', 'driver'], driver)
 
     def read_container (self, path):
         is_leaf, children = self.iface.ReadContainer (path)

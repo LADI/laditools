@@ -84,12 +84,6 @@ class manager:
         return proxy and proxy.is_available()
 
     def jack_start(self):
-        if not self.get_jack_configure().get_selected_driver():
-             dlg = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, "JACK has no driver selected. Configure JACK first!")
-             dlg.set_title("Cannot start JACK server")
-             dlg.run()
-             dlg.destroy()
-             return
 # This has nothing to do here... I suppose
 #        self.set_starting_status()
         self.get_jack_controller().start()

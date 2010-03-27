@@ -117,50 +117,6 @@ class configure_command:
     def run(self, arg):
         pass
 
-class jack_driver_change_command(configure_command):
-    def get_description(self):
-        return 'Select JACK driver'
-
-    def run(self, arg):
-        dlg = gtk.Dialog()
-        dlg.set_title(self.get_window_title())
-        dlg.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-        dlg.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-
-        driver_list = gtk.TreeView()
-        dlg.vbox.pack_start(driver_list, True)
-
-        store = gtk.ListStore(str)
-
-        text_renderer = gtk.CellRendererText()
-
-        column = gtk.TreeViewColumn("Name", text_renderer, text=0)
-        driver_list.append_column(column)
-
-        drivers = jack.get_available_driver()
-        for driver in drivers:
-            store.append([driver])
-
-        driver_list.set_model(store)
-
-        selection = driver_list.get_selection()
-
-        current_driver = jack.get_selected_driver()
-        if current_driver:
-            for row in store:
-                if current_driver == row[0]:
-                    selection.select_iter(row.iter)
-
-        driver_list.connect("row-activated", lambda *x: dlg.response(gtk.RESPONSE_OK))
-
-        driver = None
-
-        dlg.show_all()
-        ret = dlg.run()
-        if ret == gtk.RESPONSE_OK:
-            jack.select_driver(store.get(selection.get_selected()[1], 0)[0])
-        dlg.hide()
-
 class parameter_enum_value(gobject.GObject):
     def __init__(self, is_fake_value, value, description):
         gobject.GObject.__init__(self)
@@ -637,7 +593,6 @@ class jack_internal_params_configure_command(jack_params_configure_command):
 check_ladish()
 
 commands = [
-    jack_driver_change_command(),
     jack_engine_params_configure_command(),
     jack_driver_params_configure_command(),
     ]
