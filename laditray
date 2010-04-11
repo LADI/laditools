@@ -84,6 +84,8 @@ class laditray (gtk.StatusIcon, laditools.manager):
                 # Get Realtime status
                 if self.jack_is_realtime():
                     status_text = "RT | "
+                else:
+                    status_text = ""
                 # Get DSP Load
                 status_text += str (round (float (self.jack_get_load()),1)) + "% | "
                 # Get Xruns
