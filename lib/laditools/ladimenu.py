@@ -316,10 +316,13 @@ class manager:
             menu_items.append((gtk.ImageMenuItem("Reactivate JACK"), self.on_menu_command, self.jack_reactivate))
             menu_items.append((gtk.SeparatorMenuItem(), None, None))
         if self.a2j_is_available():
-            if not self.a2j_is_started():
-                menu_items.append((gtk.ImageMenuItem("Start A2J bridge"), self.on_menu_command, self.a2j_start))
-            else:
-                menu_items.append((gtk.ImageMenuItem("Stop A2J bridge"), self.on_menu_command, self.a2j_stop))
+            # when a2jmidid is used in used with ladish, a2j script should be used
+            # for managing bridge "active" lifetime
+            if not self.ladish_is_available():
+                if not self.a2j_is_started():
+                    menu_items.append((gtk.ImageMenuItem("Start A2J bridge"), self.on_menu_command, self.a2j_start))
+                else:
+                    menu_items.append((gtk.ImageMenuItem("Stop A2J bridge"), self.on_menu_command, self.a2j_stop))
             menu_items.append((gtk.ImageMenuItem("Reactivate A2J"), self.on_menu_command, self.a2j_reactivate))
             menu_items.append((gtk.SeparatorMenuItem(), None, None))
         menu_items.append((gtk.ImageMenuItem("Quit"), self.on_menu_command, gtk.main_quit))
