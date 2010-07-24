@@ -56,7 +56,7 @@ def read_last(lfile, lines):
     while pos >= 0 and backlog_size <= lines:
         lfile.seek(pos, 0)
         s = lfile.read(chunk_size)
-        pos = pos - 10000
+        pos = pos - chunk_size
         backlog_size += s.count("\n")
         backlog = s + backlog
     backlog = backlog.strip().split("\n")
