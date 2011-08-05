@@ -34,7 +34,7 @@ setup(name='laditools',
 	('share/applications', ['data/laditray.desktop']),
 	('share/applications', ['data/ladiconf.desktop']),
         ('share/laditools/data', ['data/laditools_logo.svg',
-        'data/ladilog_ui.glade',
+        'data/ladilog_ui.ui',
         'data/started.svg',
         'data/starting.svg',
         'data/stopped.svg'])]
