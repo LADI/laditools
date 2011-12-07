@@ -30,11 +30,10 @@ if not exists (config_dir):
 class config:
     def __init__ (self):
         try:
-	    config_file = open (config_filename)
-            self.appdict = yaml.load (config_file)
-	    config_file.close ()
+            with open (config_filename) as config_file:
+                self.appdict = yaml.load (config_file)
         except:
-	    print "Config file doesn't exist, creating a new one..."
+            print "Config file doesn't exist, creating a new one..."
             self.appdict = dict ()
 
     # Returns the section named <app_name> from the global config
@@ -46,10 +45,10 @@ class config:
 
     # Saves the section named <app_name> into the global config
     def set_config_section (self, app_name, param_dict):
-	self.appdict[app_name] = param_dict
+        self.appdict[app_name] = param_dict
 
     # This writes the config file to the disk
     def save (self):
         config_file = open (config_filename, 'w')
         yaml.dump (self.appdict, config_file, default_flow_style=False)
-	config_file.close ()
+        config_file.close ()
