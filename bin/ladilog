@@ -88,13 +88,13 @@ class ladilog (gtk.glade.XML):
         self.global_config = laditools.config ()
         self.param_dict = self.global_config.get_config_section ('ladilog')
 
-	for log in self.log_files:
+        for log in self.log_files:
             if self.param_dict != None:
-	        if log['config_name'] not in self.param_dict:
+                if log['config_name'] not in self.param_dict:
                     self.param_dict[log['config_name']] = log['config_default']
             else:
-	        self.param_dict = {}
-	        self.param_dict[log['config_name']] = log['config_default']
+                self.param_dict = {}
+                self.param_dict[log['config_name']] = log['config_default']
 
         if 'max_lines' not in self.param_dict:
             self.param_dict['max_lines'] = max_lines_default
@@ -176,7 +176,7 @@ class ladilog (gtk.glade.XML):
     def run (self):
         gtk.main ()
         self.global_config.set_config_section ("ladilog", self.param_dict)
-	self.global_config.save ()
+        self.global_config.save ()
         return 0
 
 try:
