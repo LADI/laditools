@@ -41,10 +41,10 @@ class manager:
         self.proxy_ladish_controller = None
         self.diagnose_text = ""
         # Handle the configuration and grab custom menu items
-	self.menu_array = menu_config_array
+        self.menu_array = menu_config_array
         # Add some defaults if we don't already have a menu
         if self.menu_array == None:
-	    self.menu_array = []
+        self.menu_array = []
             for element in menu_default:
                 self.menu_array.append(element)
 
