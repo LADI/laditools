@@ -18,10 +18,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
+import sys
+import subprocess
 from distutils.core import setup
 
+laditools_version = "1.0~rc2"
+get_commit_script = "gitcommit.sh"
+
+if not os.getenv("LADI_RELEASE") and \
+        os.path.isfile(get_commit_script):
+    commit = subprocess.check_output(["sh", get_commit_script]).strip()
+    laditools_version += "+" + commit
+
 setup(name='laditools',
-    version='1.0~rc2',
+    version=laditools_version,
     description='Linux Audio Desktop Integration Tools',
     author='Marc-Olivier Barre and Nedko Arnaudov',
     author_email='marco@marcochapeau.org',
@@ -34,8 +45,8 @@ setup(name='laditools',
              'bin/ladiconf'],
     data_files=[('share/doc/laditools', ['README', 'COPYING', 'INSTALL']),
         ('share/pixmaps', ['data/ladilog.svg', 'data/laditray.svg', 'data/ladiconf.svg']),
-	('share/applications', ['data/laditray.desktop']),
-	('share/applications', ['data/ladiconf.desktop']),
+        ('share/applications', ['data/laditray.desktop']),
+        ('share/applications', ['data/ladiconf.desktop']),
         ('share/laditools/data', ['data/laditools_logo.svg',
         'data/ladilog_ui.glade',
         'data/started.svg',
