@@ -21,8 +21,16 @@
 import sys
 import os
 from wmdocklib import wmoo, pywmhelpers
-import laditools
 import time
+
+try:
+    import imp
+    imp.find_module('laditools')
+except ImportError:
+    # Running from the build tree?
+    sys.path.insert(0, os.path.join(sys.path[0], os.pardir))
+
+import laditools
 
 import pygtk
 pygtk.require('2.0')

@@ -27,6 +27,15 @@ import termios
 import tty
 
 try:
+    import imp
+    imp.find_module('laditools')
+except ImportError:
+    # Running from the build tree?
+    sys.path.insert(0, os.path.join(sys.path[0], os.pardir))
+
+import laditools
+
+try:
     from gobject import timeout_add
     import pygtk
     pygtk.require ('2.0')
