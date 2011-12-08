@@ -38,15 +38,13 @@ import laditools
 gettext.install(laditools.__name__)
 
 try:
-    from gobject import timeout_add
-    import pygtk
-    pygtk.require ('2.0')
-    import gtk
-    import vte
+    from gi.repository import Gtk, GObject, Vte
 except Exception, e:
-    error = gtk.MessageDialog (None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, _("You need to get you dependencies right before you run this program. Ask your package maintainer why this is happening to you\n%s") % repr(e))
+    error = Gtk.MessageDialog (None, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, _("You need to get you dependencies right before you run this program. Ask your package maintainer why this is happening to you\n%s") % repr(e))
     error.run ()
     exit (1)
+
+timeout_add = GObject.timeout_add
 
 # Default configuration
 max_lines_default = 100
@@ -120,10 +118,12 @@ class ladilog(object):
         max_lines_text = self.param_dict['max_lines']
         self.max_lines = int (max_lines_text)
         # Load the glade file
-        builder = gtk.Builder()
+        builder = Gtk.Builder()
         builder.add_from_file(laditools.find_data_file("ladilog_ui.ui"))
+        print laditools.find_data_file("ladilog_ui.ui")
         # Get the ui ready for action
         self.event_dict = {"on_ladilog_ui_destroy" : self.on_quit,
+            "on_ladilog_ui_delete" : self.on_delete,
             "on_close_button_clicked" : self.on_quit,
             "on_clear_button_clicked" : self.on_clear_text,
             "on_purge_button_clicked" : self.on_purge}
@@ -131,13 +131,11 @@ class ladilog(object):
 
         # Create our terminal and display it
         for log in self.log_files:
-            log['term'] = vte.Terminal ()
-            log["tab_label"] = gtk.Label (log["name"])
+            log['term'] = Vte.Terminal.new ()
+            log['term'].set_scroll_on_output(True)
+            log["tab_label"] = Gtk.Label(label=log["name"])
 
         self.logview_notebook = builder.get_object ("ladilog_notebook")
-
-        for log in self.log_files:
-            log['term'].show ()
 
         # Make it do something...
         for log in self.log_files:
@@ -146,7 +144,7 @@ class ladilog(object):
                 lines = read_last(log['log_file'], self.max_lines)
                 for line in lines:
                     line = line.strip('\r\n') + '\r\n'
-                    log["term"].feed(line)
+                    log["term"].feed(line, len(line))
 
             except ValueError:
                 print _("You called Popen with invalid arguments... dumbass")
@@ -154,9 +152,12 @@ class ladilog(object):
                 print _("Unexpected error:"), sys.exc_info ()[0]
 
         for log in self.log_files:
-            self.logview_notebook.append_page (log["term"])
-            self.logview_notebook.set_tab_label (log["term"], log["tab_label"])
+            self.logview_notebook.append_page (log["term"], log["tab_label"])
+#            self.logview_notebook.set_tab_label (log["term"], log["tab_label"])
 
+        ui = builder.get_object("ladilog_ui")
+        ui.resize(800, 400)
+        ui.show_all()
         self.auto_updater = timeout_add(250, self.update)
 
     def update(self):
@@ -164,34 +165,37 @@ class ladilog(object):
         for log in self.log_files:
             line = log['log_file'].readline()
             while line:
-                log["term"].feed(line + '\r')
+                log["term"].feed(line + '\r', len(line)+1)
                 line = log['log_file'].readline()
             log['log_file'].seek(log['log_file'].tell())
         return True
 
+    def on_delete(self, widget=None, data=None):
+        return False
+
     def on_quit (self, data=None):
-        gtk.main_quit ()
+        Gtk.main_quit ()
 
     def on_clear_text (self, data=None):
         current_view = self.logview_notebook.get_current_page ()
-        self.log_files[current_view]["term"].feed ("\033[2J\033[;f")
-
+        self.log_files[current_view]["term"].feed ("\033[2J\033[;f", len("\033[2J\033[;f"))
 
     def on_purge (self, data=None):
         current_view = self.logview_notebook.get_current_page ()
         # Opens the file in write anew mode thus clearing the file and close it right away
         open (self.log_files[current_view]['logfile_path'], "w+")
-        self.log_files[current_view]["term"].feed ("\033[2J\033[;f")
+        self.log_files[current_view]["term"].feed ("\033[2J\033[;f", len("\033[2J\033[;f"))
 
     def run (self):
-        gtk.main ()
+        Gtk.main ()
         self.global_config.set_config_section ("ladilog", self.param_dict)
         self.global_config.save ()
         return 0
 
 try:
     ladilog().run()
+    exit(0)
 except Exception, e:
-    error = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, _("Unexpected error\n\n") + repr(e))
+    error = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, _("Unexpected error\n\n") + repr(e))
     error.run()
     exit(1)
