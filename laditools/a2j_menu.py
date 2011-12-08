@@ -15,22 +15,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import pygtk
-pygtk.require('2.0')
-import gtk
+from gi.repository import Gtk
 
 # TODO : somehow, we need stock icons. Nothing else can be used for ImageMenuItems
 
 class a2j_menu:
     def __init__(self):
         self.menu_items = []
-        self.menu_items.append((gtk.ImageMenuItem("Start bridging"), self.on_menu_start))
-        self.menu_items.append((gtk.ImageMenuItem("Stop bridging"), self.on_menu_stop))
-        self.menu_items.append((gtk.SeparatorMenuItem(), None))
-        self.menu_items.append((gtk.ImageMenuItem("Reactivate"), self.on_menu_reactivate))
-        self.menu_items.append((gtk.ImageMenuItem("Quit"), self.on_menu_destroy))
+        self.menu_items.append((Gtk.ImageMenuItem("Start bridging"), self.on_menu_start))
+        self.menu_items.append((Gtk.ImageMenuItem("Stop bridging"), self.on_menu_stop))
+        self.menu_items.append((Gtk.SeparatorMenuItem(), None))
+        self.menu_items.append((Gtk.ImageMenuItem("Reactivate"), self.on_menu_reactivate))
+        self.menu_items.append((Gtk.ImageMenuItem("Quit"), self.on_menu_destroy))
 
-        self.menu = gtk.Menu()
+        self.menu = Gtk.Menu()
         for menu_tuple in self.menu_items:
             item, callback = menu_tuple
             self.menu.append(item)
@@ -49,7 +47,7 @@ class a2j_menu:
         self.get_controller().kill()
 
     def on_menu_destroy(self, widget):
-        gtk.main_quit()
+        Gtk.main_quit()
 
     def menu_activate(self):
         self.menu.popup(None, None, None, 3, 0)
