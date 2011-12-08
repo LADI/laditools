@@ -111,16 +111,18 @@ class ladilog(object):
             # skip logfiles that dont exist
             if not os.access(log['logfile_path'], os.R_OK):
                 self.log_files.remove(log)
-                print _("Skipping '%s' because it does not exist") % log['logfile_path']
+                sys.stderr.write( _("Skipping '%s' because it does not exist\n") % log['logfile_path'])
             else:
-                print _("Watching '%s'") % log['logfile_path']
+                sys.stderr.write( _("Watching %s\n") % log['logfile_path'])
+            sys.stderr.flush()
 
         max_lines_text = self.param_dict['max_lines']
         self.max_lines = int (max_lines_text)
         # Load the glade file
         builder = Gtk.Builder()
         builder.add_from_file(laditools.find_data_file("ladilog_ui.ui"))
-        print laditools.find_data_file("ladilog_ui.ui")
+        sys.stderr.write( _("Loading interface from %s\n") % laditools.find_data_file("ladilog_ui.ui"))
+        sys.stderr.flush()
         # Get the ui ready for action
         self.event_dict = {"on_ladilog_ui_destroy" : self.on_quit,
             "on_ladilog_ui_delete" : self.on_delete,
@@ -141,19 +143,20 @@ class ladilog(object):
         for log in self.log_files:
             try:
                 log['log_file'] = open(log['logfile_path'], "rb")
+                sys.stderr.write (_("Opening %s...\n") % log['logfile_path'])
                 lines = read_last(log['log_file'], self.max_lines)
                 for line in lines:
                     line = line.strip('\r\n') + '\r\n'
                     log["term"].feed(line, len(line))
-
             except ValueError:
-                print _("You called Popen with invalid arguments... dumbass")
+                sys.stderr.write( _("You called Popen with invalid arguments... dumbass\n") )
             except:
-                print _("Unexpected error:"), sys.exc_info ()[0]
+                sys.stderr.write( _("Unexpected error: %s\n") % (sys.exc_info ()[0]))
+            finally:
+                sys.stderr.flush()
 
         for log in self.log_files:
             self.logview_notebook.append_page (log["term"], log["tab_label"])
-#            self.logview_notebook.set_tab_label (log["term"], log["tab_label"])
 
         ui = builder.get_object("ladilog_ui")
         ui.resize(800, 400)
