@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 # LADITools - Linux Audio Desktop Integration Tools
 # wmladi - Window maker dockapp for jackdbus
