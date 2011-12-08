@@ -26,7 +26,6 @@ from signal import SIGTERM
 import termios
 import tty
 import gettext
-import laditools
 
 gettext.install(laditools.__name__)
 
