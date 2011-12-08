@@ -29,13 +29,14 @@ if not exists (config_dir):
 
 # Note to users of the config class. Only applications should create an instance
 # of the config object. The ladimenu is *NOT* an application...
-class config:
+class config(object):
     def __init__ (self):
         try:
             with open (config_filename) as config_file:
                 self.appdict = yaml.load (config_file)
         except:
-            print "Config file doesn't exist, creating a new one..."
+            sys.stderr.write("Config file doesn't exist, creating a new one...\n")
+            sys.stderr.flush()
             self.appdict = dict ()
 
     # Returns the section named <app_name> from the global config

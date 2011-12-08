@@ -352,8 +352,9 @@ def find_data_file(path):
         start_dir = "."
 
     paths = [
-        start_dir + os.sep + "data" + os.sep + path,
-        start_dir + os.sep + ".." + os.sep + "share"+ os.sep + "laditools" + os.sep + "data" + os.sep + path,
+        os.path.join(sys.path[0], 'data', path),
+        os.path.join(os.path.join(sys.path[0], os.pardir), 'data', path),
+        os.path.join(os.path.join(sys.path[0], os.pardir), 'share', 'laditools', 'data', path),
         ]
 
     for path in paths:
