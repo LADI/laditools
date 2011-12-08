@@ -35,7 +35,8 @@ class config(object):
             with open (config_filename) as config_file:
                 self.appdict = yaml.load (config_file)
         except:
-            print "Config file doesn't exist, creating a new one..."
+            sys.stderr.write("Config file doesn't exist, creating a new one...\n")
+            sys.stderr.flush()
             self.appdict = dict ()
 
     # Returns the section named <app_name> from the global config

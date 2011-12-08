@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import dbus
+import sys
 
 name_base = 'org.jackaudio'
 controller_interface_name = name_base + '.JackControl'
@@ -30,7 +31,8 @@ class jack_controller:
 #        self.bus.add_signal_receiver (self.name_owner_changed, dbus_interface = controller_interface_name, signal_name = "NameOwnerChanged")
 
     def name_owner_changed (name = None, old_owner = None, new_owner = None):
-        print "Name changed : %r" % name
+        sys.stderr.write("Name changed : %r\n" % name)
+        sys.stderr.flush()
 
     def is_available (self):
         try:
