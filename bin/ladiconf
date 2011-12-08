@@ -57,10 +57,10 @@ def check_ladish():
             title = sys.stderr.write(_("Studio is running"))
     else:
         msg = sys.stderr.write(_("JACK can only be configured with a loaded and stopped studio. Please create a new studio or load and stop an existing one."))
-        title = sys.stderr.write(_("No studio present")
+        title = sys.stderr.write(_("No studio present"))
 
     # studio is not loaded or loaded and started
-    mdlg = Gtk.MessageDialog(type = Gtk.MessageType.ERROR, buttons = Gtk.ButtonsType.CLOSE, message_format = msg)
+    mdlg = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.CLOSE, msg)
     mdlg.set_title(title)
     mdlg.run()
     mdlg.hide()
@@ -216,7 +216,7 @@ def combobox_get_active_text(combobox, model_index = 0):
         return None
     return model[active][model_index]
 
-class cell_renderer_param(Gtk.GenericCellRenderer):
+class cell_renderer_param(Gtk.CellRenderer):
     __gproperties__ = { "parameter": (GObject.TYPE_OBJECT, "Parameter", "Parameter", GObject.PARAM_READWRITE) }
 
     def __init__(self):
