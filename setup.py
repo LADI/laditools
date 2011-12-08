@@ -22,6 +22,7 @@ import os
 import sys
 import subprocess
 from distutils.core import setup
+from distutils.command.clean import clean
 
 laditools_version = "1.0~rc2"
 get_commit_script = "gitcommit.sh"
@@ -30,6 +31,16 @@ if not os.getenv("LADI_RELEASE") and \
         os.path.isfile(get_commit_script):
     commit = subprocess.check_output(["sh", get_commit_script]).strip()
     laditools_version += "+" + commit
+
+class clean_extra(clean):
+    def run(self):
+        clean.run(self)
+
+        for path, dirs, files in os.walk('.'):
+            for f in files:
+                f = os.path.join(path, f)
+                if f.endswith('.pyc'):
+                    self.spawn(['rm', f])
 
 setup(name='laditools',
     version=laditools_version,
@@ -51,5 +62,7 @@ setup(name='laditools',
         'data/ladilog_ui.glade',
         'data/started.svg',
         'data/starting.svg',
-        'data/stopped.svg'])]
+        'data/stopped.svg'])],
+    cmdclass={
+        'clean' : clean_extra}
 )
