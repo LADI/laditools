@@ -18,12 +18,12 @@
 import yaml
 
 # Let's make sure we'll place the file in an existing dir
-from os import environ, sep, mkdir
+from os import environ, sep, mkdir, path
 from os.path import exists
 from xdg import BaseDirectory as basedir
 
-config_dir = os.path.join(basedir.xdg_config_home, 'laditools')
-config_filename = os.path.join(config_dir, 'laditools.conf')
+config_dir = path.join(basedir.xdg_config_home, 'laditools')
+config_filename = path.join(config_dir, 'laditools.conf')
 if not exists (config_dir):
     mkdir (config_dir, 0755)
 
