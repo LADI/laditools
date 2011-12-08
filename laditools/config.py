@@ -29,7 +29,7 @@ if not exists (config_dir):
 
 # Note to users of the config class. Only applications should create an instance
 # of the config object. The ladimenu is *NOT* an application...
-class config:
+class config(object):
     def __init__ (self):
         try:
             with open (config_filename) as config_file:
