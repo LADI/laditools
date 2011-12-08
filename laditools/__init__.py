@@ -23,4 +23,4 @@ from a2j_menu import a2j_menu
 from ladish_controller import ladish_proxy
 # from error import error
 from config import config
-from TreeViewTooltips import TreeViewTooltips
+#from TreeViewTooltips import TreeViewTooltips
