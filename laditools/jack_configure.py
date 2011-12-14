@@ -33,7 +33,55 @@ def dbus_type_to_python_type (dbus_value):
         return str (dbus_value)
     return dbus_value
 
-class jack_configure:
+class jack_configuration_parameter(object):
+    def __init__(self, jack, path):
+        self._jack = jack
+        self.path = path
+        self.name = path[-1:]
+
+    def get_name(self):
+        return self.name
+
+    def get_type(self):
+        return self._jack.get_param_type(self.path)
+
+    def get_value(self):
+        return self._jack.get_param_value(self.path)
+
+    def set_value(self, value):
+        self._jack.set_param_value(self.path, value)
+
+    def reset_value(self):
+        self._jack.reset_param_value(self.path)
+
+    def get_short_description(self):
+        return self._jack.get_param_short_description(self.path)
+
+    def get_long_description(self):
+        descr = self._jack.get_param_long_description(self.path)
+        if not descr:
+            descr = self.get_short_description()
+        return descr
+
+    def has_range(self):
+        return self._jack.param_has_range(self.path)
+
+    def get_range(self):
+        return self._jack.param_get_range(self.path)
+
+    def has_enum(self):
+        return self._jack.param_has_enum(self.path)
+
+    def is_strict_enum(self):
+        return self._jack.param_is_strict_enum(self.path)
+
+    def is_fake_values_enum(self):
+        return self._jack.param_is_fake_value(self.path)
+
+    def get_enum_values(self):
+        return self._jack.param_get_enum_values(self.path)
+
+class jack_configure(object):
     def __init__ (self):
         # Connect to the bus
         self.bus = dbus.SessionBus ()
