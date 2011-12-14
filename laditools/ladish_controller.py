@@ -24,6 +24,9 @@ control_object_path = "/org/ladish/Control"
 studio_object_path = "/org/ladish/Studio"
 service_name = name_base
 
+class LadishProxyError(Exception): pass
+class LadishStudioException(Exception): pass
+
 class ladish_proxy:
     def __init__(self):
         self.bus = dbus.SessionBus()
@@ -81,3 +84,23 @@ class ladish_proxy:
 
     def studio_is_started(self):
         return self.studio_iface.IsStarted()
+
+def check_ladish():
+    """Connect to ladish and return its current status."""
+    try:
+        proxy = ladish_proxy()
+    except Exception as e:
+        raise LadishProxyError("ladish proxy creation failed: %s" % e.message)
+    if not proxy.is_available():
+        raise LadishProxyError("ladish is not available")
+
+    if not proxy.studio_is_loaded():
+        raise LadishStudioException("\
+JACK can only be configured with a loaded and stopped studio. \
+Please create a new studio or load and stop an existing one.")
+    else:
+        if proxy.studio_is_started():
+            raise LadishStudioException("JACK can only be configured \
+with a stopped studio. Please stop your studio first.")
+
+    return True
