@@ -20,10 +20,11 @@
 
 import os
 import sys
-import pygtk
-pygtk.require('2.0')
-import gtk
-from gobject import timeout_add
+from gi.repository import Gtk
+from gi.repository import GdkPixbuf
+from gi.repository import GObject
+
+timeout_add = GObject.timeout_add
 
 try:
     import imp
@@ -37,7 +38,7 @@ import laditools
 # Default configuration
 autostart_default = False
 
-class laditray (gtk.StatusIcon, laditools.manager):
+class laditray (Gtk.StatusIcon, laditools.manager):
     def __init__ (self):
         # Handle the configuration
         self.global_config = laditools.config ()
@@ -51,13 +52,13 @@ class laditray (gtk.StatusIcon, laditools.manager):
         autostart = self.laditray_param_dict['autostart']
         # Build the UI
         laditools.manager.__init__(self, self.global_config.get_config_section ('ladimenu'), autostart)
-        gtk.StatusIcon.__init__ (self)
+        GObject.GObject.__init__ (self)
         self.icon_state = ""
         self.last_status_text = ""
         # Create the needed pixbufs to manage the status icon's look
-        self.stopped_pixbuf = gtk.gdk.pixbuf_new_from_file(laditools.find_data_file("stopped.svg"))
-        self.starting_pixbuf = gtk.gdk.pixbuf_new_from_file(laditools.find_data_file("starting.svg"))
-        self.started_pixbuf = gtk.gdk.pixbuf_new_from_file(laditools.find_data_file("started.svg"))
+        self.stopped_pixbuf = GdkPixbuf.Pixbuf.new_from_file(laditools.find_data_file("stopped.svg"))
+        self.starting_pixbuf = GdkPixbuf.Pixbuf.new_from_file(laditools.find_data_file("starting.svg"))
+        self.started_pixbuf = GdkPixbuf.Pixbuf.new_from_file(laditools.find_data_file("started.svg"))
         self.set_icon ("stopped")
         # Get the initial status
         self.update ()
@@ -66,9 +67,14 @@ class laditray (gtk.StatusIcon, laditools.manager):
         # Make the menu popup when the icon is right clicked
         self.connect ("popup-menu", self.menu_activate)
 
-    def menu_activate (self, statusicon, button, activate_time):
+    def menu_activate(self, status_icon, button, activate_time, user_data=None):
         menu = self.create_menu()
-        menu.popup (None, None, gtk.status_icon_position_menu, button, activate_time, self)
+        menu.popup (parent_menu_shell=None,
+                    parent_menu_item=None,
+                    func=self.position_menu,
+                    data=self,
+                    button=button,
+                    activate_time=activate_time)
         menu.reposition ()
 
     def set_starting_status (self):
@@ -85,7 +91,7 @@ class laditray (gtk.StatusIcon, laditools.manager):
 
     def set_tooltip_safe (self, text):
         if text != self.last_status_text:
-            self.set_tooltip (text)
+            self.set_tooltip_text (text)
             self.last_status_text = text
 
     def update (self):
@@ -118,7 +124,7 @@ class laditray (gtk.StatusIcon, laditools.manager):
         return True
 
     def run(self):
-        gtk.main ()
+        Gtk.main ()
         # Some default config might need to be injected in the config file,
         # we handle all that before we quit.
         self.global_config.set_config_section ('ladimenu', self.menu_array)
@@ -129,6 +135,6 @@ class laditray (gtk.StatusIcon, laditools.manager):
 #try:
 laditray().run()
 #except Exception, e:
-#    error = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Unexpected error\n\n" + repr(e))
+#    error = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "Unexpected error\n\n" + repr(e))
 #    error.run()
 #    exit(1)

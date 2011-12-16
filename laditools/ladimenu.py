@@ -147,8 +147,8 @@ class manager:
 
     def get_ladish_controller(self):
         if not self.proxy_ladish_controller:
-            self.proxy_ladish = ladish_proxy()
-        return self.proxy_ladish
+            self.proxy_ladish_controller = ladish_proxy()
+        return self.proxy_ladish_controller
 
     def clear_ladish_controller(self):
         self.proxy_ladish_controller = None
@@ -184,12 +184,13 @@ class manager:
         dlg = Gtk.Dialog(
             title,
             None,
-            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-            (Gtk.STOCK_CANCEL, Gtk.ResponseType.REJECT,
-             Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT))
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT)
+        dlg.add_buttons (
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.REJECT,
+            Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT)
 
         hbox = Gtk.HBox()
-        hbox.pack_start(Gtk.Label(label, True, True, 0))
+        hbox.pack_start(Gtk.Label(label), True, True, 0)
         entry = Gtk.Entry()
         entry.set_text(text)
         hbox.pack_start(entry, True, True, 0)
@@ -246,7 +247,7 @@ class manager:
         self.proc_list.append(subprocess.Popen([exec_path, exec_path]))
 
     def menu_clear(self, menu):
-        menu.foreach(lambda item: menu.remove(item))
+        menu.foreach(lambda item,none: menu.remove(item), None)
 
     def studio_list_fill(self, widget, function):
         menu = widget.get_submenu()
@@ -258,7 +259,6 @@ class manager:
                 menu.append(item)
                 item.connect("button-release-event", function, studio) # "activate" is not used because of focus bug in pygtk
         except Exception, e:
-            print e
             self.menu_clear(menu)
             item = Gtk.MenuItem("Error obtaining studio list")
             item.set_sensitive(False)
