@@ -253,8 +253,8 @@ class cell_renderer_param(Gtk.CellRendererPixbuf):
 
         if typechar == "b":
             self.renderer = self.renderer_toggle
-            self.renderer.set_property('activatable', True)
-            self.renderer.set_property('active', value)
+            self.renderer.set_activatable(True)
+            self.renderer.set_active(value)
             self.renderer.set_property("xalign", 0.0)
             return
 
@@ -300,20 +300,15 @@ class cell_renderer_param(Gtk.CellRendererPixbuf):
         self.renderer.set_property('editable', True)
         self.renderer.set_property('text', self.parameter.get_value())
 
-#    def do_render(self, ctx, widget, bg_area, cell_area, flags):
-#        self.on_render(ctx, widget, bg_area, cell_area, flags)
-
-#    def on_render(self, window, widget, background_area, cell_area, expose_area, flags):
-#    def do_render(self, ctx, widget, bg_area, cell_area, flags):
-    def do_render(self, window, widget, background_area, cell_area, flags):
+    def do_render(self, ctx, widget, bg_area, cell_area, flags):
         self.choose_renderer()
-        return self.renderer.render(window, widget, background_area, cell_area, flags)
+        return self.renderer.render(ctx, widget, bg_area, cell_area, flags)
 
-    def on_get_size(self, widget, cell_area=None):
+    def do_get_size(self, widget, cell_area=None):
         self.choose_renderer()
         return self.renderer.get_size(widget, cell_area)
 
-    def on_activate(self, event, widget, path, background_area, cell_area, flags):
+    def do_activate(self, event, widget, path, background_area, cell_area, flags):
         self.choose_renderer()
         if self.parameter.get_type() == 'b':
             self.parameter.set_value(not self.parameter.get_value())
@@ -357,7 +352,7 @@ class cell_renderer_param(Gtk.CellRendererPixbuf):
         model[path][4] = "modified"
         self.edit_tree.grab_focus()
 
-    def on_start_editing(self, event, widget, path, background_area, cell_area, flags):
+    def do_editing_started(self, event, widget, path, background_area, cell_area, flags):
         # this happens when edit requested using keyboard
         if not event:
             event = Gdk.Event(Gdk.NOTHING)
@@ -412,11 +407,11 @@ class jack_params_configure_command(configure_command):
         param.reset_value()
         row[4] = "reset"
 
-    def on_row_activated(self, treeview, path, view_column):
+    def do_row_activated(self, treeview, path, view_column):
         if view_column == self.tvcolumn_is_set:
             self.reset_value(path)
             
-    def on_button_press_event(self, tree, event):
+    def do_button_press_event(self, tree, event):
         if event.type != Gdk.EventType._2BUTTON_PRESS:
             return False
         # this is needed for proper double-click handling in the list; don't ask me why, I don't know
@@ -425,7 +420,7 @@ class jack_params_configure_command(configure_command):
         # deactivating the widget causes it to be deleted
         return True
 
-    def on_key_press_event(self, tree, event):
+    def do_key_press_event(self, tree, event):
         (row_path, cur) = self.treeview.get_cursor()
 
         # if Delete was pressed, reset the value
@@ -440,7 +435,7 @@ class jack_params_configure_command(configure_command):
 
         # single-key data entry: if the control is a text entry, spin button or combo box/combo box entry,
         # then edit the current and set the text value to what user has already typed in
-        cur = self.treeview.get_cursor()
+        (row_path, cur) = self.treeview.get_cursor()
         param = self.liststore[row_path][1]
         ptype = param.get_type()
 
@@ -455,7 +450,7 @@ class jack_params_configure_command(configure_command):
 
         # Start cell editing
         # MAYBE: call a specially crafted cell_renderer_param method for this
-        self.treeview.set_cursor_on_cell(cur[0], self.tvcolumn_value, self.renderer_value.renderer, True)
+        self.treeview.set_cursor_on_cell(path, self.tvcolumn_value, self.renderer_value.renderer, True)
 
         # cell_renderer_param::on_start_editing() should set edit_widget.
         # if edit operation has failed (didn't create a widget), pass the key on
@@ -498,11 +493,11 @@ class jack_params_configure_command(configure_command):
         return False
         
     def on_cursor_changed(self, tree):
-        cur = self.treeview.get_cursor()
-        if not self.is_setting and cur[1] != None and cur[1].get_title() != self.tvcolumn_value.get_title():
+        (row_path, cur) = self.treeview.get_cursor()
+        if not self.is_setting and cur != None and cur.get_title() != self.tvcolumn_value.get_title():
             self.is_setting = True
             try:
-                self.treeview.set_cursor_on_cell(cur[0], self.tvcolumn_value, self.renderer_value.renderer, False)
+                self.treeview.set_cursor_on_cell(row_path, self.tvcolumn_value, self.renderer_value.renderer, False)
             finally:
                 self.is_setting = False
 
@@ -553,10 +548,10 @@ class jack_params_configure_command(configure_command):
                 is_set = "default"
             self.liststore.append([name, store, param.get_short_description(), param.get_long_description(), is_set])
 
-        self.treeview.connect("row-activated", self.on_row_activated)
+        self.treeview.connect("row-activated", self.do_row_activated)
         self.treeview.connect("cursor-changed", self.on_cursor_changed)
-        self.treeview.connect("key-press-event", self.on_key_press_event)
-        self.treeview.connect("button-press-event", self.on_button_press_event)
+        self.treeview.connect("key-press-event", self.do_key_press_event)
+        self.treeview.connect("button-press-event", self.do_button_press_event)
 
 #        self.tooltips = ladiconf_tooltips(self.tvcolumn_parameter, self.tvcolumn_is_set)
 #        self.tooltips.add_view(self.treeview)
