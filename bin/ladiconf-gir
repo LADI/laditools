@@ -220,8 +220,8 @@ def combobox_get_active_text(combobox, model_index = 0):
 class cell_renderer_param(Gtk.CellRendererPixbuf):
     __gproperties__ = { "parameter": (GObject.TYPE_OBJECT, "Parameter", "Parameter", GObject.PARAM_READWRITE) }
 
-    def init(self):
-#        self.__gobject_init__()
+    def __init__(self):
+        Gtk.CellRendererPixbuf.__init__(self)
         self.parameter = None
         self.set_property('mode', Gtk.CellRendererMode.EDITABLE)
         self.set_property('mode', Gtk.CellRendererMode.ACTIVATABLE)
@@ -426,8 +426,7 @@ class jack_params_configure_command(configure_command):
         return True
 
     def on_key_press_event(self, tree, event):
-        cur = self.treeview.get_cursor()
-        row_path = cur
+        (row_path, cur) = self.treeview.get_cursor()
 
         # if Delete was pressed, reset the value
         if event.get_state() == 0 and event.keyval == Gdk.KEY_Delete:
@@ -442,7 +441,7 @@ class jack_params_configure_command(configure_command):
         # single-key data entry: if the control is a text entry, spin button or combo box/combo box entry,
         # then edit the current and set the text value to what user has already typed in
         cur = self.treeview.get_cursor()
-        param = self.liststore[row_path][0]
+        param = self.liststore[row_path][1]
         ptype = param.get_type()
 
         # we don't care about booleans
@@ -503,7 +502,7 @@ class jack_params_configure_command(configure_command):
         if not self.is_setting and cur[1] != None and cur[1].get_title() != self.tvcolumn_value.get_title():
             self.is_setting = True
             try:
-                self.treeview.set_cursor_on_cell(cur[0], self.tvcolumn_value)
+                self.treeview.set_cursor_on_cell(cur[0], self.tvcolumn_value, self.renderer_value.renderer, False)
             finally:
                 self.is_setting = False
 
@@ -527,7 +526,6 @@ class jack_params_configure_command(configure_command):
         renderer_text = Gtk.CellRendererText()
         renderer_toggle = Gtk.CellRendererToggle()
         renderer_value = cell_renderer_param()
-        renderer_value.init()
         self.renderer_value = renderer_value # save for use in event handler methods
 
         self.tvcolumn_parameter = Gtk.TreeViewColumn('Parameter', renderer_text, text=0)
