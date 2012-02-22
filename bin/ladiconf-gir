@@ -451,7 +451,7 @@ class jack_params_configure_command(configure_command):
 
         # Start cell editing
         # MAYBE: call a specially crafted cell_renderer_param method for this
-        self.treeview.set_cursor_on_cell(path, self.tvcolumn_value, self.renderer_value.renderer, True)
+        self.treeview.set_cursor_on_cell(row_path, self.tvcolumn_value, self.renderer_value.renderer, True)
 
         # cell_renderer_param::on_start_editing() should set edit_widget.
         # if edit operation has failed (didn't create a widget), pass the key on
