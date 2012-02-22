@@ -437,7 +437,7 @@ class jack_params_configure_command(configure_command):
         # single-key data entry: if the control is a text entry, spin button or combo box/combo box entry,
         # then edit the current and set the text value to what user has already typed in
         (row_path, cur) = self.treeview.get_cursor()
-        param = self.liststore[row_path][1]
+        param = self.liststore[row_path][0]
         ptype = param.get_type()
 
         # we don't care about booleans
