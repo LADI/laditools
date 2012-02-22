@@ -425,7 +425,8 @@ class jack_params_configure_command(configure_command):
         (row_path, cur) = self.treeview.get_cursor()
 
         # if Delete was pressed, reset the value
-        if event.get_state() == 0 and event.keyval == Gdk.KEY_Delete:
+        #if event.get_state() == 0 and event.keyval == Gdk.KEY_Delete:
+        if event.keyval == Gdk.KEY_Delete:
             self.reset_value(row_path)
             tree.queue_draw()
             return True
