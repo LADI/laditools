@@ -42,19 +42,20 @@ def check_ladish():
     try:
         proxy = laditools.ladish_proxy()
     except:
-        sys.stderr.write(_("ladish proxy creation failed"))
+        sys.stderr.write(_("ladish proxy creation failed\n"))
         return
 
     if not proxy.is_available():
-        sys.stderr.write( _("ladish is not available"))
+        sys.stderr.write( _("ladish is not available\n"))
         return
 
+    # FIXME
     if proxy.studio_is_loaded():
         if not proxy.studio_is_started():
-            sys.stderr.write(("ladish studio is loaded and not started"))
+            sys.stderr.write(_("ladish studio is loaded and not started\n"))
             return
         else:
-            sys.stderr.write(_("JACK can only be configured with a stopped studio. Please stop your studio first."))
+            sys.stderr.write(_("JACK can only be configured with a stopped studio. Please stop your studio first.\n"))
             title = sys.stderr.write(_("Studio is running"))
     else:
         msg = sys.stderr.write(_("JACK can only be configured with a loaded and stopped studio. Please create a new studio or load and stop an existing one."))
