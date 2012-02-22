@@ -327,7 +327,7 @@ class cell_renderer_param(Gtk.CellRendererPixbuf):
             if value == None:
                 return
             value_str = value.value
-        elif type(widget) == Gtk.ComboBoxEntry:
+        elif type(widget) == Gtk.ComboBoxText:
             enum_value = combobox_get_active_text(widget, 1)
             if enum_value:
                 value_str = enum_value.value
@@ -353,7 +353,7 @@ class cell_renderer_param(Gtk.CellRendererPixbuf):
         model[path][4] = "modified"
         self.edit_tree.grab_focus()
 
-    def do_editing_started(self, event, widget, path, background_area, cell_area, flags):
+    def do_start_editing(self, event, widget, path, background_area, cell_area, flags):
         # this happens when edit requested using keyboard
         if not event:
             event = Gdk.Event(Gdk.NOTHING)
@@ -461,7 +461,7 @@ class jack_params_configure_command(configure_command):
             return
 
         widget = self.renderer_value.edit_widget
-        if type(widget) in (Gtk.Entry, Gtk.ComboBoxEntry):
+        if type(widget) in (Gtk.Entry, Gtk.ComboBoxText):
             # (combo or plain) text entry - set the content and move the cursor to the end
             sl = len(event.string)
             widget.set_text(event.string)
