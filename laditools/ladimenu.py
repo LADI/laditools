@@ -27,9 +27,11 @@ from jack_controller import jack_controller
 from a2j_controller import a2j_controller
 from ladish_controller import ladish_proxy
 
+import gettext
+gettext.install("ladimenu")
+
 # Default launcher menu :
-menu_default = [{"Configure": "ladiconf"},
-    {"Logs": "ladilog"}]
+menu_default = [{"Logs": "ladilog"}]
 
 class manager:
     def __init__(self, menu_config_array, jack_autostart = False):
@@ -249,6 +251,38 @@ class manager:
     def menu_clear(self, menu):
         menu.foreach(lambda item,none: menu.remove(item), None)
 
+    def studio_configure(self, item, event, module):
+        self.proc_list.append(subprocess.Popen(["ladiconf", "-m", module]))
+
+    def configure_list_fill(self, widget, function):
+        menu = widget.get_submenu()
+        self.menu_clear(menu)
+        try:
+            jack = self.get_jack_configure()
+            # 'engine' item
+            item = Gtk.MenuItem(_("JACK engine"))
+            item.show()
+            menu.append(item)
+            item.connect("button-release-event", function, "engine")
+            # 'params' item
+            item = Gtk.MenuItem(_('JACK "%s" driver') % jack.get_selected_driver())
+            item.show()
+            menu.append(item)
+            item.connect("button-release-event", function, "params")
+            for internal in jack.read_container(['internals']):
+                module = str(internal)
+                item = Gtk.MenuItem(_('JACK "%s"') % module)
+                item.show()
+                menu.append(item)
+                item.connect("button-release-event", function, module)
+        except Exception, err:
+            print str(err)
+        if not menu.get_children():
+            item = Gtk.MenuItem("Empty config list")
+            item.set_sensitive(False)
+            item.show()
+            menu.append(item)
+
     def studio_list_fill(self, widget, function):
         menu = widget.get_submenu()
         self.menu_clear(menu)
@@ -282,6 +316,10 @@ class manager:
 
         # Add the laucher entries at the beginning of the menu
         for items in self.menu_array:
+            # Replace "Configure" static item with the new sub-menu
+            if items.keys()[0] == 'Configure':
+                menu_items.append((Gtk.ImageMenuItem("Configure ..."), self.configure_list_fill, self.studio_configure))
+                continue
             menu_label = items.keys()[0] + "..."
             path = items.values()[0]
             menu_items.append((Gtk.ImageMenuItem(menu_label), self.on_menu_launcher, path))
@@ -332,7 +370,7 @@ class manager:
                 exec_path = menu_tuple[2]
             menu.append(item)
             if type(item) is not Gtk.SeparatorMenuItem:
-                if callback == self.studio_list_fill:
+                if callback in (self.studio_list_fill, self.configure_list_fill):
                     item.set_submenu(Gtk.Menu())
                 item.connect("activate", callback, exec_path)
         menu.show_all()
