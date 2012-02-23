@@ -40,9 +40,15 @@ gettext.install(laditools.__name__)
 try:
     from gi.repository import Gtk, GObject, Vte
 except Exception, e:
-    error = Gtk.MessageDialog (None, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, _("You need to get you dependencies right before you run this program. Ask your package maintainer why this is happening to you\n%s") % repr(e))
+    error = Gtk.MessageDialog(None,
+                              Gtk.DialogFlags.MODAL,
+                              Gtk.MessageType.ERROR,
+                              Gtk.ButtonsType.OK,
+                              _("You need to get you dependencies right before "
+                                "you run this program. Ask your package maintainer "
+                                "why this is happening to you\n%s") % repr(e))
     error.run ()
-    exit (1)
+    sys.exit (1)
 
 timeout_add = GObject.timeout_add
 
@@ -131,11 +137,20 @@ class ladilog(object):
             "on_purge_button_clicked" : self.on_purge}
         builder.connect_signals(self.event_dict)
 
+        self.ui = ui = builder.get_object("ladilog_ui")
+        #ui.resize(800, 400)
+        ui.set_size_request(600, 400)
         # Create our terminal and display it
         for log in self.log_files:
-            log['term'] = Vte.Terminal.new ()
-            log['term'].set_scroll_on_output(True)
+            log['scrolled_window'] = sw = Gtk.ScrolledWindow()
+            log['term'] = term = Vte.Terminal.new ()
+            sw.set_policy(hscrollbar_policy=Gtk.PolicyType.AUTOMATIC,
+                          vscrollbar_policy=Gtk.PolicyType.ALWAYS)
+            #sw.set_min_content_width(400)
+            #sw.set_min_content_height(600)
+            term.set_scroll_on_output(True)
             log["tab_label"] = Gtk.Label(label=log["name"])
+            sw.add(term)
 
         self.logview_notebook = builder.get_object ("ladilog_notebook")
 
@@ -156,10 +171,8 @@ class ladilog(object):
                 sys.stderr.flush()
 
         for log in self.log_files:
-            self.logview_notebook.append_page (log["term"], log["tab_label"])
-
-        ui = builder.get_object("ladilog_ui")
-        ui.resize(800, 400)
+            self.logview_notebook.append_page(log["scrolled_window"],
+                                              log["tab_label"])
         ui.show_all()
         self.auto_updater = timeout_add(250, self.update)
 
@@ -197,8 +210,12 @@ class ladilog(object):
 
 try:
     ladilog().run()
-    exit(0)
+    sys.exit(0)
 except Exception, e:
-    error = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, _("Unexpected error\n\n") + repr(e))
+    error = Gtk.MessageDialog(None,
+                              Gtk.DialogFlags.MODAL,
+                              Gtk.MessageType.ERROR,
+                              Gtk.ButtonsType.OK,
+                              _("Unexpected error\n\n") + repr(e))
     error.run()
-    exit(1)
+    sys.exit(1)
