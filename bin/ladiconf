@@ -518,7 +518,11 @@ class jack_params_configure_command(configure_command):
 
         #dlg.set_transient_for(window)
 
-        self.liststore = Gtk.ListStore(str, parameter_store, str, str, str)
+        self.liststore = Gtk.ListStore(GObject.TYPE_STRING,
+            parameter_store,
+            GObject.TYPE_STRING,
+            GObject.TYPE_STRING,
+            GObject.TYPE_STRING)
         self.treeview = Gtk.TreeView(self.liststore)
         self.treeview.set_rules_hint(True)
         self.treeview.set_has_tooltip(True)
