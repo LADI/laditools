@@ -38,6 +38,12 @@ gettext.install(laditools.__name__)
 
 jack = laditools.jack_configure()
 
+(COLUMN_NAME,
+ COLUMN_PARAMETER,
+ COLUMN_SHORTDESC,
+ COLUMN_LONGDESC,
+ COLUMN_ISSET) = range (5)
+
 def check_ladish():
     try:
         proxy = laditools.ladish_proxy()
@@ -367,36 +373,6 @@ class cell_renderer_param(Gtk.CellRendererPixbuf):
 
 GObject.type_register(cell_renderer_param)
 
-class ladiconf_tooltips(object):
-        def __init__(self, name_column, is_set_column):
-            self.name_column = name_column
-            self.is_set_column = is_set_column
-            #laditools.TreeViewTooltips.__init__(self)
-
-        def location(self, x, y, w, h):
-            return x + 10, y + 10
-
-        def get_tooltip(self, view, column, path):
-            if column is self.name_column:
-                model = view.get_model()
-                tooltip = model[path][3]
-                return tooltip
-
-            if column is self.is_set_column:
-                model = view.get_model()
-                param = model[path][1]
-                is_set = model[path][4]
-
-                if is_set == "default":
-                    return None
-
-                if is_set == "reset":
-                    return _("Value will be reset to %s") % param.get_default_value()
-
-                return _("Double-click to schedule reset of value to %s") % param.get_default_value()
-
-            return None
-
 class jack_params_configure_command(configure_command):
     def __init__(self, path):
         self.path = path
@@ -493,9 +469,10 @@ class jack_params_configure_command(configure_command):
             return True
 
         return False
-        
+
     def on_cursor_changed(self, tree):
         (row_path, cur) = self.treeview.get_cursor()
+
         if not self.is_setting and cur != None and cur.get_title() != self.tvcolumn_value.get_title():
             self.is_setting = True
             try:
@@ -506,6 +483,32 @@ class jack_params_configure_command(configure_command):
     def ok_clicked(self, dlg):
         if self.renderer_value.edit_widget:
             self.renderer_value.edit_widget.editing_done()
+
+    def _on_query_tooltip(self, treeview, x, y, keyboard_tip, tooltip):
+        """Handle tooltips for the cells"""
+        try:
+            result, out_x, out_y, model, path, iter = treeview.get_tooltip_context(x, y, keyboard_tip)
+            if not path:
+                return False
+        except TypeError:
+            return False
+
+        text = self.liststore[path][COLUMN_LONGDESC]
+        if self.liststore[path][COLUMN_ISSET] == "default":
+            pass
+        else:
+            text += '\n\n'
+            if self.liststore[path][COLUMN_ISSET] == "reset":
+                text += _("<i>Value will be reset to %s</i>") % \
+                    self.liststore[path][COLUMN_PARAMETER].get_default_value()
+            else:
+                text += _("<i>Double-click to schedule reset of value to %s</i>") % \
+                    self.liststore[path][COLUMN_PARAMETER].get_default_value()
+
+        tooltip.set_icon_from_icon_name(Gtk.STOCK_DIALOG_INFO, Gtk.IconSize.DIALOG)
+        tooltip.set_markup(text)
+        treeview.set_tooltip_row(tooltip, path)
+        return True
 
     def run(self, arg):
         dlg = Gtk.Dialog()
@@ -518,6 +521,7 @@ class jack_params_configure_command(configure_command):
         self.liststore = Gtk.ListStore(str, parameter_store, str, str, str)
         self.treeview = Gtk.TreeView(self.liststore)
         self.treeview.set_rules_hint(True)
+        self.treeview.set_has_tooltip(True)
         self.treeview.set_enable_search(False)
 
         renderer_text = Gtk.CellRendererText()
@@ -554,6 +558,7 @@ class jack_params_configure_command(configure_command):
         self.treeview.connect("cursor-changed", self.on_cursor_changed)
         self.treeview.connect("key-press-event", self.do_key_press_event)
         self.treeview.connect("button-press-event", self.do_button_press_event)
+        self.treeview.connect("query-tooltip", self._on_query_tooltip)
 
 #        self.tooltips = ladiconf_tooltips(self.tvcolumn_parameter, self.tvcolumn_is_set)
 #        self.tooltips.add_view(self.treeview)
