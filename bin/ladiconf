@@ -574,8 +574,6 @@ class jack_params_configure_command(configure_command):
         self.treeview.connect("button-press-event", self.do_button_press_event)
         self.treeview.connect("query-tooltip", self._on_query_tooltip)
 
-#        self.tooltips = ladiconf_tooltips(self.tvcolumn_parameter, self.tvcolumn_is_set)
-#        self.tooltips.add_view(self.treeview)
         if len(param_names):
             # move cursor to first row and 'value' column
             self.treeview.set_cursor(Gtk.TreePath(path=0),
