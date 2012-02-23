@@ -319,7 +319,7 @@ class cell_renderer_param(Gtk.CellRendererPixbuf):
         self.choose_renderer()
         if self.parameter.get_type() == 'b':
             self.parameter.set_value(not self.parameter.get_value())
-            widget.get_model()[path][4] = "modified"
+            widget.get_model()[path][COLUMN_ISSET] = "modified"
         return True
 
     def on_edited(self, renderer, path, value_str):
@@ -356,7 +356,7 @@ class cell_renderer_param(Gtk.CellRendererPixbuf):
         else:
             value = value_str
         parameter.set_value(value)
-        model[path][4] = "modified"
+        model[path][COLUMN_ISSET] = "modified"
         self.edit_tree.grab_focus()
 
     def do_start_editing(self, event, widget, path, background_area, cell_area, flags):
@@ -380,9 +380,9 @@ class jack_params_configure_command(configure_command):
 
     def reset_value(self, row_path):
         row = self.liststore[row_path]
-        param = row[1]
+        param = row[COLUMN_PARAMETER]
         param.reset_value()
-        row[4] = "reset"
+        row[COLUMN_ISSET] = "reset"
 
     def do_row_activated(self, treeview, path, view_column):
         if view_column == self.tvcolumn_is_set:
@@ -414,7 +414,7 @@ class jack_params_configure_command(configure_command):
         # single-key data entry: if the control is a text entry, spin button or combo box/combo box entry,
         # then edit the current and set the text value to what user has already typed in
         (row_path, cur) = self.treeview.get_cursor()
-        param = self.liststore[row_path][1]
+        param = self.liststore[row_path][COLUMN_PARAMETER]
         ptype = param.get_type()
 
         # we don't care about booleans
@@ -577,8 +577,8 @@ class jack_params_configure_command(configure_command):
         ret = dlg.run()
         if ret == Gtk.ResponseType.OK:
             for row in self.liststore:
-                param = row[1]
-                reset = row[4] == "reset"
+                param = row[COLUMN_PARAMETER]
+                reset = row[COLUMN_ISSET] == "reset"
                 if reset:
                     #print "%s -> reset" % param.get_name()
                     param.param.reset_value()
