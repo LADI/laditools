@@ -36,8 +36,6 @@ except ImportError:
 import laditools
 gettext.install(laditools.__name__)
 
-jack = laditools.jack_configure()
-
 (COLUMN_NAME,
  COLUMN_PARAMETER,
  COLUMN_SHORTDESC,
@@ -153,8 +151,6 @@ class parameter_enum_value(GObject.GObject):
             return self.description
 
         return str(self.value) + " - " + self.description
-
-GObject.type_register(parameter_enum_value)
 
 class parameter_store(GObject.GObject):
     def __init__(self, param):
@@ -620,28 +616,30 @@ class jack_internal_params_configure_command(jack_params_configure_command):
     def get_description(self):
         return _('JACK "%s" parameters') % self.name
 
-check_ladish()
+if __name__ == "__main__":
 
-commands = [
-    jack_engine_params_configure_command(),
-    jack_driver_params_configure_command(),
-    ]
+    jack = laditools.jack_configure()
+    check_ladish()
 
-for internal in jack.read_container(['internals']):
-    commands.append(jack_internal_params_configure_command(internal))
+    GObject.type_register(parameter_enum_value)
 
-window = Gtk.Window()
+    commands = [
+        jack_engine_params_configure_command(),
+        jack_driver_params_configure_command(),
+        ]
 
-buttons_widget = Gtk.VBox()
+    for internal in jack.read_container(['internals']):
+        commands.append(jack_internal_params_configure_command(internal))
 
-for command in commands:
-    button = Gtk.Button(command.get_description())
-    button.connect('clicked', command.run)
-    buttons_widget.pack_start(button, True, True, 0)
+    window = Gtk.Window()
+    buttons_widget = Gtk.VBox()
 
-window.add(buttons_widget)
+    for command in commands:
+        button = Gtk.Button(command.get_description())
+        button.connect('clicked', command.run)
+        buttons_widget.pack_start(button, True, True, 0)
 
-window.show_all()
-window.connect('destroy', Gtk.main_quit)
-
-Gtk.main()
+    window.add(buttons_widget)
+    window.show_all()
+    window.connect('destroy', Gtk.main_quit)
+    Gtk.main()
