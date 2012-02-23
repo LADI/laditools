@@ -21,6 +21,7 @@ import yaml
 from os import environ, sep, mkdir, path
 from os.path import exists
 from xdg import BaseDirectory as basedir
+import sys
 
 config_dir = path.join(basedir.xdg_config_home, 'laditools')
 config_filename = path.join(config_dir, 'laditools.conf')
@@ -31,20 +32,23 @@ if not exists (config_dir):
 # of the config object. The ladimenu is *NOT* an application...
 class config(object):
     def __init__ (self):
+        self.appdict = {}
         try:
-            with open (config_filename) as config_file:
+            with open (config_filename, 'r') as config_file:
                 self.appdict = yaml.load (config_file)
         except:
             sys.stderr.write("Config file doesn't exist, creating a new one...\n")
             sys.stderr.flush()
-            self.appdict = dict ()
 
     # Returns the section named <app_name> from the global config
     def get_config_section (self, app_name):
-        if app_name in self.appdict:
-            return self.appdict[app_name]
-        else:
-            return None
+        try:
+            if app_name in self.appdict:
+                return self.appdict[app_name]
+            else:
+                return {}
+        except:
+            return {}
 
     # Saves the section named <app_name> into the global config
     def set_config_section (self, app_name, param_dict):
