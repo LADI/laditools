@@ -533,10 +533,10 @@ class jack_params_configure_command(configure_command):
         renderer_value = cell_renderer_param()
         self.renderer_value = renderer_value # save for use in event handler methods
 
-        self.tvcolumn_parameter = Gtk.TreeViewColumn('Parameter', renderer_text, text=0)
-        self.tvcolumn_is_set = Gtk.TreeViewColumn('Status', renderer_text, text=4)
-        self.tvcolumn_value = Gtk.TreeViewColumn('Value', renderer_value, parameter=1)
-        self.tvcolumn_description = Gtk.TreeViewColumn('Description', renderer_text, text=2)
+        self.tvcolumn_parameter = Gtk.TreeViewColumn('Parameter', renderer_text, text=COLUMN_NAME)
+        self.tvcolumn_is_set = Gtk.TreeViewColumn('Status', renderer_text, text=COLUMN_ISSET)
+        self.tvcolumn_value = Gtk.TreeViewColumn('Value', renderer_value, parameter=COLUMN_PARAMETER)
+        self.tvcolumn_description = Gtk.TreeViewColumn('Description', renderer_text, text=COLUMN_SHORTDESC)
 
         self.tvcolumn_value.set_resizable(True)
         self.tvcolumn_value.set_min_width(100)
