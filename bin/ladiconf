@@ -232,7 +232,10 @@ def combobox_get_active_text(combobox, model_index = 0):
     return model[active][model_index]
 
 class cell_renderer_param(Gtk.CellRendererPixbuf):
-    __gproperties__ = { "parameter": (GObject.TYPE_OBJECT, "Parameter", "Parameter", GObject.PARAM_READWRITE) }
+    __gproperties__ = { "parameter": (GObject.TYPE_OBJECT,
+                                      "Parameter",
+                                      "Parameter",
+                                      GObject.PARAM_READWRITE) }
 
     def __init__(self):
         Gtk.CellRendererPixbuf.__init__(self)
