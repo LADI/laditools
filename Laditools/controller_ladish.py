@@ -60,7 +60,9 @@ class LadishProxy(LadiController):
                                 iface_name=control_iface_name)
         self.studio_obj = self.bus.get_object(service_name, studio_obj_path)
         self.studio_iface = dbus.Interface(self.studio_obj, studio_iface_name)
-        LadiController._delete_attr('is_started')
+
+    def is_started(self):
+        raise NotImplementedError
 
     def is_available(self):
         try:
