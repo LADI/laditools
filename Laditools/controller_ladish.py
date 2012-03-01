@@ -44,14 +44,9 @@ def check_ladish():
         return LadishStatusType.NOT_AVAILABLE
     if not proxy.studio_is_loaded():
         return LadishStatusType.NO_STUDIO_LOADED
-    #    raise LadishStudioException("JACK can only be configured with a loaded "
-    #                                "and stopped studio. Please create a new "
-    #                                "studio or load and stop an existing one.")
     else:
         if proxy.studio_is_started():
             return LadishStatusType.STUDIO_ALREADY_RUNNING
-#            raise LadishStudioException("JACK can only be configured with "
-#            "a stopped studio. Please stop your studio first.")
 
     return LadishStatusType.STUDIO_STOPPED
 
@@ -72,7 +67,6 @@ class LadishProxy(LadiController):
             self.studio_is_loaded()
             return True
         except Exception, e:
-            #print repr(e)
             return False
 
     def studio_list(self):
