@@ -26,10 +26,10 @@ control_obj_path = "/org/ladish/Control"
 studio_obj_path = "/org/ladish/Studio"
 service_name = name_base
 
-LadishStatusType = Enum("STUDIO_OK",
+LadishStatusType = Enum("STUDIO_STOPPED",
                         "NOT_AVAILABLE",
                         "NO_STUDIO_LOADED",
-                        "STUDIO_ALREADY_RUNNING")
+                        "STUDIO_RUNNING")
 
 class LadishProxyError(Exception): pass
 class LadishStudioException(Exception): pass
@@ -53,7 +53,7 @@ def check_ladish():
 #            raise LadishStudioException("JACK can only be configured with "
 #            "a stopped studio. Please stop your studio first.")
 
-    return LadishStatusType.STUDIO_OK
+    return LadishStatusType.STUDIO_STOPPED
 
 class LadishProxy(LadiController):
 
