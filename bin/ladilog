@@ -139,8 +139,6 @@ class ladilog(object):
         builder.connect_signals(self.event_dict)
 
         self.ui = ui = builder.get_object("ladilog_ui")
-        #ui.resize(800, 400)
-        ui.set_size_request(600, 400)
         # Create our terminal and display it
         for log in self.log_files:
             log['scrolled_window'] = sw = Gtk.ScrolledWindow()
