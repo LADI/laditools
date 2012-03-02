@@ -1,0 +1,9 @@
+bin/laditray
+bin/ladilog
+bin/ladiconf
+bin/g15ladi
+data/ladiconf.desktop
+data/laditray.desktop
+data/ladilog_ui.ui
+laditools/gtk/a2j_menu.py
+laditools/gtk/ladimenu.py

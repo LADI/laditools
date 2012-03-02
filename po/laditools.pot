@@ -1,0 +1,255 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-03-02 10:14+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../bin/ladilog:116
+#, c-format
+msgid "Skipping '%s' because it does not exist\n"
+msgstr ""
+
+#: ../bin/ladilog:118
+#, c-format
+msgid "Watching %s\n"
+msgstr ""
+
+#: ../bin/ladilog:126
+#, c-format
+msgid "Loading interface from %s\n"
+msgstr ""
+
+#: ../bin/ladilog:155
+#, c-format
+msgid "Opening %s...\n"
+msgstr ""
+
+#: ../bin/ladilog:161
+msgid "You called Popen with invalid arguments... dumbass\n"
+msgstr ""
+
+#: ../bin/ladilog:163
+#, c-format
+msgid "Unexpected error: %s\n"
+msgstr ""
+
+#: ../bin/ladilog:213 ../laditools/gtk/ladimenu.py:253
+msgid ""
+"Unexpected error\n"
+"\n"
+msgstr ""
+
+#: ../bin/ladiconf:65
+#, c-format
+msgid "ladish proxy creation failed: %s\n"
+msgstr ""
+
+#: ../bin/ladiconf:74
+msgid "ladish is not available\n"
+msgstr ""
+
+#: ../bin/ladiconf:79
+msgid ""
+"JACK can only be configured with a loaded and stopped studio. Please create "
+"a new studio or load and stop an existing one."
+msgstr ""
+
+#: ../bin/ladiconf:82
+msgid "No studio present"
+msgstr ""
+
+#: ../bin/ladiconf:84
+msgid ""
+"JACK can only be configured with a stopped studio. Please stop your studio "
+"first."
+msgstr ""
+
+#: ../bin/ladiconf:87
+msgid "Studio is running"
+msgstr ""
+
+#: ../bin/ladiconf:89
+msgid "Unexpected error!\n"
+msgstr ""
+
+#: ../bin/ladiconf:529
+#, c-format
+msgid "<i>Value will be reset to %s</i>"
+msgstr ""
+
+#: ../bin/ladiconf:532
+#, c-format
+msgid "<i>Double-click to schedule reset of value to %s</i>"
+msgstr ""
+
+#: ../bin/ladiconf:677
+msgid "Available modules: "
+msgstr ""
+
+#: ../bin/ladiconf:689
+#, c-format
+msgid ""
+"Module %s is not available, type '%s -l' for a list of available modules."
+msgstr ""
+
+#: ../bin/ladiconf:640
+msgid "ladiconf [-m <module>]..."
+msgstr ""
+
+#: ../laditools/gtk/a2j_menu.py:27
+msgid "Start bridging"
+msgstr ""
+
+#: ../laditools/gtk/a2j_menu.py:28
+msgid "Stop bridging"
+msgstr ""
+
+#: ../laditools/gtk/a2j_menu.py:30
+msgid "Reactivate"
+msgstr ""
+
+#: ../laditools/gtk/a2j_menu.py:31 ../laditools/gtk/ladimenu.py:373
+msgid "Quit"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:172
+msgid "New studio"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:172 ../laditools/gtk/ladimenu.py:213
+msgid "Studio name"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:212
+msgid "Rename studio"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:226
+msgid "<b><big>Confirm studio delete</big></b>"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:227
+#, python-format
+msgid "Studio \"%s\" will be deleted. Are you sure?"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:239
+msgid "Cannot communicate JACK D-Bus"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:251
+msgid "Error executing "
+msgstr ""
+
+#. 'engine' item
+#: ../laditools/gtk/ladimenu.py:272
+msgid "JACK engine"
+msgstr ""
+
+#. 'params' item
+#: ../laditools/gtk/ladimenu.py:277
+#, python-format
+msgid "JACK \"%s\" driver"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:283
+#, python-format
+msgid "JACK \"%s\""
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:290
+msgid "Empty config list"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:306
+msgid "Error obtaining studio list"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:311
+msgid "Empty studio list"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:320
+msgid "Diagnose"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:324
+msgid "Start gladish"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:339
+msgid "New studio..."
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:340
+msgid "Load studio"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:343
+msgid "Start studio"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:344
+msgid "Stop studio"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:347
+msgid "Rename studio..."
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:348
+msgid "Save studio"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:349
+msgid "Unload studio"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:350
+msgid "Delete studio"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:351
+msgid "Reactivate ladishd"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:356
+msgid "Start JACK server"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:358
+msgid "Reset Xruns"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:360
+msgid "Stop JACK server"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:361
+msgid "Reactivate JACK"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:368
+msgid "Start A2J bridge"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:370
+msgid "Stop A2J bridge"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:371
+msgid "Reactivate A2J"
+msgstr ""
