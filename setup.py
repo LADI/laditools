@@ -28,7 +28,7 @@ from DistUtilsExtra.command import *
 
 laditools_version = "1.0~rc2"
 get_commit_script = "gitcommit.sh"
-pkg_short_desc = "Manage and monitor a LADI system"
+pkg_short_desc = "Linux Audio Desktop Integration Tools"
 pkg_long_desc = """LADITools is a set of tools aiming to achieve the goals of the LADI project to improve desktop integration and user workflow of Linux audio system based on JACK and ladish. Those tools take advantage of the D-Bus interfaces recently added to JACK and ladish to ease the configuration and use of those two great softwares.
 
 The following tools are included:
@@ -55,7 +55,6 @@ class clean_extra(clean_i18n.clean_i18n):
 
 setup(name='laditools',
     version=laditools_version,
-    description='Linux Audio Desktop Integration Tools',
     author='Marc-Olivier Barre, Nedko Arnaudov and Alessio Treglia',
     author_email='linux-audio-dev@lists.linuxaudio.org',
     license='GPL-3',
