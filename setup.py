@@ -50,6 +50,11 @@ pkg_data_files = [('share/doc/laditools',  ['README',
                                             'data/started.svg',
                                             'data/starting.svg',
                                             'data/stopped.svg'])]
+pkg_scripts = ['bin/laditray',
+               'bin/wmladi',
+               'bin/g15ladi',
+               'bin/ladilog',
+               'bin/ladiconf']
 
 if not os.getenv("LADI_RELEASE") and \
         os.path.isfile(get_commit_script):
@@ -75,11 +80,7 @@ setup(name='laditools',
     description=pkg_short_desc,
     long_description=pkg_long_desc,
     packages=['laditools'],
-    scripts=['bin/laditray',
-             'bin/wmladi',
-             'bin/g15ladi',
-             'bin/ladilog',
-             'bin/ladiconf'],
+    scripts=pkg_scripts,
     data_files=pkg_data_files,
     cmdclass={
         'build' : build_extra.build_extra,
