@@ -32,6 +32,11 @@ if not exists (config_dir):
 # Note to users of the config class. Only applications should create an instance
 # of the config object. The ladimenu is *NOT* an application...
 class LadiConfiguration(object):
+    """Convenient class for parsing and updating configuration files.
+    
+    It is recommended to avoid abuses of these objects, only applications
+    should create instances of this class.
+    """
     def __init__ (self, args = None):
         self.appdict = {}
         try:
@@ -41,8 +46,10 @@ class LadiConfiguration(object):
             sys.stderr.write("Config file doesn't exist, creating a new one...\n")
             sys.stderr.flush()
 
-    # Returns the section named <app_name> from the global config
     def get_config_section (self, app_name):
+        """Returns the section named <app_name> from the global configuration.
+        
+        If the section doesn't exist, returns an empty dictionary."""
         try:
             if app_name in self.appdict:
                 return self.appdict[app_name]
@@ -53,10 +60,12 @@ class LadiConfiguration(object):
 
     # Saves the section named <app_name> into the global config
     def set_config_section (self, app_name, param_dict):
+        """Save the section named <app_name> into the global configuration."""
         self.appdict[app_name] = param_dict
 
     # This writes the config file to the disk
     def save (self):
+        """Write configuration to file."""
         config_file = open (config_filename, 'w')
         yaml.dump (self.appdict, config_file, default_flow_style=False)
         config_file.close ()
