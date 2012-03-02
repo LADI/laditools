@@ -51,7 +51,6 @@ pkg_data_files = [('share/doc/laditools',  ['README',
                                             'data/starting.svg',
                                             'data/stopped.svg'])]
 pkg_scripts = ['bin/laditray',
-               'bin/wmladi',
                'bin/g15ladi',
                'bin/ladilog',
                'bin/ladiconf']
