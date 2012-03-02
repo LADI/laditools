@@ -2,6 +2,7 @@
 
 # LADITools - Linux Audio Desktop Integration Tools
 # setup.py - Setup script for the LADITools suite
+# Copyright (C) 2011-2012 Alessio Treglia <quadrispro@ubuntu.com>
 # Copyright (C) 2007-2008, Marc-Olivier Barre <marco@marcochapeau.org>
 # Copyright (C) 2007-2008, Nedko Arnaudov <nedko@arnaudov.name>
 #
@@ -45,9 +46,9 @@ class clean_extra(clean):
 setup(name='laditools',
     version=laditools_version,
     description='Linux Audio Desktop Integration Tools',
-    author='Marc-Olivier Barre and Nedko Arnaudov',
-    author_email='marco@marcochapeau.org',
-    url='http://www.marcochapeau.org/software/laditools',
+    author='Marc-Olivier Barre, Nedko Arnaudov and Alessio Treglia',
+    author_email='linux-audio-dev@lists.linuxaudio.org',
+    url='https://launchpad.net/laditools',
     packages=['laditools'],
     scripts=['bin/laditray',
              'bin/wmladi',
