@@ -41,7 +41,7 @@ The following tools are included:
 if not os.getenv("LADI_RELEASE") and \
         os.path.isfile(get_commit_script):
     commit = subprocess.check_output(["sh", get_commit_script]).strip()
-    laditools_version += "+" + commit
+    laditools_version += "~" + commit
 
 class clean_extra(clean_i18n.clean_i18n):
     def run(self):
