@@ -28,6 +28,15 @@ from DistUtilsExtra.command import *
 
 laditools_version = "1.0~rc2"
 get_commit_script = "gitcommit.sh"
+pkg_short_desc = "Manage and monitor a LADI system"
+pkg_long_desc = """LADITools is a set of tools aiming to achieve the goals of the LADI project to improve desktop integration and user workflow of Linux audio system based on JACK and ladish. Those tools take advantage of the D-Bus interfaces recently added to JACK and ladish to ease the configuration and use of those two great softwares.
+
+The following tools are included:
+ * laditray - a system tray icon that allows users to start, stop and
+              monitor JACK, as well as start some JACK related applications
+ * ladilog - a JACK, ladish and a2jmidid log viewer
+ * ladiconf - a GUI to setup JACK's configuration
+ * g15ladi - a JACK monitor for g15 keyboards"""
 
 if not os.getenv("LADI_RELEASE") and \
         os.path.isfile(get_commit_script):
@@ -51,6 +60,8 @@ setup(name='laditools',
     author_email='linux-audio-dev@lists.linuxaudio.org',
     license='GPL-3',
     url='https://launchpad.net/laditools',
+    description=pkg_short_desc,
+    long_description=pkg_long_desc,
     packages=['laditools'],
     scripts=['bin/laditray',
              'bin/wmladi',
