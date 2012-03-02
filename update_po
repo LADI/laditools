@@ -1,0 +1,11 @@
+#!/bin/bash
+
+oldpwd="`pwd`"
+
+cd po
+for i in `ls *.po`
+do
+   intltool-update -g laditools -d `echo $i | sed -e 's/.po//'`
+done
+
+cd $oldpwd
