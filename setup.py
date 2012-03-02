@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 # LADITools - Linux Audio Desktop Integration Tools
 # setup.py - Setup script for the LADITools suite
