@@ -19,6 +19,11 @@ import dbus
 import sys
 
 class LadiController(object):
+    """Wrap common routines used by D-Bus objects.
+    
+    It is recommended to use one of the available implementations
+    instead of creating instances of this class.
+    """
 
     def __init__(self, dbus_type, service_name, obj_path, iface_name, args = None):
         # Connect to the bus
