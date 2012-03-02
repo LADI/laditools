@@ -125,7 +125,7 @@ class jackctl_g15:
 
     def get_jack_info(self):
         if not self.jack:
-            self.jack = laditools.jack_controller()
+            self.jack = laditools.JackController()
 
         if not self.jack.is_started():
             return False, None, None, None, None, None
@@ -155,7 +155,7 @@ class jackctl_g15:
             studio_name = None
             if not self.ladish:
                 try:
-                    self.ladish = laditools.ladish_proxy()
+                    self.ladish = laditools.LadishProxy()
                 except:
                     pass
             try:
