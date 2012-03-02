@@ -39,6 +39,10 @@ def _dbus_type_to_python_type (dbus_value):
     return dbus_value
 
 class JackController(LadiController):
+    """Wrapper for controlling and monitoring JACK.
+    
+    This class provides an (almost) complete control on configured JACK servers.
+    """
     def __init__ (self):
         LadiController.__init__(self,
                                 dbus_type='SessionBus',
@@ -81,6 +85,10 @@ class JackController(LadiController):
         self.controller_iface.Exit ()
 
 class JackConfigParameter(object):
+    """Wrapper for JACK's parameters.
+    
+    This class provides an (almost) complete control to JACK's configuration parameters.
+    """
     def __init__(self, jack, path):
         self._jack = jack
         self.path = path
@@ -129,6 +137,10 @@ class JackConfigParameter(object):
         return self._jack.param_get_enum_values(self.path)
 
 class JackConfigProxy(LadiController):
+    """Wrapper for JACK's configuration.
+    
+    This controller provides access to the JACK's whole configuration.
+    """
     def __init__ (self):
         LadiController.__init__(self,
                                 dbus_type='SessionBus',
