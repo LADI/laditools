@@ -642,8 +642,24 @@ Convenient graphical interface for configuring JACK.
 
   -m, --module=MODULE     select the configuration module
   -l, --list-modules      list available modules
+  -r, --rack              show controls rack
   -h, --help              display this help and exit
 """)
+
+def show_rack(args):
+    commands = args['commands']
+    w = Gtk.Window.new(Gtk.WindowType.TOPLEVEL)
+    buttons_widget = Gtk.VBox.new(homogeneous=True, spacing=0)
+    w.add(buttons_widget)
+
+    for command in commands:
+        button = Gtk.Button(command.get_description())
+        button.connect('clicked', command.run)
+        buttons_widget.add(button)
+
+    w.show_all()
+    w.connect('destroy', Gtk.main_quit)
+    Gtk.main()
 
 if __name__ == "__main__":
     global jack
@@ -658,8 +674,8 @@ if __name__ == "__main__":
     for internal in jack.read_container(['internals']):
         modules[str(internal)] = jack_internal_params_configure_command(internal)
 
-    options = "hlm:"
-    longoptions = ["help", "list-modules", "module="]
+    options = "hlm:r"
+    longoptions = ["help", "list-modules", "module=", "rack"]
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], options, longoptions)
@@ -682,6 +698,9 @@ if __name__ == "__main__":
             sys.exit(0)
         elif o in ("-m", "--module"):
             module = a
+        elif o in ("-r", "--rack"):
+            show_rack({'commands' : modules.values()})
+            sys.exit(0)
         else:
             assert False, "unhandled option"
 
