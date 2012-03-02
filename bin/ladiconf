@@ -24,9 +24,6 @@ import os
 import sys
 import gettext
 import getopt
-from gi.repository import Gtk
-from gi.repository import Gdk
-from gi.repository import GObject
 
 try:
     import imp
@@ -35,8 +32,20 @@ except ImportError:
     # Running from the build tree?
     sys.path.insert(0, os.path.join(sys.path[0], os.pardir))
 
-import laditools
-gettext.install(laditools.__name__)
+from laditools import _gettext_domain
+gettext.install(_gettext_domain)
+
+from laditools import _find_data_file as find_data_file
+from laditools import check_ladish
+from laditools import LadiConfiguration
+from laditools import LadishProxy
+from laditools import LadishStatusType
+from laditools import LadishProxyError
+from laditools import JackConfigProxy
+
+from gi.repository import Gtk
+from gi.repository import Gdk
+from gi.repository import GObject
 
 (COLUMN_NAME,
  COLUMN_PARAMETER,
@@ -44,44 +53,53 @@ gettext.install(laditools.__name__)
  COLUMN_LONGDESC,
  COLUMN_ISSET) = range (5)
 
-def check_ladish():
+def _check_ladish():
     try:
-        proxy = laditools.ladish_proxy()
-    except:
-        sys.stderr.write(_("ladish proxy creation failed\n"))
+        ret = check_ladish()
+    except LadishProxyError as e:
+        sys.stderr.write("%s\n" % str(e))
+        sys.stderr.flush()
         sys.exit(1)
-
-    if not proxy.is_available():
-        sys.stderr.write( _("ladish is not available\n"))
+    except Exception as e:
+        sys.stderr.write(_("ladish proxy creation failed: %s\n") % str(e))
+        sys.stderr.flush()
         sys.exit(1)
-
-    if proxy.studio_is_loaded():
-        if not proxy.studio_is_started():
-            sys.stderr.write(_("ladish studio is loaded and not started\n"))
-            return False
-        else:
-            msg = _("JACK can only be configured with a stopped studio. Please stop your studio first.")
+    if ret == LadishStatusType.STUDIO_STOPPED:
+        # Everything is OK, there's no need to print out a message
+        #sys.stderr.write(_("ladish studio is loaded and not started\n"))
+        #sys.stderr.flush()
+        return False
+    elif ret == LadishStatusType.NOT_AVAILABLE:
+        sys.stderr.write(_("ladish is not available\n"))
+        sys.stderr.flush()
+        sys.exit(1)
+    else:
+        if ret == LadishStatusType.NO_STUDIO_LOADED:
+            msg = _("JACK can only be configured with a loaded and stopped studio. "
+                    "Please create a new studio or load and stop an existing one.")
+            sys.stderr.write(msg + "\n")
+            title = _("No studio present")
+        elif ret == LadishStatusType.STUDIO_RUNNING:
+            msg = _("JACK can only be configured with a stopped studio. "
+                    "Please stop your studio first.")
             sys.stderr.write(msg + "\n")
             title = _("Studio is running")
-    else:
-        msg = _("JACK can only be configured with a loaded and stopped studio. Please create a new studio or load and stop an existing one.")
-        sys.stderr.write(msg + "\n")
-        title = _("No studio present")
+        else:
+            sys.stderr(_("Unexpected error!\n"))
+        try:
+            mdlg = Gtk.MessageDialog(type = Gtk.MessageType.ERROR,
+                                     buttons = Gtk.ButtonsType.CLOSE,
+                                     message_format = msg)
+            mdlg.set_title(title)
+            mdlg.run()
+            mdlg.hide()
+        except:
+            pass
+        finally:
+            sys.stderr.flush()
+            sys.exit(1)
 
-    # studio is not loaded or loaded and started
-    try:
-        mdlg = Gtk.MessageDialog(type = Gtk.MessageType.ERROR,
-            buttons = Gtk.ButtonsType.CLOSE,
-            message_format = msg)
-        mdlg.set_title(title)
-        mdlg.run()
-        mdlg.hide()
-    except:
-        pass
-    finally:
-        sys.exit(1)
-
-class parameter:
+class parameter(object):
     def __init__(self, path):
         self.path = path
         self.name = path[-1:]
@@ -128,7 +146,7 @@ class parameter:
     def get_enum_values(self):
         return jack.param_get_enum_values(self.path)
 
-class configure_command:
+class configure_command(object):
     def __init__(self):
         pass
 
@@ -618,10 +636,19 @@ class jack_internal_params_configure_command(jack_params_configure_command):
     def get_description(self):
         return _('JACK "%s" parameters') % self.name
 
-if __name__ == "__main__":
+usage = _("""ladiconf [-m <module>]...
+Convenient graphical interface for configuring JACK.
 
-    jack = laditools.jack_configure()
-    check_ladish()
+  -m, --module=MODULE     select the configuration module
+  -l, --list-modules      list available modules
+  -h, --help              display this help and exit
+""")
+
+if __name__ == "__main__":
+    global jack
+
+    jack = JackConfigProxy()
+    _check_ladish()
 
     GObject.type_register(parameter_enum_value)
 
@@ -630,8 +657,8 @@ if __name__ == "__main__":
     for internal in jack.read_container(['internals']):
         modules[str(internal)] = jack_internal_params_configure_command(internal)
 
-    options = "hm:"
-    longoptions = ["help", "module="]
+    options = "hlm:"
+    longoptions = ["help", "list-modules", "module="]
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], options, longoptions)
@@ -642,11 +669,15 @@ if __name__ == "__main__":
     module = None
     for o, a in opts:
         if o in ("-h", "--help"):
-            sys.stderr.write(_("Usage: %s -m module") % sys.argv[0] + "\n")
+            sys.stderr.write(usage)
+            sys.stderr.flush()
+            sys.exit(0)
+        elif o in ("-l", "--list-modules"):
             sys.stderr.write(_("Available modules: "))
             for m in modules:
                 sys.stderr.write(m + " ")
             sys.stderr.write("\n")
+            sys.stderr.flush()
             sys.exit(0)
         elif o in ("-m", "--module"):
             module = a
@@ -654,8 +685,9 @@ if __name__ == "__main__":
             assert False, "unhandled option"
 
     if not module in modules:
-        sys.stderr.write(_("Module %s is not available, type '%s -h' for a list "
+        sys.stderr.write(_("Module %s is not available, type '%s -l' for a list "
                            "of available modules.") % (module, sys.argv[0]) + "\n")
+        sys.stderr.flush()
         sys.exit(2)
     else:
         modules[module].run({})
