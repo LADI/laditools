@@ -19,15 +19,12 @@ import dbus
 import sys
 
 class LadiController(object):
+
     def __init__(self, dbus_type, service_name, obj_path, iface_name, args = None):
         # Connect to the bus
         self.bus = getattr(dbus, dbus_type)()
         self.controller_obj = self.bus.get_object (service_name, obj_path)
         self.controller_iface = dbus.Interface (self.controller_obj, iface_name)
-    
-    @classmethod
-    def _delete_attr(cls, name):
-        return delattr(cls, name)
     
     def is_available (self):
         try:
