@@ -24,6 +24,7 @@ import sys
 import subprocess
 from distutils.core import setup
 from distutils.command.clean import clean
+from DistUtilsExtra.command import *
 
 laditools_version = "1.0~rc2"
 get_commit_script = "gitcommit.sh"
@@ -33,9 +34,9 @@ if not os.getenv("LADI_RELEASE") and \
     commit = subprocess.check_output(["sh", get_commit_script]).strip()
     laditools_version += "+" + commit
 
-class clean_extra(clean):
+class clean_extra(clean_i18n.clean_i18n):
     def run(self):
-        clean.run(self)
+        clean_i18n.clean_i18n.run(self)
 
         for path, dirs, files in os.walk('.'):
             for f in files:
@@ -65,5 +66,7 @@ setup(name='laditools',
         'data/starting.svg',
         'data/stopped.svg'])],
     cmdclass={
+        'build' : build_extra.build_extra,
+        'build_i18n' :  build_i18n.build_i18n,
         'clean' : clean_extra}
 )
