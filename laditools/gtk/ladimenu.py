@@ -1,4 +1,6 @@
+#!/usr/bin/python
 # LADITools - Linux Audio Desktop Integration Tools
+# Copyright (C) 2011-2012 Alessio Treglia <quadrispro@ubuntu.com>
 # Copyright (C) 2007-2010:
 # * Marc-Olivier Barre <marco@marcochapeau.org>
 # * Nedko Arnaudov <nedko@arnaudov.name>
@@ -18,22 +20,20 @@
 
 import os
 import sys
+import subprocess
 from gi.repository import Gtk
 from gi.repository import GObject
-import subprocess
-from config import config
-from jack_configure import jack_configure
-from jack_controller import jack_controller
-from a2j_controller import a2j_controller
-from ladish_controller import ladish_proxy
-
-import gettext
-gettext.install("ladimenu")
+from laditools import _gettext_domain
+from laditools import LadiConfiguration
+from laditools import JackConfigProxy
+from laditools import JackController
+from laditools import A2jController
+from laditools import LadishProxy
 
 # Default launcher menu :
 menu_default = [{"Logs": "ladilog"}]
 
-class manager:
+class LadiManager(object):
     def __init__(self, menu_config_array, jack_autostart = False):
         self.proxy_jack_controller = None
         self.proxy_jack_configure = None
@@ -61,7 +61,7 @@ class manager:
             
     def get_jack_controller(self):
         if not self.proxy_jack_controller:
-            self.proxy_jack_controller = jack_controller()
+            self.proxy_jack_controller = JackController()
         return self.proxy_jack_controller
 
     def is_jack_controller_available(self):
@@ -69,7 +69,7 @@ class manager:
 
     def get_jack_configure(self):
         if not self.proxy_jack_configure:
-            self.proxy_jack_configure = jack_configure()
+            self.proxy_jack_configure = JackConfigProxy()
         return self.proxy_jack_configure
 
     def clear_jack_proxies(self):
@@ -118,7 +118,7 @@ class manager:
 
     def get_a2j_controller(self):
         if not self.proxy_a2j_controller:
-            self.proxy_a2j_controller = a2j_controller()
+            self.proxy_a2j_controller = A2jController()
         return self.proxy_a2j_controller
 
     def clear_a2j_controller(self):
@@ -149,7 +149,7 @@ class manager:
 
     def get_ladish_controller(self):
         if not self.proxy_ladish_controller:
-            self.proxy_ladish_controller = ladish_proxy()
+            self.proxy_ladish_controller = LadishProxy()
         return self.proxy_ladish_controller
 
     def clear_ladish_controller(self):
@@ -169,7 +169,7 @@ class manager:
         return self.get_ladish_controller().studio_is_loaded()
 
     def studio_new(self):
-        accept, name = self.name_dialog("New studio", "Studio name", "")
+        accept, name = self.name_dialog(_("New studio"), _("Studio name"), "")
         if accept:
             self.get_ladish_controller().studio_new(name)
 
@@ -187,9 +187,10 @@ class manager:
             title,
             None,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT)
-        dlg.add_buttons (
-            Gtk.STOCK_CANCEL, Gtk.ResponseType.REJECT,
-            Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT)
+        dlg.add_buttons (Gtk.STOCK_CANCEL,
+                         Gtk.ResponseType.REJECT,
+                         Gtk.STOCK_OK,
+                         Gtk.ResponseType.ACCEPT)
 
         hbox = Gtk.HBox()
         hbox.pack_start(Gtk.Label(label), True, True, 0)
@@ -208,7 +209,9 @@ class manager:
             return False, text
 
     def studio_rename(self):
-        accept, name = self.name_dialog("Rename studio", "Studio name", self.get_ladish_controller().studio_name())
+        accept, name = self.name_dialog(_("Rename studio"),
+                                        _("Studio name"),
+                                        self.get_ladish_controller().studio_name())
         if accept:
             self.get_ladish_controller().studio_rename(name)
 
@@ -220,8 +223,8 @@ class manager:
 
     def studio_delete(self, item, event, studio):
         dlg = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.YES_NO, "")
-        dlg.set_markup("<b><big>Confirm studio delete</big></b>")
-        dlg.format_secondary_text("Studio \"%s\" will be deleted. Are you sure?" % studio)
+        dlg.set_markup(_("<b><big>Confirm studio delete</big></b>"))
+        dlg.format_secondary_text(_("Studio \"%s\" will be deleted. Are you sure?") % studio)
         ret = dlg.run()
         dlg.destroy()
         if ret == Gtk.ResponseType.YES:
@@ -233,7 +236,7 @@ class manager:
 
     def on_menu_show_diagnose(self, widget, data=None):
         dlg = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.CLOSE, self.diagnose_text)
-        dlg.set_title("Cannot communicate JACK D-Bus")
+        dlg.set_title(_("Cannot communicate JACK D-Bus"))
         dlg.run()
         dlg.destroy()
 
@@ -241,7 +244,13 @@ class manager:
         try:
             function()
         except Exception, e:
-            error = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "Error executing " + repr(function) + "Unexpected error\n\n" + repr(e))
+            error = Gtk.MessageDialog(None,
+                                      Gtk.DialogFlags.MODAL,
+                                      Gtk.MessageType.ERROR,
+                                      Gtk.ButtonsType.OK,
+                                      _("Error executing ") +
+                                      repr(function) +
+                                      _("Unexpected error\n\n") + repr(e))
             error.run()
             error.destroy()
 
@@ -278,7 +287,7 @@ class manager:
         except Exception, err:
             print str(err)
         if not menu.get_children():
-            item = Gtk.MenuItem("Empty config list")
+            item = Gtk.MenuItem(_("Empty config list"))
             item.set_sensitive(False)
             item.show()
             menu.append(item)
@@ -294,12 +303,12 @@ class manager:
                 item.connect("button-release-event", function, studio) # "activate" is not used because of focus bug in pygtk
         except Exception, e:
             self.menu_clear(menu)
-            item = Gtk.MenuItem("Error obtaining studio list")
+            item = Gtk.MenuItem(_("Error obtaining studio list"))
             item.set_sensitive(False)
             item.show()
             menu.append(item)
         if not menu.get_children():
-            item = Gtk.MenuItem("Empty studio list")
+            item = Gtk.MenuItem(_("Empty studio list"))
             item.set_sensitive(False)
             item.show()
             menu.append(item)
@@ -308,11 +317,11 @@ class manager:
         menu_items = []
 
         if self.diagnose_text:
-            menu_items.append((Gtk.ImageMenuItem("Diagnose"), self.on_menu_show_diagnose, None))
-            menu_items.append((Gtk.SeparatorMenuItem(), None, None))
+            menu_items.append((Gtk.ImageMenuItem(_("Diagnose")), self.on_menu_show_diagnose, None))
+            menu_items.append((Gtk.SeparatorMenuItem.new(), None, None))
 
         if self.ladish_is_available():
-            menu_items.append((Gtk.ImageMenuItem("Start gladish"), self.on_menu_launcher, "gladish"))
+            menu_items.append((Gtk.ImageMenuItem(_("Start gladish")), self.on_menu_launcher, "gladish"))
 
         # Add the laucher entries at the beginning of the menu
         for items in self.menu_array:
@@ -325,43 +334,43 @@ class manager:
             menu_items.append((Gtk.ImageMenuItem(menu_label), self.on_menu_launcher, path))
 
         menu = Gtk.Menu()
-        menu_items.append((Gtk.SeparatorMenuItem(),))
+        menu_items.append((Gtk.SeparatorMenuItem.new(),))
         if self.ladish_is_available():
-            menu_items.append((Gtk.ImageMenuItem("New studio..."), self.on_menu_command, self.studio_new))
-            menu_items.append((Gtk.ImageMenuItem("Load studio"), self.studio_list_fill, self.studio_load))
+            menu_items.append((Gtk.ImageMenuItem(_("New studio...")), self.on_menu_command, self.studio_new))
+            menu_items.append((Gtk.ImageMenuItem(_("Load studio")), self.studio_list_fill, self.studio_load))
             if self.studio_is_loaded():
-                menu_items.append((Gtk.SeparatorMenuItem(), None, None))
-                menu_items.append((Gtk.ImageMenuItem("Start studio"), self.on_menu_command, self.studio_start))
-                menu_items.append((Gtk.ImageMenuItem("Stop studio"), self.on_menu_command, self.studio_stop))
-            menu_items.append((Gtk.SeparatorMenuItem(), None, None))
+                menu_items.append((Gtk.SeparatorMenuItem.new(), None, None))
+                menu_items.append((Gtk.ImageMenuItem(_("Start studio")), self.on_menu_command, self.studio_start))
+                menu_items.append((Gtk.ImageMenuItem(_("Stop studio")), self.on_menu_command, self.studio_stop))
+            menu_items.append((Gtk.SeparatorMenuItem.new(), None, None))
             if self.studio_is_loaded():
-                menu_items.append((Gtk.ImageMenuItem("Rename studio..."), self.on_menu_command, self.studio_rename))
-                menu_items.append((Gtk.ImageMenuItem("Save studio"), self.on_menu_command, self.studio_save))
-                menu_items.append((Gtk.ImageMenuItem("Unload studio"), self.on_menu_command, self.studio_unload))
-            menu_items.append((Gtk.ImageMenuItem("Delete studio"), self.studio_list_fill, self.studio_delete))
-            menu_items.append((Gtk.ImageMenuItem("Reactivate ladishd"), self.on_menu_command, self.ladish_reactivate))
-            menu_items.append((Gtk.SeparatorMenuItem(), None, None))
+                menu_items.append((Gtk.ImageMenuItem(_("Rename studio...")), self.on_menu_command, self.studio_rename))
+                menu_items.append((Gtk.ImageMenuItem(_("Save studio")), self.on_menu_command, self.studio_save))
+                menu_items.append((Gtk.ImageMenuItem(_("Unload studio")), self.on_menu_command, self.studio_unload))
+            menu_items.append((Gtk.ImageMenuItem(_("Delete studio")), self.studio_list_fill, self.studio_delete))
+            menu_items.append((Gtk.ImageMenuItem(_("Reactivate ladishd")), self.on_menu_command, self.ladish_reactivate))
+            menu_items.append((Gtk.SeparatorMenuItem.new(), None, None))
         if self.jack_is_available():
             if not self.jack_is_started():
                 if not self.ladish_is_available():
-                    menu_items.append((Gtk.ImageMenuItem("Start JACK server"), self.on_menu_command, self.jack_start))
+                    menu_items.append((Gtk.ImageMenuItem(_("Start JACK server")), self.on_menu_command, self.jack_start))
             else:
-                menu_items.append((Gtk.ImageMenuItem("Reset Xruns"), self.on_menu_command, self.jack_reset_xruns))
+                menu_items.append((Gtk.ImageMenuItem(_("Reset Xruns")), self.on_menu_command, self.jack_reset_xruns))
                 if not self.ladish_is_available():
-                    menu_items.append((Gtk.ImageMenuItem("Stop JACK server"), self.on_menu_command, self.jack_stop))
-            menu_items.append((Gtk.ImageMenuItem("Reactivate JACK"), self.on_menu_command, self.jack_reactivate))
-            menu_items.append((Gtk.SeparatorMenuItem(), None, None))
+                    menu_items.append((Gtk.ImageMenuItem(_("Stop JACK server")), self.on_menu_command, self.jack_stop))
+            menu_items.append((Gtk.ImageMenuItem(_("Reactivate JACK")), self.on_menu_command, self.jack_reactivate))
+            menu_items.append((Gtk.SeparatorMenuItem.new(), None, None))
         if self.a2j_is_available():
             # when a2jmidid is used in used with ladish, a2j script should be used
             # for managing bridge "active" lifetime
             if not self.ladish_is_available():
                 if not self.a2j_is_started():
-                    menu_items.append((Gtk.ImageMenuItem("Start A2J bridge"), self.on_menu_command, self.a2j_start))
+                    menu_items.append((Gtk.ImageMenuItem(_("Start A2J bridge")), self.on_menu_command, self.a2j_start))
                 else:
-                    menu_items.append((Gtk.ImageMenuItem("Stop A2J bridge"), self.on_menu_command, self.a2j_stop))
-            menu_items.append((Gtk.ImageMenuItem("Reactivate A2J"), self.on_menu_command, self.a2j_reactivate))
-            menu_items.append((Gtk.SeparatorMenuItem(), None, None))
-        menu_items.append((Gtk.ImageMenuItem("Quit"), self.on_menu_command, Gtk.main_quit))
+                    menu_items.append((Gtk.ImageMenuItem(_("Stop A2J bridge")), self.on_menu_command, self.a2j_stop))
+            menu_items.append((Gtk.ImageMenuItem(_("Reactivate A2J")), self.on_menu_command, self.a2j_reactivate))
+            menu_items.append((Gtk.SeparatorMenuItem.new(), None, None))
+        menu_items.append((Gtk.ImageMenuItem(_("Quit")), self.on_menu_command, Gtk.main_quit))
 
         for menu_tuple in menu_items:
             item = menu_tuple[0]
@@ -380,23 +389,3 @@ class manager:
         menu = self.create_menu()
         menu.popup(None, None, None, 3, 0)
         menu.reposition()
-
-def find_data_file(path):
-    start_dir = os.path.dirname(sys.argv[0])
-
-    if not start_dir:
-        start_dir = "."
-
-    paths = [
-        os.path.join(sys.path[0], 'data', path),
-        os.path.join(os.path.join(sys.path[0], os.pardir), 'data', path),
-        os.path.join(os.path.join(sys.path[0], os.pardir), 'share', 'laditools', 'data', path),
-        ]
-
-    for path in paths:
-        #print 'Checking "%s"...' % path
-        if os.path.isfile(path):
-            #print 'Found data file in "%s"' % path
-            return path
-
-    raise Exception('Data file "%s" not found' % path)

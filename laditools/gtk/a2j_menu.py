@@ -1,4 +1,6 @@
+#!/usr/bin/python
 # LADITools - Linux Audio Desktop Integration Tools
+# Copyright (C) 2011-2012 Alessio Treglia <quadrispro@ubuntu.com>
 # Copyright (C) 2007-2010, Marc-Olivier Barre <marco@marcochapeau.org>
 # Copyright (C) 2007-2009, Nedko Arnaudov <nedko@arnaudov.name>
 #
@@ -19,14 +21,14 @@ from gi.repository import Gtk
 
 # TODO : somehow, we need stock icons. Nothing else can be used for ImageMenuItems
 
-class a2j_menu:
+class A2jMenu(object):
     def __init__(self):
         self.menu_items = []
-        self.menu_items.append((Gtk.ImageMenuItem("Start bridging"), self.on_menu_start))
-        self.menu_items.append((Gtk.ImageMenuItem("Stop bridging"), self.on_menu_stop))
+        self.menu_items.append((Gtk.ImageMenuItem(_("Start bridging")), self.on_menu_start))
+        self.menu_items.append((Gtk.ImageMenuItem(_("Stop bridging")), self.on_menu_stop))
         self.menu_items.append((Gtk.SeparatorMenuItem(), None))
-        self.menu_items.append((Gtk.ImageMenuItem("Reactivate"), self.on_menu_reactivate))
-        self.menu_items.append((Gtk.ImageMenuItem("Quit"), self.on_menu_destroy))
+        self.menu_items.append((Gtk.ImageMenuItem(_("Reactivate")), self.on_menu_reactivate))
+        self.menu_items.append((Gtk.ImageMenuItem(_("Quit")), self.on_menu_destroy))
 
         self.menu = Gtk.Menu()
         for menu_tuple in self.menu_items:

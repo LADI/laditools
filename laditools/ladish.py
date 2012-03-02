@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # LADITools - Linux Audio Desktop Integration Tools
 # Copyright (C) 2011-2012 Alessio Treglia <quadrispro@ubuntu.com>
 # Copyright (C) 2007-2010, Marc-Olivier Barre <marco@marcochapeau.org>
@@ -47,7 +48,7 @@ def check_ladish():
         return LadishStatusType.NO_STUDIO_LOADED
     else:
         if proxy.studio_is_started():
-            return LadishStatusType.STUDIO_ALREADY_RUNNING
+            return LadishStatusType.STUDIO_RUNNING
 
     return LadishStatusType.STUDIO_STOPPED
 

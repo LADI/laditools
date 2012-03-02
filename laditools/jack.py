@@ -1,4 +1,6 @@
+#!/usr/bin/python
 # LADITools - Linux Audio Desktop Integration Tools
+# Copyright (C) 2011-2012 Alessio Treglia <quadrispro@ubuntu.com>
 # Copyright (C) 2007-2010, Marc-Olivier Barre <marco@marcochapeau.org>
 # Copyright (C) 2007-2009, Nedko Arnaudov <nedko@arnaudov.name>
 #
@@ -15,12 +17,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
 import dbus
-from dbus.mainloop.glib import DBusGMainLoop
 from controller import LadiController
 
 name_base = 'org.jackaudio'
-iface_name = name_base + '.Configure'
+ctrl_iface_name = name_base + '.JackControl'
+conf_iface_name = name_base + '.Configure'
 service_name = name_base + '.service'
 obj_path = '/org/jackaudio/Controller'
 
@@ -34,6 +37,48 @@ def _dbus_type_to_python_type (dbus_value):
     if type (dbus_value) == dbus.Byte:
         return str (dbus_value)
     return dbus_value
+
+class JackController(LadiController):
+    def __init__ (self):
+        LadiController.__init__(self,
+                                dbus_type='SessionBus',
+                                service_name=service_name,
+                                obj_path=obj_path,
+                                iface_name=ctrl_iface_name)
+
+    def is_started (self):
+        return self.controller_iface.IsStarted ()
+
+    def name_owner_changed (name = None, old_owner = None, new_owner = None):
+        sys.stderr.write("Name changed : %r\n" % name)
+        sys.stderr.flush()
+
+    def is_realtime (self):
+        return self.controller_iface.IsRealtime ()
+
+    def get_load (self):
+        return self.controller_iface.GetLoad ()
+
+    def get_xruns (self):
+        return self.controller_iface.GetXruns ()
+
+    def get_sample_rate (self):
+        return self.controller_iface.GetSampleRate ()
+
+    def get_latency (self):
+        return self.controller_iface.GetLatency ()
+
+    def reset_xruns (self):
+        return self.controller_iface.ResetXruns ()
+
+    def start (self):
+        self.controller_iface.StartServer ()
+
+    def stop (self):
+        self.controller_iface.StopServer ()
+
+    def kill (self):
+        self.controller_iface.Exit ()
 
 class JackConfigParameter(object):
     def __init__(self, jack, path):
@@ -89,7 +134,7 @@ class JackConfigProxy(LadiController):
                                 dbus_type='SessionBus',
                                 service_name=service_name,
                                 obj_path=obj_path,
-                                iface_name=iface_name)
+                                iface_name=conf_iface_name)
 
     def name_owner_changed (name = None, old_owner = None, new_owner = None):
         print "Name changed : %r" % name
@@ -163,7 +208,7 @@ class JackConfigProxy(LadiController):
         return is_strict
 
     def param_is_fake_value (self, path):
-        is_range, is_strict, is_fake_value, values = self.iface.GetParameterConstraint (path)
+        is_range, is_strict, is_fake_value, values = self.controller_iface.GetParameterConstraint (path)
         return is_fake_value
 
     def param_get_enum_values (self, path):

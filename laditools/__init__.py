@@ -1,4 +1,6 @@
+#!/usr/bin/python
 # LADITools - Linux Audio Desktop Integration Tools
+# Copyright (C) 2011-2012 Alessio Treglia <quadrispro@ubuntu.com>
 # Copyright (C) 2007-2010, Marc-Olivier Barre <marco@marcochapeau.org>
 # Copyright (C) 2007-2010, Nedko Arnaudov <nedko@arnaudov.name>
 #
@@ -15,13 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from jack_controller import jack_controller
-from jack_configure import jack_configure
-from jack_configure import jack_configuration_parameter
-from ladimenu import manager, find_data_file
-from a2j_controller import a2j_controller
-from a2j_menu import a2j_menu
-from ladish_controller import ladish_proxy, check_ladish
-# from error import error
-from config import config
-#from TreeViewTooltips import TreeViewTooltips
+__version__ = (1, 0)
+_gettext_domain = 'laditools'
+
+get_version_string = lambda: '.'.join((str(comp)) for comp in __version__)
+
+from config import LadiConfiguration
+from a2j import A2jController
+from ladish import LadishProxy, LadishStatusType, LadishProxyError, check_ladish
+from jack import JackController, JackConfigProxy, JackConfigParameter
+from utils import _find_data_file
+
+import gtk

@@ -1,4 +1,6 @@
+#!/usr/bin/python
 # LADITools - Linux Audio Desktop Integration Tools
+# Copyright (C) 2011-2012 Alessio Treglia <quadrispro@ubuntu.com>
 # Copyright (C) 2007-2010, Marc-Olivier Barre <marco@marcochapeau.org>
 # Copyright (C) 2007-2009, Nedko Arnaudov <nedko@arnaudov.name>
 #
@@ -15,13 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import yaml
-
 # Let's make sure we'll place the file in an existing dir
 from os import environ, sep, mkdir, path
 from os.path import exists
 from xdg import BaseDirectory as basedir
 import sys
+import yaml
 
 config_dir = path.join(basedir.xdg_config_home, 'laditools')
 config_filename = path.join(config_dir, 'laditools.conf')
@@ -30,8 +31,8 @@ if not exists (config_dir):
 
 # Note to users of the config class. Only applications should create an instance
 # of the config object. The ladimenu is *NOT* an application...
-class config(object):
-    def __init__ (self):
+class LadiConfiguration(object):
+    def __init__ (self, args = None):
         self.appdict = {}
         try:
             with open (config_filename, 'r') as config_file:

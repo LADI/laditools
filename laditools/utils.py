@@ -17,7 +17,25 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-__version__ = (1, 0)
-get_version_string = lambda: '.'.join((str(i)) for i in __version__)
+import os
+import sys
 
-from config import Configuration
+def _find_data_file(path):
+    start_dir = os.path.dirname(sys.argv[0])
+
+    if not start_dir:
+        start_dir = "."
+
+    paths = [
+        os.path.join(sys.path[0], 'data', path),
+        os.path.join(os.path.join(sys.path[0], os.pardir), 'data', path),
+        os.path.join(os.path.join(sys.path[0], os.pardir), 'share', 'laditools', 'data', path),
+        ]
+
+    for path in paths:
+        #print 'Checking "%s"...' % path
+        if os.path.isfile(path):
+            #print 'Found data file in "%s"' % path
+            return path
+
+    raise Exception('Data file "%s" not found' % path)
