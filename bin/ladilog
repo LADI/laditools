@@ -38,12 +38,13 @@ except ImportError:
 from laditools import _gettext_domain
 gettext.install(_gettext_domain)
 
-from laditools import _find_data_file as find_data_file
 from laditools import LadiConfiguration
 
 from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import Vte
+
+from laditools.gtk import find_data_file
 
 timeout_add = GObject.timeout_add
 

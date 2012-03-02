@@ -20,7 +20,7 @@
 import os
 import sys
 
-def _find_data_file(path):
+def find_data_file(path):
     start_dir = os.path.dirname(sys.argv[0])
 
     if not start_dir:
