@@ -37,6 +37,19 @@ The following tools are included:
  * ladilog - a JACK, ladish and a2jmidid log viewer
  * ladiconf - a GUI to setup JACK's configuration
  * g15ladi - a JACK monitor for g15 keyboards"""
+pkg_data_files = [('share/doc/laditools',  ['README',
+                                            'COPYING',
+                                            'INSTALL']),
+                  ('share/pixmaps',        ['data/ladilog.svg',
+                                            'data/laditray.svg',
+                                            'data/ladiconf.svg']),
+                  ('share/applications',   ['data/laditray.desktop']),
+                  ('share/applications',   ['data/ladiconf.desktop']),
+                  ('share/laditools/data', ['data/laditools_logo.svg',
+                                            'data/ladilog_ui.ui',
+                                            'data/started.svg',
+                                            'data/starting.svg',
+                                            'data/stopped.svg'])]
 
 if not os.getenv("LADI_RELEASE") and \
         os.path.isfile(get_commit_script):
@@ -67,15 +80,7 @@ setup(name='laditools',
              'bin/g15ladi',
              'bin/ladilog',
              'bin/ladiconf'],
-    data_files=[('share/doc/laditools', ['README', 'COPYING', 'INSTALL']),
-        ('share/pixmaps', ['data/ladilog.svg', 'data/laditray.svg', 'data/ladiconf.svg']),
-        ('share/applications', ['data/laditray.desktop']),
-        ('share/applications', ['data/ladiconf.desktop']),
-        ('share/laditools/data', ['data/laditools_logo.svg',
-        'data/ladilog_ui.ui',
-        'data/started.svg',
-        'data/starting.svg',
-        'data/stopped.svg'])],
+    data_files=pkg_data_files,
     cmdclass={
         'build' : build_extra.build_extra,
         'build_i18n' :  build_i18n.build_i18n,
