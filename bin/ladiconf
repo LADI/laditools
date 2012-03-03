@@ -23,7 +23,7 @@
 import os
 import sys
 import gettext
-import getopt
+import argparse
 
 try:
     import imp
@@ -35,6 +35,7 @@ except ImportError:
 from laditools import _gettext_domain
 gettext.install(_gettext_domain)
 
+from laditools import get_version_string
 from laditools import check_ladish
 from laditools import LadiConfiguration
 from laditools import LadishProxy
@@ -637,15 +638,6 @@ class jack_internal_params_configure_command(jack_params_configure_command):
     def get_description(self):
         return _('JACK "%s" parameters') % self.name
 
-usage = _("""ladiconf [-m <module>]...
-Convenient graphical interface for configuring JACK.
-
-  -m, --module=MODULE     select the configuration module
-  -l, --list-modules      list available modules
-  -r, --rack              show controls rack
-  -h, --help              display this help and exit
-""")
-
 def show_rack(args):
     commands = args['commands']
     w = Gtk.Window.new(Gtk.WindowType.TOPLEVEL)
@@ -674,42 +666,41 @@ if __name__ == "__main__":
     for internal in jack.read_container(['internals']):
         modules[str(internal)] = jack_internal_params_configure_command(internal)
 
-    options = "hlm:r"
-    longoptions = ["help", "list-modules", "module=", "rack"]
+    parser = argparse.ArgumentParser(description=_('Convenient graphical interface for configuring JACK'),
+                                     epilog=_('This program is part of the LADITools suite.'))
+    parser.add_argument('-m', '--module', nargs=1, metavar='MODULE', help=_('select the module to configure'))
+    parser.add_argument('-l', '--list-modules', action='store_true', help=_('list available modules'))
+    parser.add_argument('-r', '--rack', action='store_true', help=_('show controls rack'))
+    parser.add_argument('--version', action='version', version="%(prog)s " + get_version_string())
 
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], options, longoptions)
-    except getopt.GetoptError, err:
-        sys.stderr.write("%s: %s\n" % (sys.argv[0], str(err)))
-        sys.exit(2)
+    options = parser.parse_args()
 
-    module = None
-    for o, a in opts:
-        if o in ("-h", "--help"):
-            sys.stderr.write(usage)
-            sys.stderr.flush()
-            sys.exit(0)
-        elif o in ("-l", "--list-modules"):
-            sys.stderr.write(_("Available modules: "))
-            for m in modules:
-                sys.stderr.write(m + " ")
-            sys.stderr.write("\n")
-            sys.stderr.flush()
-            sys.exit(0)
-        elif o in ("-m", "--module"):
-            module = a
-        elif o in ("-r", "--rack"):
-            show_rack({'commands' : modules.values()})
-            sys.exit(0)
-        else:
-            assert False, "unhandled option"
-
-    if not module in modules:
-        sys.stderr.write(_("Module %s is not available, type '%s -l' for a list "
-                           "of available modules.") % (module, sys.argv[0]) + "\n")
+    if options.list_modules and options.rack or \
+    ((options.list_modules or options.rack) and options.module):
+        sys.stderr.write(_("Conflicting options, type %s --help for a list of options.") % sys.argv[0] + '\n')
         sys.stderr.flush()
         sys.exit(2)
+
+    if options.list_modules:
+        sys.stderr.write(_("Available modules: "))
+        sys.stderr.write(' '.join(modules) + '\n')
+        sys.stderr.flush()
+        sys.exit(0)
+    if options.rack:
+        show_rack({'commands' : modules.values()})
+        sys.exit(0)
+
+    if options.module:
+        if not module[0] in modules:
+            sys.stderr.write(_("Module %s is not available, type '%s -l' for a list "
+                               "of available modules.") % (module, sys.argv[0]) + "\n")
+            sys.stderr.flush()
+            sys.exit(2)
+        else:
+            modules[module].run({})
     else:
-        modules[module].run({})
+        sys.stderr.write(_("%s: you must specify an option") % sys.argv[0] + '\n')
+        sys.stderr.write(_("Try `%s --help' for more information.") % sys.argv[0] + '\n')
+        sys.exit(2)
 
     sys.exit(0)
