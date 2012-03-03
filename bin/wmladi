@@ -222,7 +222,7 @@ class wmladi (wmoo.Application, LadiManager):
         self.global_config.save ()
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description=_('Window maker dockapp for jackdbus',
+    parser = argparse.ArgumentParser(description=_('Window maker dockapp for jackdbus'),
                                      epilog=_('This program is part of the LADITools suite.'))
     parser.add_argument('--version', action='version', version="%(prog)s " + get_version_string())
 
