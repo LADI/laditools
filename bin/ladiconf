@@ -22,6 +22,7 @@
 
 import os
 import sys
+import signal
 import gettext
 import argparse
 
@@ -691,7 +692,8 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if options.module:
-        if not module[0] in modules:
+        module = options.module[0]
+        if not module in modules:
             sys.stderr.write(_("Module %s is not available, type '%s -l' for a list "
                                "of available modules.") % (module, sys.argv[0]) + "\n")
             sys.stderr.flush()
