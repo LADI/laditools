@@ -22,6 +22,7 @@ import sys
 import os
 import time
 import signal
+import argparse
 
 try:
     import imp
@@ -218,4 +219,11 @@ class jackctl_g15:
 
         del self.g15
 
-jackctl_g15().run()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='JACK monitor for g15 keyboards',
+                                     epilog='This program is part of the LADITools suite.')
+    parser.add_argument('--version', action='version', version="%(prog)s " + laditools.get_version_string())
+
+    parser.parse_args()
+    jackctl_g15().run()
+    sys.exit(0)

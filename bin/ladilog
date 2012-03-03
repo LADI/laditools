@@ -27,6 +27,7 @@ from signal import SIGTERM
 import termios
 import tty
 import gettext
+import argparse
 
 try:
     import imp
@@ -38,6 +39,7 @@ except ImportError:
 from laditools import _gettext_domain
 gettext.install(_gettext_domain)
 
+from laditools import get_version_string
 from laditools import LadiConfiguration
 
 from gi.repository import Gtk
@@ -202,14 +204,20 @@ class ladilog(object):
         self.global_config.save ()
         return 0
 
-try:
+#try:
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=_('JACK, ladish and a2jmidid log viewer'),
+                                     epilog=_('This program is part of the LADITools suite.'))
+    parser.add_argument('--version', action='version', version="%(prog)s " + get_version_string())
+
+    parser.parse_args()
     ladilog().run()
     sys.exit(0)
-except Exception, e:
-    error = Gtk.MessageDialog(None,
-                              Gtk.DialogFlags.MODAL,
-                              Gtk.MessageType.ERROR,
-                              Gtk.ButtonsType.OK,
-                              _("Unexpected error\n\n") + repr(e))
-    error.run()
-    sys.exit(1)
+#except Exception, e:
+#    error = Gtk.MessageDialog(None,
+#                              Gtk.DialogFlags.MODAL,
+#                              Gtk.MessageType.ERROR,
+#                              Gtk.ButtonsType.OK,
+#                              _("Unexpected error\n\n") + repr(e))
+#    error.run()
+#    sys.exit(1)
