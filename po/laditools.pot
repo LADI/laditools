@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-03 13:42+0200\n"
+"POT-Creation-Date: 2012-03-03 15:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,101 +17,91 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../bin/ladilog:118
+#: ../bin/ladilog:122
 #, c-format
 msgid "Skipping '%s' because it does not exist\n"
 msgstr ""
 
-#: ../bin/ladilog:120
+#: ../bin/ladilog:124
 #, c-format
 msgid "Watching %s\n"
 msgstr ""
 
-#: ../bin/ladilog:128
+#: ../bin/ladilog:132
 #, c-format
 msgid "Loading interface from %s\n"
 msgstr ""
 
-#: ../bin/ladilog:157
+#: ../bin/ladilog:161
 #, c-format
 msgid "Opening %s...\n"
 msgstr ""
 
-#: ../bin/ladilog:163
+#: ../bin/ladilog:167
 msgid "You called Popen with invalid arguments... dumbass\n"
 msgstr ""
 
-#: ../bin/ladilog:165
+#: ../bin/ladilog:169
 #, c-format
 msgid "Unexpected error: %s\n"
 msgstr ""
 
-#: ../bin/ladiconf:66
+#: ../bin/ladiconf:70
 #, c-format
 msgid "ladish proxy creation failed: %s\n"
 msgstr ""
 
-#: ../bin/ladiconf:75
+#: ../bin/ladiconf:79
 msgid "ladish is not available\n"
 msgstr ""
 
-#: ../bin/ladiconf:80
+#: ../bin/ladiconf:84
 msgid ""
 "JACK can only be configured with a loaded and stopped studio. Please create "
 "a new studio or load and stop an existing one."
 msgstr ""
 
-#: ../bin/ladiconf:83
+#: ../bin/ladiconf:87
 msgid "No studio present"
 msgstr ""
 
-#: ../bin/ladiconf:85
+#: ../bin/ladiconf:89
 msgid ""
 "JACK can only be configured with a stopped studio. Please stop your studio "
 "first."
 msgstr ""
 
-#: ../bin/ladiconf:88
+#: ../bin/ladiconf:92
 msgid "Studio is running"
 msgstr ""
 
-#: ../bin/ladiconf:90
+#: ../bin/ladiconf:94
 msgid "Unexpected error!\n"
 msgstr ""
 
-#: ../bin/ladiconf:530
+#: ../bin/ladiconf:534
 #, c-format
 msgid "<i>Value will be reset to %s</i>"
 msgstr ""
 
-#: ../bin/ladiconf:533
+#: ../bin/ladiconf:537
 #, c-format
 msgid "<i>Double-click to schedule reset of value to %s</i>"
 msgstr ""
 
-#: ../bin/ladiconf:680
+#: ../bin/ladiconf:682
 #, c-format
 msgid "Conflicting options, type %s --help for a list of options."
 msgstr ""
 
-#: ../bin/ladiconf:685
+#: ../bin/ladiconf:687
 msgid "Available modules: "
 msgstr ""
 
-#: ../bin/ladiconf:695
+#: ../bin/ladiconf:693
 #, c-format
 msgid ""
 "Module %s is not available, type '%s -l' for a list of available modules."
-msgstr ""
-
-#: ../bin/ladiconf:702
-#, c-format
-msgid "%s: you must specify an option"
-msgstr ""
-
-#: ../bin/ladiconf:703
-#, c-format
-msgid "Try `%s --help' for more information."
 msgstr ""
 
 #: ../laditools/gtk/a2j_menu.py:27
