@@ -50,6 +50,17 @@ from gi.repository import GObject
 
 from laditools.gtk import find_data_file
 
+def sig_handler(signum, frame):
+    if signum == signal.SIGINT:
+        sys.stderr.write("Interrupt caught, exiting...\n")
+        sys.stderr.flush()
+        Gtk.main_quit()
+        sys.exit(0)
+    else:
+        pass
+
+signal.signal(signal.SIGINT, sig_handler)
+
 (COLUMN_NAME,
  COLUMN_PARAMETER,
  COLUMN_SHORTDESC,
