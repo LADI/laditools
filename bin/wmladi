@@ -22,6 +22,8 @@ import sys
 import os
 from wmdocklib import wmoo, pywmhelpers
 import time
+import argparse
+import gettext
 
 try:
     import imp
@@ -30,21 +32,25 @@ except ImportError:
     # Running from the build tree?
     sys.path.insert(0, os.path.join(sys.path[0], os.pardir))
 
-import laditools
+from laditools import _gettext_domain
+gettext.install(_gettext_domain)
 
-import pygtk
-pygtk.require('2.0')
-import gtk
-import gobject
+from laditools import get_version_string
+from laditools import LadiConfiguration
+
+from gi.repository import Gtk
+from gi.repository import GObject
+
+from laditools.gtk import LadiManager
 
 # Default configuration
 autostart_default = 0
 debug = False
 
-class wmladi (wmoo.Application, laditools.manager):
+class wmladi (wmoo.Application, LadiManager):
     def __init__ (self):
         # Handle the configuration
-        self.global_config = laditools.config ()
+        self.global_config = LadiConfiguration ()
         self.param_dict = self.global_config.get_config_section ('wmladi')
         if self.param_dict != None:
             if 'autostart' not in self.param_dict:
@@ -59,7 +65,7 @@ class wmladi (wmoo.Application, laditools.manager):
             margin = 2,
             debug = False)
 
-        laditools.manager.__init__(self, self.global_config.get_config_section ('ladimenu'), int(autostart))
+        LadiManager.__init__(self, self.global_config.get_config_section ('ladimenu'), int(autostart))
 
         self.addCallback (self.on_button_release, 'buttonrelease', area=(0,0,64,64))
 
@@ -205,8 +211,8 @@ class wmladi (wmoo.Application, laditools.manager):
 
     def run_gtk (self):
         #print self._sleep
-        gobject.timeout_add (int(self._sleep * 1000), self.do_dockapp)
-        gtk.main ()
+        GObject.timeout_add (int(self._sleep * 1000), self.do_dockapp)
+        Gtk.main ()
 
     def run (self):
         self.run_gtk ()
@@ -214,4 +220,10 @@ class wmladi (wmoo.Application, laditools.manager):
         self.global_config.set_config_section ('ladimenu', self.menu_array)
         self.global_config.save ()
 
-wmladi ().run ()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=_('Window maker dockapp for jackdbus',
+                                     epilog=_('This program is part of the LADITools suite.'))
+    parser.add_argument('--version', action='version', version="%(prog)s " + get_version_string())
+
+    parser.parse_args()
+    wmladi().run ()
