@@ -387,5 +387,10 @@ class LadiManager(object):
 
     def menu_activate(self):
         menu = self.create_menu()
-        menu.popup(None, None, None, 3, 0)
+        menu.popup(parent_menu_shell=None,
+                   parent_menu_item=None,
+                   func=None,
+                   data=None,
+                   button=3,
+                   activate_time=0)
         menu.reposition()
