@@ -25,14 +25,7 @@ import signal
 import gettext
 import argparse
 
-def sig_handler(signum, frame):
-    if signum == signal.SIGINT:
-        sys.stderr.write("Interrupt caught, exiting...\n")
-        sys.stderr.flush()
-        sys.exit(0)
-    else:
-        pass
-
+sig_handler = signal.getsignal(signal.SIGTERM)
 signal.signal(signal.SIGINT, sig_handler)
 
 try:
