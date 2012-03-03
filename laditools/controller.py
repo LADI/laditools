@@ -32,6 +32,7 @@ class LadiController(object):
         self.controller_iface = dbus.Interface (self.controller_obj, iface_name)
     
     def is_available (self):
+    """Check if the service is available."""
         try:
             self.is_started ()
             return True
@@ -41,13 +42,17 @@ class LadiController(object):
             return False
 
     def is_started (self):
+    """Check if the service is running."""
         return self.controller_iface.is_started ()
 
     def start(self):
+    """Start the service."""
         self.controller_iface.start()
 
     def stop(self):
+    """Stop the service."""
         self.controller_iface.stop()
 
     def kill(self):
+    """Kill the service."""
         self.controller_iface.exit()

@@ -53,7 +53,10 @@ def check_ladish():
     return LadishStatusType.STUDIO_STOPPED
 
 class LadishProxy(LadiController):
-
+    """Wrapper for controlling and monitoring ladish.
+    
+    This class provides an (almost) complete control on LADI Session Handler.
+    """
     def __init__ (self):
         LadiController.__init__(self,
                                 dbus_type='SessionBus',
@@ -67,6 +70,7 @@ class LadishProxy(LadiController):
         raise NotImplementedError
 
     def is_available(self):
+    """Check if the service is running and a studio is loaded."""
         try:
             self.studio_is_loaded()
             return True
@@ -74,43 +78,56 @@ class LadishProxy(LadiController):
             return False
 
     def studio_list(self):
+    """Return a list of configured studios."""
         studios = []
         for studio in self.controller_iface.GetStudioList():
             studios.append(studio[0])
         return studios
 
     def studio_new(self, name=""):
+    """Setup a new studio and name it as <name>."""
         self.controller_iface.NewStudio(name)
 
     def studio_is_loaded(self):
+    """Check if a studio is loaded."""
         return self.controller_iface.IsStudioLoaded()
 
     def studio_load(self, name):
+    """Load the studio named <name>."""
         self.controller_iface.LoadStudio(name, {})
 
     def studio_delete(self, name):
+    """Delete the studio named <name>."""
         self.controller_iface.DeleteStudio(name)
 
     def kill(self):
+    """Kill the service."""
         self.controller_iface.Exit()
 
     def studio_start(self):
+    """Start the current studio."""
         self.studio_iface.Start()
 
     def studio_stop(self):
+    """Stop the current studio."""
         self.studio_iface.Stop()
 
     def studio_rename(self, new_name):
+    """Rename the current studio to <new_name>."""
         self.studio_iface.Rename(new_name)
 
     def studio_save(self):
+    """Save the changes to the current studio."""
         self.studio_iface.Save()
 
     def studio_unload(self):
+    """Unload the current studio."""
         self.studio_iface.Unload()
 
     def studio_name(self):
+    """Return the current studio's name."""
         return self.studio_iface.GetName()
 
     def studio_is_started(self):
+    """Check if the current studio is running."""
         return self.studio_iface.IsStarted()
