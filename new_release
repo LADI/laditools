@@ -1,0 +1,5 @@
+#!/bin/bash
+
+## ./retrieve_changelog -r tag:0.7.1.. > ChangeLog
+python setup.py sdist
+gpg --armor --sign --detach-sig dist/*.tar.gz
