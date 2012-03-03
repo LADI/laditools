@@ -21,6 +21,7 @@
 
 import os
 import sys
+import signal
 from subprocess import Popen, PIPE
 import pty
 from signal import SIGTERM
@@ -28,6 +29,16 @@ import termios
 import tty
 import gettext
 import argparse
+
+def sig_handler(signum, frame):
+    if signum == signal.SIGINT:
+        sys.stderr.write("Interrupt caught, exiting...\n")
+        sys.stderr.flush()
+        sys.exit(0)
+    else:
+        pass
+
+signal.signal(signal.SIGINT, sig_handler)
 
 try:
     import imp
