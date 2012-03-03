@@ -36,7 +36,7 @@ import laditools
 
 pipe_filename = "/dev/shm/g15log.pipe"
 
-class g15composer:
+class g15composer (object):
     text_justify_left = 0
     text_justify_center = 1
     text_justify_right = 2
