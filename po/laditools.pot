@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-02 10:14+0100\n"
+"POT-Creation-Date: 2012-03-03 12:23+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,96 +17,101 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../bin/ladilog:116
+#: ../bin/ladilog:118
 #, c-format
 msgid "Skipping '%s' because it does not exist\n"
 msgstr ""
 
-#: ../bin/ladilog:118
+#: ../bin/ladilog:120
 #, c-format
 msgid "Watching %s\n"
 msgstr ""
 
-#: ../bin/ladilog:126
+#: ../bin/ladilog:128
 #, c-format
 msgid "Loading interface from %s\n"
 msgstr ""
 
-#: ../bin/ladilog:155
+#: ../bin/ladilog:157
 #, c-format
 msgid "Opening %s...\n"
 msgstr ""
 
-#: ../bin/ladilog:161
+#: ../bin/ladilog:163
 msgid "You called Popen with invalid arguments... dumbass\n"
 msgstr ""
 
-#: ../bin/ladilog:163
+#: ../bin/ladilog:165
 #, c-format
 msgid "Unexpected error: %s\n"
 msgstr ""
 
-#: ../bin/ladilog:213 ../laditools/gtk/ladimenu.py:253
-msgid ""
-"Unexpected error\n"
-"\n"
-msgstr ""
-
-#: ../bin/ladiconf:65
+#: ../bin/ladiconf:66
 #, c-format
 msgid "ladish proxy creation failed: %s\n"
 msgstr ""
 
-#: ../bin/ladiconf:74
+#: ../bin/ladiconf:75
 msgid "ladish is not available\n"
 msgstr ""
 
-#: ../bin/ladiconf:79
+#: ../bin/ladiconf:80
 msgid ""
 "JACK can only be configured with a loaded and stopped studio. Please create "
 "a new studio or load and stop an existing one."
 msgstr ""
 
-#: ../bin/ladiconf:82
+#: ../bin/ladiconf:83
 msgid "No studio present"
 msgstr ""
 
-#: ../bin/ladiconf:84
+#: ../bin/ladiconf:85
 msgid ""
 "JACK can only be configured with a stopped studio. Please stop your studio "
 "first."
 msgstr ""
 
-#: ../bin/ladiconf:87
+#: ../bin/ladiconf:88
 msgid "Studio is running"
 msgstr ""
 
-#: ../bin/ladiconf:89
+#: ../bin/ladiconf:90
 msgid "Unexpected error!\n"
 msgstr ""
 
-#: ../bin/ladiconf:529
+#: ../bin/ladiconf:530
 #, c-format
 msgid "<i>Value will be reset to %s</i>"
 msgstr ""
 
-#: ../bin/ladiconf:532
+#: ../bin/ladiconf:533
 #, c-format
 msgid "<i>Double-click to schedule reset of value to %s</i>"
 msgstr ""
 
-#: ../bin/ladiconf:677
+#: ../bin/ladiconf:680
+#, c-format
+msgid "Conflicting options, type %s --help for a list of options."
+msgstr ""
+
+#: ../bin/ladiconf:685
 msgid "Available modules: "
 msgstr ""
 
-#: ../bin/ladiconf:689
+#: ../bin/ladiconf:695
 #, c-format
 msgid ""
 "Module %s is not available, type '%s -l' for a list of available modules."
 msgstr ""
 
-#: ../bin/ladiconf:640
-msgid "ladiconf [-m <module>]..."
+#: ../bin/ladiconf:702
+#, c-format
+msgid "%s: you must specify an option"
+msgstr ""
+
+#: ../bin/ladiconf:703
+#, c-format
+msgid "Try `%s --help' for more information."
 msgstr ""
 
 #: ../laditools/gtk/a2j_menu.py:27
@@ -152,6 +157,12 @@ msgstr ""
 
 #: ../laditools/gtk/ladimenu.py:251
 msgid "Error executing "
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:253
+msgid ""
+"Unexpected error\n"
+"\n"
 msgstr ""
 
 #. 'engine' item
