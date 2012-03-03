@@ -49,6 +49,7 @@ pkg_data_files = [('share/pixmaps',        ['data/ladilog.svg',
                                             'data/stopped.svg'])]
 pkg_scripts = ['bin/laditray',
                'bin/g15ladi',
+               'bin/wmladi',
                'bin/ladilog',
                'bin/ladiconf']
 
