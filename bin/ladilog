@@ -140,19 +140,20 @@ class ladilog(object):
         builder.connect_signals(self.event_dict)
 
         self.ui = ui = builder.get_object("ladilog_ui")
+        self.logview_notebook = builder.get_object ("ladilog_notebook")
         # Create our terminal and display it
         for log in self.log_files:
             log['scrolled_window'] = sw = Gtk.ScrolledWindow()
             log['term'] = term = Vte.Terminal.new ()
             sw.set_policy(hscrollbar_policy=Gtk.PolicyType.AUTOMATIC,
                           vscrollbar_policy=Gtk.PolicyType.ALWAYS)
-            #sw.set_min_content_width(400)
-            #sw.set_min_content_height(600)
+            sw.add(term)
+            sw.show()
             term.set_scroll_on_output(True)
             log["tab_label"] = Gtk.Label(label=log["name"])
-            sw.add(term)
 
-        self.logview_notebook = builder.get_object ("ladilog_notebook")
+            self.logview_notebook.append_page(log["scrolled_window"],
+                                              log["tab_label"])
 
         # Make it do something...
         for log in self.log_files:
@@ -170,9 +171,6 @@ class ladilog(object):
             finally:
                 sys.stderr.flush()
 
-        for log in self.log_files:
-            self.logview_notebook.append_page(log["scrolled_window"],
-                                              log["tab_label"])
         ui.show_all()
         self.auto_updater = timeout_add(250, self.update)
 
