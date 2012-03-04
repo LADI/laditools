@@ -162,7 +162,7 @@ class ladilog(object):
                 lines = read_last(log['log_file'], self.max_lines)
                 for line in lines:
                     line = line.strip('\r\n') + '\r\n'
-                    log["term"].feed(line, len(line))
+                    log["term"].feed(line, -1)
             except ValueError:
                 sys.stderr.write( _("You called Popen with invalid arguments... dumbass\n") )
             except:
@@ -181,7 +181,7 @@ class ladilog(object):
         for log in self.log_files:
             line = log['log_file'].readline()
             while line:
-                log["term"].feed(line + '\r', len(line)+1)
+                log["term"].feed(line + '\r', -1)
                 line = log['log_file'].readline()
             log['log_file'].seek(log['log_file'].tell())
         return True
@@ -194,13 +194,13 @@ class ladilog(object):
 
     def on_clear_text (self, data=None):
         current_view = self.logview_notebook.get_current_page ()
-        self.log_files[current_view]["term"].feed ("\033[2J\033[;f", len("\033[2J\033[;f"))
+        self.log_files[current_view]["term"].feed ("\033[2J\033[;f", -1)
 
     def on_purge (self, data=None):
         current_view = self.logview_notebook.get_current_page ()
         # Opens the file in write anew mode thus clearing the file and close it right away
         open (self.log_files[current_view]['logfile_path'], "w+")
-        self.log_files[current_view]["term"].feed ("\033[2J\033[;f", len("\033[2J\033[;f"))
+        self.log_files[current_view]["term"].feed ("\033[2J\033[;f", -1)
 
     def run (self):
         Gtk.main ()
