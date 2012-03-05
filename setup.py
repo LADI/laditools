@@ -67,6 +67,9 @@ class clean_extra(clean_i18n.clean_i18n):
                 f = os.path.join(path, f)
                 if f.endswith('.pyc'):
                     self.spawn(['rm', f])
+            for d in dirs:
+                if d == '__pycache__':
+                    self.spawn(['rm', '-r', os.path.join(path,d)])
 
 setup(name='laditools',
     version=laditools_version,
