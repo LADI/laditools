@@ -27,7 +27,7 @@ import yaml
 config_dir = path.join(basedir.xdg_config_home, 'laditools')
 config_filename = path.join(config_dir, 'laditools.conf')
 if not exists (config_dir):
-    mkdir (config_dir, 0755)
+    mkdir (config_dir, 0o755)
 
 # Note to users of the config class. Only applications should create an instance
 # of the config object. The ladimenu is *NOT* an application...
