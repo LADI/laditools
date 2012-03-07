@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-03 15:45+0100\n"
+"POT-Creation-Date: 2012-03-07 14:52+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,37 +17,56 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: ../bin/laditray:152
+#, python-format
+msgid ""
+"system tray icon that allows users to start, stop andmonitor JACK, as well "
+"as start some JACK related applications"
+msgstr ""
+
+#: ../bin/laditray:154 ../bin/ladilog:212 ../bin/ladiconf:674
+#: ../bin/wmladi:230
+#, python-format
+msgid "This program is part of the LADITools suite."
+msgstr ""
+
 #: ../bin/ladilog:122
-#, c-format
+#, python-format
 msgid "Skipping '%s' because it does not exist\n"
 msgstr ""
 
 #: ../bin/ladilog:124
-#, c-format
+#, python-format
 msgid "Watching %s\n"
 msgstr ""
 
 #: ../bin/ladilog:132
-#, c-format
+#, python-format
 msgid "Loading interface from %s\n"
 msgstr ""
 
-#: ../bin/ladilog:161
-#, c-format
+#: ../bin/ladilog:162
+#, python-format
 msgid "Opening %s...\n"
 msgstr ""
 
-#: ../bin/ladilog:167
+#: ../bin/ladilog:168
+#, python-format
 msgid "You called Popen with invalid arguments... dumbass\n"
 msgstr ""
 
-#: ../bin/ladilog:169
-#, c-format
+#: ../bin/ladilog:170
+#, python-format
 msgid "Unexpected error: %s\n"
 msgstr ""
 
+#: ../bin/ladilog:211
+#, python-format
+msgid "JACK, ladish and a2jmidid log viewer"
+msgstr ""
+
 #: ../bin/ladiconf:70
-#, c-format
+#, python-format
 msgid "ladish proxy creation failed: %s\n"
 msgstr ""
 
@@ -56,52 +75,97 @@ msgid "ladish is not available\n"
 msgstr ""
 
 #: ../bin/ladiconf:84
+#, python-format
 msgid ""
 "JACK can only be configured with a loaded and stopped studio. Please create "
 "a new studio or load and stop an existing one."
 msgstr ""
 
 #: ../bin/ladiconf:87
+#, python-format
 msgid "No studio present"
 msgstr ""
 
 #: ../bin/ladiconf:89
+#, python-format
 msgid ""
 "JACK can only be configured with a stopped studio. Please stop your studio "
 "first."
 msgstr ""
 
 #: ../bin/ladiconf:92
+#, python-format
 msgid "Studio is running"
 msgstr ""
 
 #: ../bin/ladiconf:94
+#, python-format
 msgid "Unexpected error!\n"
 msgstr ""
 
 #: ../bin/ladiconf:534
-#, c-format
+#, python-format
 msgid "<i>Value will be reset to %s</i>"
 msgstr ""
 
 #: ../bin/ladiconf:537
-#, c-format
+#, python-format
 msgid "<i>Double-click to schedule reset of value to %s</i>"
 msgstr ""
 
+#: ../bin/ladiconf:625
+#, python-format
+msgid "JACK engine parameters"
+msgstr ""
+
+#: ../bin/ladiconf:632
+#, python-format
+msgid "JACK driver parameters"
+msgstr ""
+
+#: ../bin/ladiconf:635
+#, python-format
+msgid "JACK \"%s\" driver parameters"
+msgstr ""
+
+#: ../bin/ladiconf:643
+#, python-format
+msgid "JACK \"%s\" parameters"
+msgstr ""
+
+#: ../bin/ladiconf:673
+#, python-format
+msgid "Convenient graphical interface for configuring JACK"
+msgstr ""
+
+#: ../bin/ladiconf:675
+#, python-format
+msgid "select the module to configure"
+msgstr ""
+
+#: ../bin/ladiconf:676
+#, python-format
+msgid "list available modules"
+msgstr ""
+
 #: ../bin/ladiconf:682
-#, c-format
+#, python-format
 msgid "Conflicting options, type %s --help for a list of options."
 msgstr ""
 
-#: ../bin/ladiconf:687
+#: ../bin/ladiconf.py:687
 msgid "Available modules: "
 msgstr ""
 
-#: ../bin/ladiconf:693
-#, c-format
+#: ../bin/ladiconf.py:693
+#, python-format
 msgid ""
 "Module %s is not available, type '%s -l' for a list of available modules."
+msgstr ""
+
+#: ../bin/wmladi:229
+#, python-format
+msgid "Window maker dockapp for jackdbus"
 msgstr ""
 
 #: ../laditools/gtk/a2j_menu.py:27
