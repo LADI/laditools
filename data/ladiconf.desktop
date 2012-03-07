@@ -5,5 +5,5 @@ Comment=JACK and LASH control application configuration
 Terminal=false
 Exec=ladiconf
 Icon=ladiconf
-Categories=GTK;Settings;
+Categories=GNOME;GTK;Settings;
 GenericName=LADI Configuration
