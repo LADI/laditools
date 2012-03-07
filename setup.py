@@ -22,6 +22,7 @@
 import os
 import sys
 import subprocess
+import glob
 from distutils.core import setup
 from distutils.command.clean import clean
 from DistUtilsExtra.command import *
@@ -40,8 +41,7 @@ The following tools are included:
 pkg_data_files = [('share/pixmaps',        ['data/ladilog.svg',
                                             'data/laditray.svg',
                                             'data/ladiconf.svg']),
-                  ('share/applications',   ['data/laditray.desktop']),
-                  ('share/applications',   ['data/ladiconf.desktop']),
+                  ('share/applications',   glob.glob('data/*.desktop')),
                   ('share/laditools/data', ['data/laditools_logo.svg',
                                             'data/ladilog_ui.ui',
                                             'data/started.svg',
