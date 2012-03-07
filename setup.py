@@ -53,6 +53,8 @@ pkg_scripts = ['bin/laditray',
                'bin/ladilog',
                'bin/ladiconf']
 
+os.environ['XGETTEXT_ARGS'] = "--language=Python"
+
 if not os.getenv("LADI_RELEASE") and \
         os.path.isfile(get_commit_script):
     commit = subprocess.check_output(["sh", get_commit_script]).strip()
