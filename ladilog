@@ -43,7 +43,7 @@ from gi.repository import Gtk
 from gi.repository import GObject
 from gi.repository import Vte
 
-from laditools.gtk import find_data_file
+from laditools.GTK import find_data_file
 
 timeout_add = GObject.timeout_add
 
