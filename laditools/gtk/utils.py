@@ -28,8 +28,8 @@ def find_data_file(path):
 
     paths = [
         os.path.join(sys.path[0], 'data', path),
-        os.path.join(os.path.join(sys.path[0], os.pardir), 'data', path),
-        os.path.join(os.path.join(sys.path[0], os.pardir), 'share', 'laditools', 'data', path),
+        os.path.join(sys.prefix, 'share', 'laditools', path),
+        os.path.join(sys.prefix, 'share', 'laditools', 'data', path),
         ]
 
     for path in paths:
