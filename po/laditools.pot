@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-08 01:41+0100\n"
+"POT-Creation-Date: 2012-03-08 02:01+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -145,11 +145,36 @@ msgstr ""
 #: ../ladiconf:683
 #, python-format
 msgid ""
-"Module %s is not available, type '%s -l' for a list of available modules."
+"Module %(mod)s is not available, type '%(cmd)s -l' for a list of available "
+"modules."
 msgstr ""
 
 #: ../wmladi:222
 msgid "Window maker dockapp for jackdbus"
+msgstr ""
+
+#: ../data/ladiconf.desktop.in.h:1
+msgid "Linux Audio Configuration"
+msgstr ""
+
+#: ../data/ladiconf.desktop.in.h:2
+msgid "JACK and LASH control application configuration"
+msgstr ""
+
+#: ../data/ladiconf.desktop.in.h:3
+msgid "LADI Configuration"
+msgstr ""
+
+#: ../data/laditray.desktop.in.h:1
+msgid "LADITray"
+msgstr ""
+
+#: ../data/laditray.desktop.in.h:2
+msgid "JACK and LASH control tray application"
+msgstr ""
+
+#: ../data/laditray.desktop.in.h:3
+msgid "LADI Trayicon"
 msgstr ""
 
 #: ../laditools/gtk/a2j_menu.py:27
