@@ -27,7 +27,7 @@ from distutils.core import setup
 from distutils.command.clean import clean
 from DistUtilsExtra.command import *
 
-laditools_version = "1.0~rc4"
+laditools_version = "1.0~rc5"
 get_commit_script = "gitcommit.sh"
 pkg_short_desc = "Linux Audio Desktop Integration Tools"
 pkg_long_desc = """LADITools is a set of tools aiming to achieve the goals of the LADI project to improve desktop integration and user workflow of Linux audio system based on JACK and ladish. Those tools take advantage of the D-Bus interfaces recently added to JACK and ladish to ease the configuration and use of those two great softwares.
