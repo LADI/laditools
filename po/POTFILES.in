@@ -1,8 +1,8 @@
-bin/laditray
-bin/ladilog
-bin/ladiconf
-bin/g15ladi
-bin/wmladi
+laditray
+ladilog
+ladiconf
+g15ladi
+wmladi
 data/ladiconf.desktop
 data/laditray.desktop
 data/ladilog_ui.ui
