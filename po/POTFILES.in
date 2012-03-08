@@ -3,8 +3,8 @@ ladilog
 ladiconf
 g15ladi
 wmladi
-data/ladiconf.desktop
-data/laditray.desktop
+data/ladiconf.desktop.in
+data/laditray.desktop.in
 data/ladilog_ui.ui
 laditools/gtk/a2j_menu.py
 laditools/gtk/ladimenu.py
