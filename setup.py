@@ -41,7 +41,6 @@ The following tools are included:
 pkg_data_files = [('share/pixmaps',        ['data/ladilog.svg',
                                             'data/laditray.svg',
                                             'data/ladiconf.svg']),
-                  ('share/applications',   glob.glob('data/*.desktop')),
                   ('share/laditools/data', ['data/laditools_logo.svg',
                                             'data/ladilog_ui.ui',
                                             'data/started.svg',
