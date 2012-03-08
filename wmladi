@@ -39,7 +39,7 @@ from laditools import LadiConfiguration
 from gi.repository import Gtk
 from gi.repository import GObject
 
-from laditools.GTK import LadiManager
+from laditools import LadiManager
 
 # Default configuration
 autostart_default = 0
