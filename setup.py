@@ -87,5 +87,6 @@ setup(name='laditools',
     cmdclass={
         'build' : build_extra.build_extra,
         'build_i18n' :  build_i18n.build_i18n,
+        'build_icons' : build_icons.build_icons,
         'clean' : clean_extra}
 )
