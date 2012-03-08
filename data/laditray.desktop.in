@@ -1,9 +1,9 @@
 [Desktop Entry]
-Name=LADITray
+_Name=LADITray
 Type=Application
-Comment=JACK and LASH control tray application
+_Comment=JACK and LASH control tray application
 Terminal=false
 Exec=laditray
 Icon=laditray
 Categories=GTK;AudioVideo;
-GenericName=LADI Trayicon
+_GenericName=LADI Trayicon

@@ -1,0 +1,9 @@
+[Desktop Entry]
+_Name=Linux Audio Configuration
+Type=Application
+_Comment=JACK and LASH control application configuration
+Terminal=false
+Exec=ladiconf
+Icon=ladiconf
+Categories=GNOME;GTK;Settings;
+_GenericName=LADI Configuration
