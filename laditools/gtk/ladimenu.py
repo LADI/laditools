@@ -255,7 +255,7 @@ class LadiManager(object):
             error.destroy()
 
     def on_menu_launcher(self, widget, exec_path):
-        self.proc_list.append(subprocess.Popen([exec_path, exec_path]))
+        self.proc_list.append(subprocess.Popen([exec_path]))
 
     def menu_clear(self, menu):
         menu.foreach(lambda item,none: menu.remove(item), None)
