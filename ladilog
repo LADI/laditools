@@ -165,9 +165,9 @@ class ladilog(object):
                 sys.stderr.flush()
 
         ui.show_all()
-        self.auto_updater = timeout_add(250, self.update)
+        self.auto_updater = timeout_add(250, self.update, None)
 
-    def update(self):
+    def update(self, user_data = None):
         # Append latest output to the buffer
         for log in self.log_files:
             line = log['log_file'].readline()

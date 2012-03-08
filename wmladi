@@ -173,7 +173,7 @@ class wmladi (wmoo.Application, LadiManager):
             self.putString (x, y, line)
             y += 9
 
-    def do_dockapp (self):
+    def do_dockapp (self, user_data = None):
         """this is called from event loop.  events are examined and if a
         callback has been registered, it is called, passing it the event as
         argument.
@@ -209,7 +209,7 @@ class wmladi (wmoo.Application, LadiManager):
 
     def run_gtk (self):
         #print self._sleep
-        GObject.timeout_add (int(self._sleep * 1000), self.do_dockapp)
+        GObject.timeout_add (int(self._sleep * 1000), self.do_dockapp, None)
         Gtk.main ()
 
     def run (self):
