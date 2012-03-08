@@ -6,5 +6,5 @@ wmladi
 data/ladiconf.desktop.in
 data/laditray.desktop.in
 data/ladilog_ui.ui
-laditools/GTK/a2j_menu.py
-laditools/GTK/ladimenu.py
+laditools/gtk/a2j_menu.py
+laditools/gtk/ladimenu.py

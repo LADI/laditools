@@ -27,9 +27,9 @@ from a2j import A2jController
 from ladish import LadishProxy, LadishStatusType, LadishProxyError, check_ladish
 from jack import JackController, JackConfigProxy, JackConfigParameter
 
-import GTK
+import gtk
 
-__all__ = ["GTK",
+__all__ = ["gtk",
            "LadiConfiguration",
            "A2jController",
            "LadishProxy",

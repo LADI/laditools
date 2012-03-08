@@ -37,8 +37,8 @@ from laditools import LadiConfiguration
 from gi.repository import Gtk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
-from laditools.GTK import LadiManager
-from laditools.GTK import find_data_file
+from laditools.gtk import LadiManager
+from laditools.gtk import find_data_file
 
 timeout_add = GObject.timeout_add
 
