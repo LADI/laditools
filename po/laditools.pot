@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-08 01:39+0100\n"
+"POT-Creation-Date: 2012-03-08 01:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgid ""
 "as start some JACK related applications"
 msgstr ""
 
-#: ../laditray:147 ../ladilog:205 ../ladiconf:667 ../wmladi:223
+#: ../laditray:147 ../ladilog:205 ../ladiconf:664 ../wmladi:223
 msgid "This program is part of the LADITools suite."
 msgstr ""
 
@@ -75,74 +75,74 @@ msgid ""
 "a new studio or load and stop an existing one."
 msgstr ""
 
-#: ../ladiconf:80
+#: ../ladiconf:79
 msgid "No studio present"
 msgstr ""
 
-#: ../ladiconf:82
+#: ../ladiconf:81
 msgid ""
 "JACK can only be configured with a stopped studio. Please stop your studio "
 "first."
 msgstr ""
 
-#: ../ladiconf:85
+#: ../ladiconf:83
 msgid "Studio is running"
 msgstr ""
 
-#: ../ladiconf:87
+#: ../ladiconf:85
 msgid "Unexpected error!\n"
 msgstr ""
 
-#: ../ladiconf:527
+#: ../ladiconf:524
 #, python-format
 msgid "<i>Value will be reset to %s</i>"
 msgstr ""
 
-#: ../ladiconf:530
+#: ../ladiconf:527
 #, python-format
 msgid "<i>Double-click to schedule reset of value to %s</i>"
 msgstr ""
 
-#: ../ladiconf:618
+#: ../ladiconf:615
 msgid "JACK engine parameters"
 msgstr ""
 
-#: ../ladiconf:625
+#: ../ladiconf:622
 msgid "JACK driver parameters"
 msgstr ""
 
-#: ../ladiconf:628
+#: ../ladiconf:625
 #, python-format
 msgid "JACK \"%s\" driver parameters"
 msgstr ""
 
-#: ../ladiconf:636
+#: ../ladiconf:633
 #, python-format
 msgid "JACK \"%s\" parameters"
 msgstr ""
 
-#: ../ladiconf:666
+#: ../ladiconf:663
 msgid "Convenient graphical interface for configuring JACK"
 msgstr ""
 
-#: ../ladiconf:668
+#: ../ladiconf:665
 msgid "select the module to configure"
 msgstr ""
 
-#: ../ladiconf:669
+#: ../ladiconf:666
 msgid "list available modules"
 msgstr ""
 
-#: ../ladiconf:675
+#: ../ladiconf:672
 #, python-format
 msgid "Conflicting options, type %s --help for a list of options."
 msgstr ""
 
-#: ../ladiconf:680
+#: ../ladiconf:677
 msgid "Available modules: "
 msgstr ""
 
-#: ../ladiconf:686
+#: ../ladiconf:683
 #, python-format
 msgid ""
 "Module %s is not available, type '%s -l' for a list of available modules."
