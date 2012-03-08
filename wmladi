@@ -30,13 +30,6 @@ import gettext
 sig_handler = signal.getsignal(signal.SIGTERM)
 signal.signal(signal.SIGINT, sig_handler)
 
-try:
-    import imp
-    imp.find_module('laditools')
-except ImportError:
-    # Running from the build tree?
-    sys.path.insert(0, os.path.join(sys.path[0], os.pardir))
-
 from laditools import _gettext_domain
 gettext.install(_gettext_domain)
 

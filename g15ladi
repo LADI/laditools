@@ -25,13 +25,6 @@ import time
 import signal
 import argparse
 
-try:
-    import imp
-    imp.find_module('laditools')
-except ImportError:
-    # Running from the build tree?
-    sys.path.insert(0, os.path.join(sys.path[0], os.pardir))
-
 import laditools
 
 pipe_filename = "/dev/shm/g15log.pipe"
