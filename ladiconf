@@ -680,7 +680,7 @@ if __name__ == "__main__":
     elif options.module:
         module = options.module[0]
         if not module in modules:
-            sys.stderr.write(_("Module %s is not available, type '%s -l' for a list of available modules.") % (module, sys.argv[0]) + "\n")
+            sys.stderr.write(_("Module %(mod)s is not available, type '%(cmd)s -l' for a list of available modules.") % {'mod' : module, 'cmd' : sys.argv[0]} + "\n")
             sys.stderr.flush()
             sys.exit(2)
         else:
