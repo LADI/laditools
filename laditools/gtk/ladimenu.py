@@ -43,7 +43,7 @@ class LadiManager(object):
         # Handle the configuration and grab custom menu items
         self.menu_array = menu_config_array
         # Add some defaults if we don't already have a menu
-        if self.menu_array == None:
+        if not self.menu_array:
             self.menu_array = []
             for element in menu_default:
                 self.menu_array.append(element)
@@ -323,11 +323,11 @@ class LadiManager(object):
         if self.ladish_is_available():
             menu_items.append((Gtk.ImageMenuItem(_("Start gladish")), self.on_menu_launcher, "gladish"))
 
+        menu_items.append((Gtk.ImageMenuItem("Configure ..."), self.configure_list_fill, self.studio_configure))
         # Add the laucher entries at the beginning of the menu
         for item in self.menu_array:
             # Replace "Configure" static item with the new sub-menu
             if item == 'configure':
-                menu_items.append((Gtk.ImageMenuItem("Configure ..."), self.configure_list_fill, self.studio_configure))
                 continue
             menu_label = item.capitalize() + "..."
             path = self.menu_array[item]
