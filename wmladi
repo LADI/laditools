@@ -218,6 +218,17 @@ class wmladi (wmoo.Application, LadiManager):
         self.global_config.set_config_section ('ladimenu', self.menu_array)
         self.global_config.save ()
 
+    def menu_activate(self):
+        icon = Gtk.StatusIcon()
+        menu = self.create_menu()
+        menu.popup(parent_menu_shell=None,
+                   parent_menu_item=None,
+                   func=icon.position_menu,
+                   data=None,
+                   button=3,
+                   activate_time=0)
+        menu.reposition()
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=_('Window maker dockapp for jackdbus'),
                                      epilog=_('This program is part of the LADITools suite.'))
