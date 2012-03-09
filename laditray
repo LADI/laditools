@@ -134,6 +134,7 @@ class laditray (Gtk.StatusIcon, LadiManager):
         logo_pixbuf = GdkPixbuf.Pixbuf.new_from_file(find_data_file("laditools_logo.svg"))
         ad = Gtk.AboutDialog.new()
         ad.set_program_name("LADITools")
+        ad.set_comments(_("LADITools is a set of tools aiming to achieve the goals of the LADI project to improve desktop integration and user workflow of Linux audio system based on JACK and ladish."))
         ad.set_logo(logo_pixbuf)
         ad.set_authors(["Marc-Olivier Barre", "Nedko Arnaudov", "Alessio Treglia"])
         ad.set_copyright("""Copyright © 2011-2012 Alessio Treglia <quadrispro@ubuntu.com>
