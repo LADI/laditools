@@ -227,6 +227,7 @@ class wmladi (wmoo.Application, LadiManager):
                    data=None,
                    button=3,
                    activate_time=0)
+        print "Popup'd!"
         menu.reposition()
 
 if __name__ == '__main__':
