@@ -22,10 +22,10 @@ _gettext_domain = 'laditools'
 
 get_version_string = lambda: '.'.join((str(comp)) for comp in __version__)
 
-from config import LadiConfiguration
-from a2j import A2jController
-from ladish import LadishProxy, LadishStatusType, LadishProxyError, check_ladish
-from jack import JackController, JackConfigProxy, JackConfigParameter
+from .config import LadiConfiguration
+from .a2j import A2jController
+from .ladish import LadishProxy, LadishStatusType, LadishProxyError, check_ladish
+from .jack import JackController, JackConfigProxy, JackConfigParameter
 
 from . import gtk
 

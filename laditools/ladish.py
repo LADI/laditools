@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from enum import Enum
-from controller import LadiController
+from .controller import LadiController
 import dbus
 
 name_base = 'org.ladish'

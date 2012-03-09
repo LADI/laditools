@@ -19,7 +19,7 @@
 
 import sys
 import dbus
-from controller import LadiController
+from .controller import LadiController
 
 name_base = 'org.jackaudio'
 ctrl_iface_name = name_base + '.JackControl'

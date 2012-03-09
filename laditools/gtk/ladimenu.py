@@ -23,12 +23,12 @@ import sys
 import subprocess
 from gi.repository import Gtk
 from gi.repository import GObject
-from laditools import _gettext_domain
-from laditools import LadiConfiguration
-from laditools import JackConfigProxy
-from laditools import JackController
-from laditools import A2jController
-from laditools import LadishProxy
+from .. import _gettext_domain
+from .. import LadiConfiguration
+from .. import JackConfigProxy
+from .. import JackController
+from .. import A2jController
+from .. import LadishProxy
 
 # Default launcher menu :
 menu_default = [{"Logs": "ladilog"}]

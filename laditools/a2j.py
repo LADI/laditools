@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from controller import LadiController
+from .controller import LadiController
 
 name_base = 'org.gna.home.a2jmidid'
 iface_name = name_base + '.control'
