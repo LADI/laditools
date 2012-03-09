@@ -384,7 +384,7 @@ class LadiManager(object):
                 if callback in (self.studio_list_fill, self.configure_list_fill):
                     item.set_submenu(Gtk.Menu())
                 item.connect("activate", callback, exec_path)
-        menu.show_all()
+        #menu.show_all()
         return menu
 
     def menu_activate(self):
@@ -395,4 +395,5 @@ class LadiManager(object):
                    data=None,
                    button=3,
                    activate_time=0)
+        menu.show_all()
         menu.reposition()
