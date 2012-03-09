@@ -89,6 +89,7 @@ class LadiConfiguration(SafeConfigParser):
         except MissingSectionHeaderError:
             if yaml:
                 self._migrate_configuration()
+                self.save()
             # go on otherwise
         except:
             raise MalformedConfigError()
