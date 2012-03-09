@@ -21,30 +21,71 @@
 from os import environ, sep, mkdir, path
 from os.path import exists
 from xdg import BaseDirectory as basedir
+from ConfigParser import SafeConfigParser, MissingSectionHeaderError
 import sys
-import yaml
+
+try:
+    import yaml
+except:
+    yaml = None
 
 config_dir = path.join(basedir.xdg_config_home, 'laditools')
 config_filename = path.join(config_dir, 'laditools.conf')
 if not exists (config_dir):
     mkdir (config_dir, 0o755)
 
+class MalformedConfigError(Exception):
+    def __init__(self):
+        Exception.__init__(self, """Malformed configuration file, \
+delete the file '%s' and let me create a new one.""" % config_filename)
+
 # Note to users of the config class. Only applications should create an instance
 # of the config object. The ladimenu is *NOT* an application...
-class LadiConfiguration(object):
+class LadiConfiguration(SafeConfigParser):
     """Convenient class for parsing and updating configuration files.
     
     It is recommended to avoid abuses of these objects, only applications
     should create instances of this class.
     """
-    def __init__ (self, args = None):
-        self.appdict = {}
+
+    def _migrate_configuration(self):
+        """Migrate configuration from old YAML coding style to the new one."""
         try:
             with open (config_filename, 'r') as config_file:
-                self.appdict = yaml.load (config_file)
+                appdict = yaml.load (config_file)
         except:
             sys.stderr.write("Config file doesn't exist, creating a new one...\n")
             sys.stderr.flush()
+            return 1
+
+        for section in appdict:
+            if not section in self.sections():
+                self.add_section(section)
+            for opt in appdict[section]:
+                if not isinstance(opt, dict):
+                    self.set(section, opt, str(appdict[section][opt]))
+                else:
+                    for k in opt:
+                        self.set(section, k, opt[k])
+
+        self.appdict = appdict
+        return 0
+
+    def __init__ (self, args = None):
+
+        SafeConfigParser.__init__(self)
+        self.appdict = {}
+
+        try:
+            self.read(config_filename)
+            for section in self.sections():
+                self.appdict[section] = dict(self.items(section))
+        except MissingSectionHeaderError:
+            if yaml:
+                self._migrate_configuration()
+            # go on otherwise
+        except:
+            raise MalformedConfigError()
 
     def get_config_section (self, app_name):
         """Returns the section named <app_name> from the global configuration.
@@ -67,5 +108,5 @@ class LadiConfiguration(object):
     def save (self):
         """Write configuration to file."""
         config_file = open (config_filename, 'w')
-        yaml.dump (self.appdict, config_file, default_flow_style=False)
+        self.write(config_file)
         config_file.close ()
