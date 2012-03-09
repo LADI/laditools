@@ -21,8 +21,14 @@
 from os import environ, sep, mkdir, path
 from os.path import exists
 from xdg import BaseDirectory as basedir
-from ConfigParser import SafeConfigParser, MissingSectionHeaderError
 import sys
+
+if sys.version_info.major == 3:
+    from configparser import SafeConfigParser, MissingSectionHeaderError
+elif sys.version_info.major == 2:
+    from ConfigParser import SafeConfigParser, MissingSectionHeaderError
+else:
+    raise Exception("Unsupported Python's interpreter version.")
 
 try:
     import yaml
