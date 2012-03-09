@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from a2j_menu import A2jMenu
+from a2jmenu import A2jMenu
 from ladimenu import LadiManager
 from utils import find_data_file
 

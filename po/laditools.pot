@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-08 02:01+0100\n"
+"POT-Creation-Date: 2012-03-09 07:56+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -177,19 +177,19 @@ msgstr ""
 msgid "LADI Trayicon"
 msgstr ""
 
-#: ../laditools/gtk/a2j_menu.py:27
+#: ../laditools/gtk/a2jmenu.py:27
 msgid "Start bridging"
 msgstr ""
 
-#: ../laditools/gtk/a2j_menu.py:28
+#: ../laditools/gtk/a2jmenu.py:28
 msgid "Stop bridging"
 msgstr ""
 
-#: ../laditools/gtk/a2j_menu.py:30
+#: ../laditools/gtk/a2jmenu.py:30
 msgid "Reactivate"
 msgstr ""
 
-#: ../laditools/gtk/a2j_menu.py:31 ../laditools/gtk/ladimenu.py:373
+#: ../laditools/gtk/a2jmenu.py:31 ../laditools/gtk/ladimenu.py:373
 msgid "Quit"
 msgstr ""
 
