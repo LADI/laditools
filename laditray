@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+# -*- coding: utf-8 -*-
 # LADITools - Linux Audio Desktop Integration Tools
 # laditray - System tray integration for LADI
 # Copyright (C) 2011-2012 Alessio Treglia <quadrispro@ubuntu.com>
@@ -129,6 +129,22 @@ class laditray (Gtk.StatusIcon, LadiManager):
         for i in self.proc_list:
             i.poll ()
         return True
+
+    def on_about(self, *args):
+        logo_pixbuf = GdkPixbuf.Pixbuf.new_from_file(find_data_file("laditools_logo.svg"))
+        ad = Gtk.AboutDialog.new()
+        ad.set_program_name("LADITools")
+        ad.set_logo(logo_pixbuf)
+        ad.set_authors(["Marc-Olivier Barre", "Nedko Arnaudov", "Alessio Treglia"])
+        ad.set_copyright("""Copyright © 2011-2012 Alessio Treglia <quadrispro@ubuntu.com>
+Copyright © 2007-2010 Marc-Olivier Barre <marco@marcochapeau.org>
+Copyright © 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>""")
+        ad.set_version(get_version_string())
+        ad.set_license_type( Gtk.License.GPL_3_0)
+        ad.set_translator_credits(_("translator-credits"))
+        ad.set_website("https://launchpad.net/laditools/")
+        ad.run()
+        ad.destroy()
 
     def run(self):
         Gtk.main ()

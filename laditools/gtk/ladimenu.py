@@ -370,6 +370,8 @@ class LadiManager(object):
                     menu_items.append((Gtk.ImageMenuItem(_("Stop A2J bridge")), self.on_menu_command, self.a2j_stop))
             menu_items.append((Gtk.ImageMenuItem(_("Reactivate A2J")), self.on_menu_command, self.a2j_reactivate))
             menu_items.append((Gtk.SeparatorMenuItem.new(), None, None))
+        if hasattr(self, 'on_about'):
+            menu_items.append((Gtk.ImageMenuItem(_("About")), self.on_about, None))
         menu_items.append((Gtk.ImageMenuItem(_("Quit")), self.on_menu_command, Gtk.main_quit))
 
         for menu_tuple in menu_items:
