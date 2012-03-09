@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-09 07:56+0100\n"
+"POT-Creation-Date: 2012-03-09 08:51+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,13 +17,24 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: ../laditray:137
+msgid ""
+"LADITools is a set of tools aiming to achieve the goals of the LADI project "
+"to improve desktop integration and user workflow of Linux audio system based "
+"on JACK and ladish."
+msgstr ""
+
 #: ../laditray:145
+msgid "translator-credits"
+msgstr ""
+
+#: ../laditray:162
 msgid ""
 "system tray icon that allows users to start, stop andmonitor JACK, as well "
 "as start some JACK related applications"
 msgstr ""
 
-#: ../laditray:147 ../ladilog:205 ../ladiconf:664 ../wmladi:223
+#: ../laditray:164 ../ladilog:205 ../ladiconf:664 ../wmladi:223
 msgid "This program is part of the LADITools suite."
 msgstr ""
 
@@ -189,7 +200,7 @@ msgstr ""
 msgid "Reactivate"
 msgstr ""
 
-#: ../laditools/gtk/a2jmenu.py:31 ../laditools/gtk/ladimenu.py:373
+#: ../laditools/gtk/a2jmenu.py:31 ../laditools/gtk/ladimenu.py:375
 msgid "Quit"
 msgstr ""
 
@@ -326,4 +337,8 @@ msgstr ""
 
 #: ../laditools/gtk/ladimenu.py:371
 msgid "Reactivate A2J"
+msgstr ""
+
+#: ../laditools/gtk/ladimenu.py:374
+msgid "About"
 msgstr ""
