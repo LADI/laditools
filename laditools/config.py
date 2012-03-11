@@ -74,22 +74,20 @@ class LadiConfiguration(SafeConfigParser):
                     for k in opt:
                         self.set(section, k, opt[k])
 
-        self.appdict = appdict
         return 0
 
     def __init__ (self, args = None):
 
         SafeConfigParser.__init__(self)
-        self.appdict = {}
 
         try:
             self.read(config_filename)
-            for section in self.sections():
-                self.appdict[section] = dict(self.items(section))
         except MissingSectionHeaderError:
             if yaml:
-                self._migrate_configuration()
-                self.save()
+                if self._migrate_configuration() == 0:
+                    self.save()
+                else: # new empty file
+                    pass
             # go on otherwise
         except:
             raise MalformedConfigError()
@@ -98,18 +96,19 @@ class LadiConfiguration(SafeConfigParser):
         """Returns the section named <app_name> from the global configuration.
         
         If the section doesn't exist, returns an empty dictionary."""
-        try:
-            if app_name in self.appdict:
-                return self.appdict[app_name]
-            else:
-                return {}
-        except:
-            return {}
+        appdict = {}
+        if self.has_section(app_name):
+            for opt in self.options(app_name):
+                appdict[opt] = self.get(app_name, opt)
+        return appdict
 
     # Saves the section named <app_name> into the global config
     def set_config_section (self, app_name, param_dict):
         """Save the section named <app_name> into the global configuration."""
-        self.appdict[app_name] = param_dict
+        if not self.has_section(app_name):
+            self.add_section(app_name)
+        for k in param_dict:
+            self.set(app_name, k, str(param_dict[k]))
 
     # This writes the config file to the disk
     def save (self):

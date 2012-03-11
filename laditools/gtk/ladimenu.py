@@ -31,7 +31,7 @@ from .. import A2jController
 from .. import LadishProxy
 
 # Default launcher menu :
-menu_default = [{"Logs": "ladilog"}]
+menu_default = {"Logs": "ladilog"}
 
 class LadiManager(object):
     def __init__(self, menu_config_array, jack_autostart = False):
@@ -44,9 +44,7 @@ class LadiManager(object):
         self.menu_array = menu_config_array
         # Add some defaults if we don't already have a menu
         if not self.menu_array:
-            self.menu_array = []
-            for element in menu_default:
-                self.menu_array.append(element)
+            self.menu_array = menu_default
 
         self.proc_list = []
 
