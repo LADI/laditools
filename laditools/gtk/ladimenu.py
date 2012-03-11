@@ -166,6 +166,9 @@ class LadiManager(object):
     def studio_is_loaded(self):
         return self.get_ladish_controller().studio_is_loaded()
 
+    def studio_is_started(self):
+        return self.get_ladish_controller().studio_is_started()
+
     def studio_new(self):
         accept, name = self.name_dialog(_("New studio"), _("Studio name"), "")
         if accept:
@@ -338,8 +341,10 @@ class LadiManager(object):
             menu_items.append((Gtk.ImageMenuItem(_("Load studio")), self.studio_list_fill, self.studio_load))
             if self.studio_is_loaded():
                 menu_items.append((Gtk.SeparatorMenuItem.new(), None, None))
-                menu_items.append((Gtk.ImageMenuItem(_("Start studio")), self.on_menu_command, self.studio_start))
-                menu_items.append((Gtk.ImageMenuItem(_("Stop studio")), self.on_menu_command, self.studio_stop))
+                if self.studio_is_started():
+                    menu_items.append((Gtk.ImageMenuItem(_("Stop studio")), self.on_menu_command, self.studio_stop))
+                else:
+                    menu_items.append((Gtk.ImageMenuItem(_("Start studio")), self.on_menu_command, self.studio_start))
             menu_items.append((Gtk.SeparatorMenuItem.new(), None, None))
             if self.studio_is_loaded():
                 menu_items.append((Gtk.ImageMenuItem(_("Rename studio...")), self.on_menu_command, self.studio_rename))
