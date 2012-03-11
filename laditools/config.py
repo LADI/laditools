@@ -76,9 +76,18 @@ class LadiConfiguration(SafeConfigParser):
 
         return 0
 
-    def __init__ (self, args = None):
+    def __init__ (self, **kwargs):
 
         SafeConfigParser.__init__(self)
+
+        # First setup default values for apps specified
+        # by the call to the contructor
+        if kwargs:
+            for app_name in kwargs:
+                self.add_section(app_name)
+                for key in kwargs[app_name]:
+                    value = kwargs[app_name][key]
+                    self.set(app_name, key, str(value))
 
         try:
             self.read(config_filename)
