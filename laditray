@@ -41,21 +41,18 @@ from laditools.gtk import find_data_file
 
 timeout_add = GObject.timeout_add
 
-# Default configuration
-autostart_default = False
-
 class laditray (Gtk.StatusIcon, LadiManager):
+
+    # Default configuration
+    _default_config = {
+        'autostart' : False,
+    }
+
     def __init__ (self):
         # Handle the configuration
-        self.global_config = LadiConfiguration()
+        self.global_config = LadiConfiguration(laditray = self._default_config)
         self.laditray_param_dict = self.global_config.get_config_section ('laditray')
-        if self.laditray_param_dict != {}:
-            if 'autostart' not in self.laditray_param_dict:
-                self.laditray_param_dict['autostart'] = str (autostart_default)
-        else:
-            self.laditray_param_dict = {}
-            self.laditray_param_dict['autostart'] = str (autostart_default)
-        autostart = self.laditray_param_dict['autostart']
+        autostart = bool(eval(self.laditray_param_dict['autostart']))
         # Build the UI
         LadiManager.__init__(self, self.global_config.get_config_section ('ladimenu'), autostart)
         GObject.GObject.__init__ (self)
