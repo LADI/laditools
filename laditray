@@ -49,7 +49,7 @@ class laditray (Gtk.StatusIcon, LadiManager):
         # Handle the configuration
         self.global_config = LadiConfiguration()
         self.laditray_param_dict = self.global_config.get_config_section ('laditray')
-        if self.laditray_param_dict != None:
+        if self.laditray_param_dict != {}:
             if 'autostart' not in self.laditray_param_dict:
                 self.laditray_param_dict['autostart'] = str (autostart_default)
         else:
