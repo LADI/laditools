@@ -26,6 +26,7 @@ from wmdocklib import wmoo, pywmhelpers
 import time
 import argparse
 import gettext
+from gi.repository import Gdk
 
 sig_handler = signal.getsignal(signal.SIGTERM)
 signal.signal(signal.SIGINT, sig_handler)
@@ -218,17 +219,22 @@ class wmladi (wmoo.Application, LadiManager):
         self.global_config.set_config_section ('ladimenu', self.menu_array)
         self.global_config.save ()
 
+    def position_menu(self, menu, data):
+        _, x, y, _ = Gdk.Display.get_default().get_pointer()
+        return x, y, True
+
     def menu_activate(self):
-        icon = Gtk.StatusIcon()
         menu = self.create_menu()
-        menu.popup(parent_menu_shell=None,
-                   parent_menu_item=None,
-                   func=icon.position_menu,
-                   data=None,
-                   button=3,
-                   activate_time=0)
-        print "Popup'd!"
-        menu.reposition()
+        try:
+            menu.popup(parent_menu_shell=None,
+                       parent_menu_item=None,
+                       func=self.position_menu,
+                       data=None,
+                       button=3,
+                       activate_time=0)
+        except Exception, e:
+            print repr(e)
+            pass
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=_('Window maker dockapp for jackdbus'),
