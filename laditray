@@ -165,7 +165,3 @@ if __name__ == "__main__":
 
     laditray().run()
     sys.exit(0)
-#except Exception, e:
-#    error = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "Unexpected error\n\n" + repr(e))
-#    error.run()
-#    exit(1)
