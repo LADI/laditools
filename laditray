@@ -69,6 +69,7 @@ class laditray (Gtk.StatusIcon, LadiManager):
         self.auto_updater = timeout_add (250, self.update, None)
         # Make the menu popup when the icon is right clicked
         self.connect ("popup-menu", self.menu_activate)
+        self.set_title("LADI Tray")
 
     def menu_activate(self, status_icon, button, activate_time, user_data=None):
         menu = self.create_menu()
