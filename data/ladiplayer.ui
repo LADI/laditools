@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- interface-requires gtk+ 3.0 -->
+  <object class="GtkActionGroup" id="actiongroup_studio">
+    <child>
+      <object class="GtkAction" id="new">
+        <property name="label" translatable="yes">New studio...</property>
+        <property name="stock_id">gtk-new</property>
+      </object>
+      <accelerator key="n" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
+    </child>
+    <child>
+      <object class="GtkAction" id="delete">
+        <property name="label" translatable="yes">Delete studio...</property>
+        <property name="stock_id">gtk-delete</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="save">
+        <property name="label" translatable="yes">Save studio</property>
+        <property name="tooltip" translatable="yes">Save the current studio</property>
+        <property name="stock_id">gtk-save</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="rename">
+        <property name="label" translatable="yes">Rename studio</property>
+        <property name="stock_id">gtk-edit</property>
+        <signal name="activate" handler="action_studio_rename" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="start">
+        <property name="label" translatable="yes">Start studio</property>
+        <property name="short_label" translatable="yes">Start studio</property>
+        <property name="stock_id">gtk-media-play</property>
+        <signal name="activate" handler="action_studio_start" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="stop">
+        <property name="label" translatable="yes">Stop the loaded studio</property>
+        <property name="short_label" translatable="yes">Stop studio</property>
+        <property name="stock_id">gtk-media-stop</property>
+        <signal name="activate" handler="action_studio_stop" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="unload">
+        <property name="label" translatable="yes">Unload the current studio</property>
+        <property name="short_label" translatable="yes">Unload studio</property>
+        <property name="stock_id">gtk-close</property>
+        <signal name="activate" handler="action_studio_unload" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="reactivate_ladishd">
+        <property name="label" translatable="yes">Reactivate ladishd</property>
+        <property name="short_label" translatable="yes">Restart ladishd</property>
+        <property name="stock_id">gtk-revert-to-saved</property>
+        <signal name="activate" handler="action_studio_reactivate_ladishd" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="load">
+        <property name="label" translatable="yes">Load studio...</property>
+        <property name="stock_id">gtk-open</property>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="main_window">
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">LADI Player</property>
+    <property name="resizable">False</property>
+    <property name="has_resize_grip">False</property>
+    <signal name="destroy" handler="on_quit" swapped="no"/>
+    <child>
+      <object class="GtkBox" id="box1">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkMenuBar" id="menubar1">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkMenuItem" id="menuitem1">
+                <property name="use_action_appearance">False</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_Studio</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu1">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkImageMenuItem" id="imagemenuitem_new">
+                        <property name="related_action">new</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="imagemenuitem_load">
+                        <property name="related_action">load</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_stock">True</property>
+                        <signal name="activate" handler="_menu_studio_fill_list" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="imagemenuitem_save">
+                        <property name="related_action">save</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="imagemenuitem_delete">
+                        <property name="related_action">delete</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                        <signal name="activate" handler="_menu_studio_fill_list" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem1">
+                        <property name="use_action_appearance">False</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="imagemenuitem5">
+                        <property name="label">gtk-quit</property>
+                        <property name="use_action_appearance">False</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_quit" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="menuitem2">
+                <property name="use_action_appearance">False</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_Controls</property>
+                <property name="use_underline">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="menuitem3">
+                <property name="use_action_appearance">False</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_Tools</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu2">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkMenuItem" id="menuitem5">
+                        <property name="use_action_appearance">False</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Launch gladish</property>
+                        <property name="label" translatable="yes">gladish</property>
+                        <property name="use_underline">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="menuitem6">
+                        <property name="use_action_appearance">False</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Launch LADI log viewer</property>
+                        <property name="label" translatable="yes">Logs</property>
+                        <property name="use_underline">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="menuitem7">
+                        <property name="use_action_appearance">False</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Launch ladiconf</property>
+                        <property name="label" translatable="yes">LADI Configuration</property>
+                        <property name="use_underline">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="menuitem4">
+                <property name="use_action_appearance">False</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">A_iuto</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu3">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkImageMenuItem" id="imagemenuitem10">
+                        <property name="label">gtk-about</property>
+                        <property name="use_action_appearance">False</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolbar" id="toolbar1">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="toolbar_style">icons</property>
+            <property name="show_arrow">False</property>
+            <child>
+              <object class="GtkToolButton" id="toolbutton_new">
+                <property name="related_action">new</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Create new studio</property>
+                <property name="related_action">new</property>
+                <property name="label" translatable="yes">toolbutton_new</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkMenuToolButton" id="toolbutton_load">
+                <property name="related_action">load</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Load studio</property>
+                <property name="related_action">load</property>
+                <property name="label" translatable="yes">toolbutton_load</property>
+                <property name="use_underline">True</property>
+                <signal name="show-menu" handler="_menu_studio_fill_list" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="toolbutton_save">
+                <property name="related_action">save</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="related_action">save</property>
+                <property name="label" translatable="yes">toolbutton_save</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkMenuToolButton" id="toolbutton_delete">
+                <property name="related_action">delete</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="related_action">delete</property>
+                <property name="label" translatable="yes">toolbutton_remove</property>
+                <property name="use_underline">True</property>
+                <signal name="show-menu" handler="_menu_studio_fill_list" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSeparatorToolItem" id="separatortoolitem1">
+                <property name="use_action_appearance">False</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="use_action_appearance">False</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="toolbutton_start">
+                <property name="related_action">start</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Start the loaded studio</property>
+                <property name="related_action">start</property>
+                <property name="label" translatable="yes">toolbutton_start</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="toolbutton_stop">
+                <property name="related_action">stop</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Stop the running studio</property>
+                <property name="related_action">stop</property>
+                <property name="label" translatable="yes">toolbutton_stop</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="toolbutton_rename">
+                <property name="related_action">rename</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="related_action">rename</property>
+                <property name="label" translatable="yes">toolbutton_rename</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="toolbutton_unload">
+                <property name="related_action">unload</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="related_action">unload</property>
+                <property name="label" translatable="yes">toolbutton_unload</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="toolbutton_reactivate_ladishd">
+                <property name="related_action">reactivate_ladishd</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="related_action">reactivate_ladishd</property>
+                <property name="label" translatable="yes">toolbutton_reactivate_ladishd</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

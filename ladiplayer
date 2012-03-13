@@ -1,0 +1,183 @@
+#!/usr/bin/python
+# LADITools - Linux Audio Desktop Integration Tools
+# laditray - System tray integration for LADI
+# Copyright (C) 2012 Alessio Treglia <quadrispro@ubuntu.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import os
+import sys
+import signal
+import gettext
+import argparse
+
+sig_handler = signal.getsignal(signal.SIGTERM)
+signal.signal(signal.SIGINT, sig_handler)
+
+from laditools import _gettext_domain
+gettext.install(_gettext_domain)
+
+from laditools import get_version_string
+from laditools import LadiConfiguration
+
+from gi.repository import Gtk
+from gi.repository import GdkPixbuf
+from gi.repository import GObject
+from laditools.gtk import LadiManager
+from laditools.gtk import find_data_file
+
+timeout_add = GObject.timeout_add
+
+class LadiPlayer(LadiManager):
+
+    # Default configuration
+    _default_config = {
+        'autostart' : False,
+    }
+
+    def on_quit(self, *args, **kwargs):
+        Gtk.main_quit()
+
+    def update_status_buttons(self, button=None):
+        buttons = self.status_buttons
+        if self.ladish_is_available():
+            # Buttons "start" and "stop"
+            if self.jack_is_started() and self.studio_is_started():
+                buttons['start'].set_sensitive(False)
+                buttons['stop'].set_sensitive(True)
+            else:
+                buttons['start'].set_sensitive(True)
+                buttons['stop'].set_sensitive(False)
+            # Buttons "rename" and "unload"
+            if self.studio_is_loaded():
+                buttons['unload'].set_sensitive(True)
+                buttons['rename'].set_sensitive(True)
+            else:
+                buttons['unload'].set_sensitive(False)
+                buttons['rename'].set_sensitive(False)
+        else:
+            for b in buttons: b.set_sensitive(False)
+
+    def update(self, *args):
+        try:
+            self.update_status_buttons()
+        except Exception, err:
+            print "Ouch!"
+            raise err
+        return True
+
+    def action_studio_start(self, action, *args):
+        if self.studio_is_loaded():
+            if not self.studio_is_started():
+                self.studio_start()
+                self.update_status_buttons()
+        #else "start automatic studio" TODO
+        else:
+            self.jack_start()
+            self.update_status_buttons()
+
+    def action_studio_stop(self, action, *args):
+        if self.studio_is_started():
+            self.studio_stop()
+            self.update_status_buttons()
+
+    def action_studio_rename(self, action, *args):
+        if self.studio_is_loaded():
+            self.studio_rename()
+            self.update_status_buttons()
+
+    def action_studio_load(self, action, *args):
+        pass
+
+    def action_studio_delete(self, action, *args):
+        pass
+
+    def action_studio_unload(self, action, *args):
+        if self.studio_is_loaded():
+            self.studio_unload()
+            self.update_status_buttons()
+
+    def action_studio_reactivate_ladishd(self, action, *args):
+        self.ladish_reactivate()
+
+    def _menu_studio_fill_list(self, widget, *args):
+        try:
+            menu = widget.get_menu()
+        except AttributeError:
+            menu = widget.get_submenu()
+        try:
+            for studio in self.get_ladish_controller().studio_list():
+                item = Gtk.MenuItem(studio)
+                item.show()
+                menu.append(item)
+                item.connect("button-release-event", function, studio) # "activate" is not used because of focus bug in pygtk
+        except Exception, e:
+            self.menu_clear(menu)
+            item = Gtk.MenuItem(_("Error obtaining studio list"))
+            item.set_sensitive(False)
+            item.show()
+            menu.append(item)
+        if not menu.get_children():
+            item = Gtk.MenuItem(_("Empty studio list"))
+            item.set_sensitive(False)
+            item.show()
+            menu.append(item)
+
+    def __init__(self):
+        # Handle the configuration
+        self.global_config = LadiConfiguration(laditray = self._default_config)
+        self.ladiplayer_param_dict = self.global_config.get_config_section ('ladiplayer')
+        #autostart = bool(eval(self.ladiplayer_param_dict['autostart']))
+        # Build the UI
+        LadiManager.__init__(self, self.global_config.get_config_section ('ladiplayer'), False)
+        # Build the UI
+        builder = Gtk.Builder()
+        ui_path = find_data_file("ladiplayer.ui")
+        builder.add_from_file(ui_path)
+        sys.stderr.write( _("Loading interface from %s\n") % ui_path)
+        sys.stderr.flush()
+        # Retrieve objects
+        self.ui = ui = builder.get_object("main_window")
+        # Setup status buttons
+        actiongroup_studio = builder.get_object("actiongroup_studio")
+        self.status_buttons = status_buttons = {}
+        for action in actiongroup_studio.list_actions():
+            status_buttons[action.get_name()] = action
+        # Setup menus and submenus
+        builder.get_object("toolbutton_load").set_menu(Gtk.Menu())
+        builder.get_object("toolbutton_delete").set_menu(Gtk.Menu())
+        builder.get_object("imagemenuitem_load").set_submenu(Gtk.Menu())
+        builder.get_object("imagemenuitem_delete").set_submenu(Gtk.Menu())
+        # Get the initial status
+        self.update ()
+        # Add the auto update callback
+        self.auto_updater = timeout_add (250, self.update, None)
+            
+        builder.connect_signals(self)
+
+    def run(self):
+        self.ui.show_all()
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=_('graphical front-end that allows users to start, stop and'
+                                                    'monitor JACK, as well as start some JACK related applications'),
+                                     epilog=_('This program is part of the LADITools suite.'))
+    parser.add_argument('--version', action='version', version="%(prog)s " + get_version_string())
+
+    parser.parse_args()
+    GObject.threads_init()
+
+    LadiPlayer().run()
+    Gtk.main()
+    sys.exit(0)
