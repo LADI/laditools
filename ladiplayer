@@ -60,7 +60,6 @@ class LadiPlayer(LadiManager):
             dlg.run()
             dlg.destroy()
             return None
-        #dlg = self.builder.get_object('dialog_select_studio')
         dlg = Gtk.Dialog()
         treeview = Gtk.TreeView()
 
@@ -124,6 +123,20 @@ class LadiPlayer(LadiManager):
                 buttons['start'].set_tooltip(_('Start automatic studio'))
         else:
             self._set_buttons_active(all=False)
+        # Update status label
+        if self.jack_is_started():
+            if self.jack_is_realtime():
+                status_text = "RT | "
+            else:
+                status_text = ""
+            # Get DSP Load
+            status_text += str (round (float (self.jack_get_load()),1)) + "% | "
+            # Get Xruns
+            status_text += str (self.jack_get_xruns())
+            # Set a started status
+            self.status_label.set_label (status_text)
+        else:
+            self.status_label.set_label(_('<i>JACK is not running</i>'))
 
     def update(self, *args):
         try:
@@ -149,7 +162,7 @@ class LadiPlayer(LadiManager):
         self.studio_save()
 
     def action_studio_stop(self, action, *args):
-        if self.studio_is_started():
+        if self.jack_is_started() and self.studio_is_started():
             self.studio_stop()
             self.update_status_buttons()
 
@@ -208,7 +221,7 @@ class LadiPlayer(LadiManager):
         # Build the UI
         LadiManager.__init__(self, self.global_config.get_config_section ('ladiplayer'), False)
         # Build the UI
-        self.builder = builder = Gtk.Builder()
+        builder = Gtk.Builder()
         ui_path = find_data_file("ladiplayer.ui")
         builder.add_from_file(ui_path)
         sys.stderr.write( _("Loading interface from %s\n") % ui_path)
@@ -220,11 +233,13 @@ class LadiPlayer(LadiManager):
         self.status_buttons = status_buttons = {}
         for action in actiongroup_studio.list_actions():
             status_buttons[action.get_name()] = action
+        self.status_label = builder.get_object('toolbutton_label_status')
+
         # Get the initial status
         self.update ()
         # Add the auto update callback
         self.auto_updater = timeout_add (250, self.update, None)
-            
+
         builder.connect_signals(self)
 
     def run(self):
