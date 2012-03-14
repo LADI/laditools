@@ -122,9 +122,7 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
 
     def ladish_toolbuttons_set_active(self, **kwargs): self._toolbuttons_set_active('ladish', **kwargs)
     def jack_toolbuttons_set_active(self, **kwargs): self._toolbuttons_set_active('jack', **kwargs)
-
-    def a2j_status_buttons_update(self):
-        pass
+    def a2j_toolbuttons_set_active(self, **kwargs): self._toolbuttons_set_active('a2j', **kwargs)
 
     def jack_status_buttons_update(self):
         if not self.jack_is_available():
@@ -169,6 +167,9 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
         else:
             self.ladish_toolbuttons_set_active(ladish_all=False)
 
+    def a2j_status_buttons_update(self):
+        pass
+
     def update_status_buttons(self):
 
         # Update widgets
@@ -201,10 +202,10 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
             raise err
         return True
 
-    def action_studio_new(self, action, *args):
+    def action_ladish_new(self, action, *args):
         self.studio_new()
 
-    def action_studio_start(self, action, *args):
+    def action_ladish_start(self, action, *args):
         if self.studio_is_loaded():
             if not self.studio_is_started():
                 self.studio_start()
@@ -213,36 +214,36 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
             self.jack_start()
             self.update_status_buttons()
 
-    def action_studio_save(self, action, *args):
+    def action_ladish_save(self, action, *args):
         self.studio_save()
 
-    def action_studio_stop(self, action, *args):
+    def action_ladish_stop(self, action, *args):
         if self.jack_is_started() and self.studio_is_started():
             self.studio_stop()
             self.update_status_buttons()
 
-    def action_studio_rename(self, action, *args):
+    def action_ladish_rename(self, action, *args):
         self.studio_rename()
         self.update_status_buttons()
 
-    def action_studio_load(self, action, *args):
+    def action_ladish_load(self, action, *args):
         selection = self._run_select_studio_dialog(_('Load studio'))
         if selection:
             self.studio_load(None, None, selection)
         return selection
 
-    def action_studio_delete(self, action, *args):
+    def action_ladish_delete(self, action, *args):
         selection = self._run_select_studio_dialog(_('Delete studio'))
         if selection:
             self.studio_delete(None, None, selection)
         return selection
 
-    def action_studio_unload(self, action, *args):
+    def action_ladish_unload(self, action, *args):
         if self.studio_is_loaded():
             self.studio_unload()
             self.update_status_buttons()
 
-    def action_studio_reactivate_ladishd(self, action, *args):
+    def action_ladish_reactivate(self, action, *args):
         self.ladish_reactivate()
 
     def action_jack_start(self, action, *args):
@@ -253,6 +254,13 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
         self.jack_reset_xruns()
     def action_jack_reactivate(self, action, *args):
         self.jack_reactivate()
+
+    def action_a2j_start(self, action, *args):
+        pass
+    def action_a2j_stop(self, action, *args):
+        pass
+    def action_a2j_reactivate(self, action, *args):
+        pass
 
     def _menu_studio_fill_list(self, widget, *args):
         try:
@@ -296,20 +304,20 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
         self.ui = ui = builder.get_object("main_window")
         actiongroup_ladish = builder.get_object("actiongroup_ladish")
         actiongroup_jack = builder.get_object("actiongroup_jack")
-        #actiongroup_a2j = builder.get_object("actiongroup_a2j")
+        actiongroup_a2j = builder.get_object("actiongroup_a2j")
         self.status_label = builder.get_object('toolbutton_label_status')
 
         # Setup status buttons
         self.ladish_status_buttons = ladish_status_buttons = {}
         self.jack_status_buttons = jack_status_buttons = {}
-        self.a2j_status_buttons = {}
+        self.a2j_status_buttons = a2j_status_buttons = {}
 
         for action in actiongroup_ladish.list_actions():
             ladish_status_buttons[action.get_name()] = action
         for action in actiongroup_jack.list_actions():
             jack_status_buttons[action.get_name()] = action
-#        for action in actiongroup_a2j.list_actions():
-#            a2j_status_buttons[action.get_name()] = action
+        for action in actiongroup_a2j.list_actions():
+            a2j_status_buttons[action.get_name()] = action
 
 #        # Duplicate _toolbuttons_set_active
 #        def gen(lst):
