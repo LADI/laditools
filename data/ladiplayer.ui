@@ -1,7 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <!-- interface-requires gtk+ 3.0 -->
-  <object class="GtkActionGroup" id="actiongroup_studio">
+  <object class="GtkActionGroup" id="actiongroup_a2j"/>
+  <object class="GtkActionGroup" id="actiongroup_jack">
+    <child>
+      <object class="GtkAction" id="jack_start">
+        <property name="label" translatable="yes">Start JACK server</property>
+        <property name="short_label" translatable="yes">Start JACK</property>
+        <property name="stock_id">gtk-execute</property>
+        <signal name="activate" handler="action_jack_start" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="jack_reset_xruns">
+        <property name="label" translatable="yes">Reset Xruns</property>
+        <property name="short_label" translatable="yes">Reset Xruns</property>
+        <property name="tooltip" translatable="yes">Clear Xruns and DSP load</property>
+        <property name="stock_id">gtk-clear</property>
+        <signal name="activate" handler="action_jack_reset_xruns" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="jack_stop">
+        <property name="label" translatable="yes">Stop JACK server</property>
+        <property name="short_label" translatable="yes">Stop JACK</property>
+        <property name="stock_id">gtk-stop</property>
+        <signal name="activate" handler="action_jack_stop" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="jack_reactivate">
+        <property name="label" translatable="yes">Reactivate JACK</property>
+        <property name="short_label" translatable="yes">Restart JACK</property>
+        <property name="stock_id">gtk-refresh</property>
+        <signal name="activate" handler="action_jack_reactivate" swapped="no"/>
+      </object>
+    </child>
+  </object>
+  <object class="GtkActionGroup" id="actiongroup_ladish">
     <child>
       <object class="GtkAction" id="new">
         <property name="label" translatable="yes">New studio...</property>
@@ -60,7 +96,7 @@
       <object class="GtkAction" id="reactivate_ladishd">
         <property name="label" translatable="yes">Reactivate ladishd</property>
         <property name="short_label" translatable="yes">Restart ladishd</property>
-        <property name="stock_id">gtk-revert-to-saved</property>
+        <property name="stock_id">gtk-refresh</property>
         <signal name="activate" handler="action_studio_reactivate_ladishd" swapped="no"/>
       </object>
     </child>
@@ -161,6 +197,68 @@
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">_Controls</property>
                 <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu4">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkMenuItem" id="submenu_jack">
+                        <property name="use_action_appearance">False</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">JACK</property>
+                        <property name="use_underline">True</property>
+                        <child type="submenu">
+                          <object class="GtkMenu" id="menu5">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkImageMenuItem" id="menuitem8">
+                                <property name="related_action">jack_start</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="use_stock">True</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkImageMenuItem" id="imagemenuitem1">
+                                <property name="related_action">jack_stop</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="use_stock">True</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkImageMenuItem" id="imagemenuitem2">
+                                <property name="related_action">jack_reset_xruns</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="use_stock">True</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkImageMenuItem" id="imagemenuitem3">
+                                <property name="related_action">jack_reactivate</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="use_stock">True</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="submenu_a2j">
+                        <property name="use_action_appearance">False</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">A2J</property>
+                        <property name="use_underline">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -227,6 +325,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_about" swapped="no"/>
                       </object>
                     </child>
                   </object>

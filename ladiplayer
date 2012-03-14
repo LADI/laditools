@@ -46,6 +46,24 @@ class LadiPlayer(LadiManager):
         'autostart' : False,
     }
 
+    def on_about(self, *args):
+        logo_pixbuf = GdkPixbuf.Pixbuf.new_from_file(find_data_file("laditools_logo.svg"))
+        copyright_str = u"""Copyright \xa9 2011-2012 Alessio Treglia <quadrispro@ubuntu.com>
+Copyright \xa9 2007-2010 Marc-Olivier Barre <marco@marcochapeau.org>
+Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
+        ad = Gtk.AboutDialog.new()
+        ad.set_program_name("LADITools")
+        ad.set_comments(_("LADITools is a set of tools aiming to achieve the goals of the LADI project to improve desktop integration and user workflow of Linux audio system based on JACK and ladish."))
+        ad.set_logo(logo_pixbuf)
+        ad.set_authors(["Marc-Olivier Barre", "Nedko Arnaudov", "Alessio Treglia"])
+        ad.set_copyright(copyright_str)
+        ad.set_version(get_version_string())
+        ad.set_license_type( Gtk.License.GPL_3_0)
+        ad.set_translator_credits(_("translator-credits"))
+        ad.set_website("https://launchpad.net/laditools/")
+        ad.run()
+        ad.destroy()
+
     def on_quit(self, *args, **kwargs):
         Gtk.main_quit()
 
@@ -92,8 +110,8 @@ class LadiPlayer(LadiManager):
         dlg.hide()
         return ret
 
-    def _set_toolbuttons_active(self, **kwargs):
-        buttons = self.status_buttons
+    def _toolbuttons_set_active(self, group, **kwargs):
+        buttons = getattr(self, "%s_status_buttons" % group)
         if 'all' in kwargs:
             status = kwargs['all']
             for button in buttons:
@@ -102,27 +120,62 @@ class LadiPlayer(LadiManager):
             for button in kwargs:
                 buttons[button].set_sensitive(kwargs[button])
 
-    def update_status_buttons(self, button=None):
-        buttons = self.status_buttons
+    def ladish_toolbuttons_set_active(self, **kwargs): self._toolbuttons_set_active('ladish', **kwargs)
+    def jack_toolbuttons_set_active(self, **kwargs): self._toolbuttons_set_active('jack', **kwargs)
+
+    def a2j_status_buttons_update(self):
+        pass
+
+    def jack_status_buttons_update(self):
+        if not self.jack_is_available():
+            return
+
+        buttons = self.jack_status_buttons
+        ladish_available = self.ladish_is_available()
+        jack_started = self.jack_is_started()
+
+        if jack_started:
+            self.jack_toolbuttons_set_active(jack_start=False,
+                                             jack_stop=(not ladish_available),
+                                             jack_reset_xruns=True,
+                                             jack_reactivate=True)
+        else:
+            self.jack_toolbuttons_set_active(jack_start=True,
+                                             jack_stop=False,
+                                             jack_reset_xruns=False,
+                                             jack_reactivate=True)
+
+    def ladish_status_buttons_update(self):
+        buttons = self.ladish_status_buttons
+
+        # Setup ladish controls
         if self.ladish_is_available():
             # Buttons "rename" and "unload"
             if self.studio_is_loaded():
-                self._set_toolbuttons_active(unload=True, rename=True)
+                self.ladish_toolbuttons_set_active(unload=True, rename=True)
                 # Buttons "start" and "stop"
                 if self.studio_is_started():
-                    self._set_toolbuttons_active(start=False, stop=True, save=True)
+                    self.ladish_toolbuttons_set_active(start=False, stop=True, save=True)
                 else:
-                    self._set_toolbuttons_active(start=True, stop=False, save=False)
+                    self.ladish_toolbuttons_set_active(start=True, stop=False, save=False)
                     buttons['start'].set_tooltip(_('Start the loaded studio'))
             else:
-                self._set_toolbuttons_active(start=True,
+                self.ladish_toolbuttons_set_active(start=True,
                                              stop=False,
                                              save=False,
                                              unload=False,
                                              rename=False)
                 buttons['start'].set_tooltip(_('Start automatic studio'))
         else:
-            self._set_buttons_active(all=False)
+            self.ladish_toolbuttons_set_active(ladish_all=False)
+
+    def update_status_buttons(self):
+
+        # Update widgets
+        self.ladish_status_buttons_update()
+        self.jack_status_buttons_update()
+        self.a2j_status_buttons_update()
+
         # Update status label
         if self.jack_is_started():
             if self.jack_is_realtime():
@@ -139,10 +192,12 @@ class LadiPlayer(LadiManager):
             self.status_label.set_label(_('<i>JACK is not running</i>'))
 
     def update(self, *args):
+        self.update_status_buttons()
+        return True
         try:
             self.update_status_buttons()
         except Exception, err:
-            print "Ouch!"
+            print "Ouch!", err
             raise err
         return True
 
@@ -190,6 +245,15 @@ class LadiPlayer(LadiManager):
     def action_studio_reactivate_ladishd(self, action, *args):
         self.ladish_reactivate()
 
+    def action_jack_start(self, action, *args):
+        self.jack_start()
+    def action_jack_stop(self, action, *args):
+        self.jack_stop()
+    def action_jack_reset_xruns(self, action, *args):
+        self.jack_reset_xruns()
+    def action_jack_reactivate(self, action, *args):
+        self.jack_reactivate()
+
     def _menu_studio_fill_list(self, widget, *args):
         try:
             menu = widget.get_menu()
@@ -218,22 +282,43 @@ class LadiPlayer(LadiManager):
         self.global_config = LadiConfiguration(laditray = self._default_config)
         self.ladiplayer_param_dict = self.global_config.get_config_section ('ladiplayer')
         #autostart = bool(eval(self.ladiplayer_param_dict['autostart']))
-        # Build the UI
+
         LadiManager.__init__(self, self.global_config.get_config_section ('ladiplayer'), False)
+
         # Build the UI
         builder = Gtk.Builder()
         ui_path = find_data_file("ladiplayer.ui")
         builder.add_from_file(ui_path)
         sys.stderr.write( _("Loading interface from %s\n") % ui_path)
         sys.stderr.flush()
+
         # Retrieve objects
         self.ui = ui = builder.get_object("main_window")
-        # Setup status buttons
-        actiongroup_studio = builder.get_object("actiongroup_studio")
-        self.status_buttons = status_buttons = {}
-        for action in actiongroup_studio.list_actions():
-            status_buttons[action.get_name()] = action
+        actiongroup_ladish = builder.get_object("actiongroup_ladish")
+        actiongroup_jack = builder.get_object("actiongroup_jack")
+        #actiongroup_a2j = builder.get_object("actiongroup_a2j")
         self.status_label = builder.get_object('toolbutton_label_status')
+
+        # Setup status buttons
+        self.ladish_status_buttons = ladish_status_buttons = {}
+        self.jack_status_buttons = jack_status_buttons = {}
+        self.a2j_status_buttons = {}
+
+        for action in actiongroup_ladish.list_actions():
+            ladish_status_buttons[action.get_name()] = action
+        for action in actiongroup_jack.list_actions():
+            jack_status_buttons[action.get_name()] = action
+#        for action in actiongroup_a2j.list_actions():
+#            a2j_status_buttons[action.get_name()] = action
+
+#        # Duplicate _toolbuttons_set_active
+#        def gen(lst):
+#            for comp in lst:
+#                yield (comp, lambda **args: self._toolbuttons_set_active(comp, **args))
+
+#        for (k, v) in gen(('ladish','jack')):#'jack','a2j')):
+#            funcname = '%s_toolbuttons_set_active' % k
+#            setattr(self, funcname, v)
 
         # Get the initial status
         self.update ()
