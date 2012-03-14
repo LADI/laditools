@@ -203,9 +203,10 @@ class LadiManager(object):
         #entry.set_activates_default(True)
         #dlg.set_default_response(Gtk.ResponseType.OK)
         ret = dlg.run()
+        new_text = entry.get_text()
         dlg.destroy()
         if ret == Gtk.ResponseType.ACCEPT:
-            return True, entry.get_text()
+            return True, new_text
         else:
             return False, text
 
