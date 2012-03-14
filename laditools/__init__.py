@@ -26,11 +26,13 @@ from .config import LadiConfiguration
 from .a2j import A2jController
 from .ladish import LadishProxy, LadishStatusType, LadishProxyError, check_ladish
 from .jack import JackController, JackConfigProxy, JackConfigParameter
+from .manager import LadiManager
 
 from . import gtk
 
 __all__ = ["gtk",
            "LadiConfiguration",
+           "LadiManager",
            "A2jController",
            "LadishProxy",
            "LadishStatusType",
