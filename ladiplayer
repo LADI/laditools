@@ -124,25 +124,6 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
     def jack_toolbuttons_set_active(self, **kwargs): self._toolbuttons_set_active('jack', **kwargs)
     def a2j_toolbuttons_set_active(self, **kwargs): self._toolbuttons_set_active('a2j', **kwargs)
 
-    def jack_status_buttons_update(self):
-        if not self.jack_is_available():
-            return
-
-        buttons = self.jack_status_buttons
-        ladish_available = self.ladish_is_available()
-        jack_started = self.jack_is_started()
-
-        if jack_started:
-            self.jack_toolbuttons_set_active(jack_start=False,
-                                             jack_stop=(not ladish_available),
-                                             jack_reset_xruns=True,
-                                             jack_reactivate=True)
-        else:
-            self.jack_toolbuttons_set_active(jack_start=True,
-                                             jack_stop=False,
-                                             jack_reset_xruns=False,
-                                             jack_reactivate=True)
-
     def ladish_status_buttons_update(self):
         buttons = self.ladish_status_buttons
 
@@ -167,8 +148,48 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
         else:
             self.ladish_toolbuttons_set_active(ladish_all=False)
 
+    def jack_status_buttons_update(self):
+        if not self.jack_is_available():
+            return
+
+        buttons = self.jack_status_buttons
+        ladish_available = self.ladish_is_available()
+        jack_started = self.jack_is_started()
+
+        if jack_started:
+            self.jack_toolbuttons_set_active(jack_start=False,
+                                             jack_stop=(not ladish_available),
+                                             jack_reset_xruns=True,
+                                             jack_reactivate=True)
+        else:
+            self.jack_toolbuttons_set_active(jack_start=True,
+                                             jack_stop=False,
+                                             jack_reset_xruns=False,
+                                             jack_reactivate=True)
+
+
     def a2j_status_buttons_update(self):
-        pass
+        if not self.a2j_is_available():
+            self.a2j_toolbuttons_set_active(all=False)
+            return
+
+        buttons = self.a2j_status_buttons
+        ladish_available = self.ladish_is_available()
+        a2j_started = self.a2j_is_started()
+
+        if not ladish_available:
+            if a2j_started:
+                self.a2j_toolbuttons_set_active(a2j_start=False,
+                                                a2j_stop=True,
+                                                a2j_reactivate=True)
+            else:
+                self.a2j_toolbuttons_set_active(a2j_start=True,
+                                                a2j_stop=False,
+                                                a2j_reactivate=True)
+        else:
+            self.a2j_toolbuttons_set_active(a2j_start=False,
+                                            a2j_stop=False,
+                                            a2j_reactivate=True)
 
     def update_status_buttons(self):
 
@@ -318,15 +339,6 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
             jack_status_buttons[action.get_name()] = action
         for action in actiongroup_a2j.list_actions():
             a2j_status_buttons[action.get_name()] = action
-
-#        # Duplicate _toolbuttons_set_active
-#        def gen(lst):
-#            for comp in lst:
-#                yield (comp, lambda **args: self._toolbuttons_set_active(comp, **args))
-
-#        for (k, v) in gen(('ladish','jack')):#'jack','a2j')):
-#            funcname = '%s_toolbuttons_set_active' % k
-#            setattr(self, funcname, v)
 
         # Get the initial status
         self.update ()
