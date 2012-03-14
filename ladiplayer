@@ -49,25 +49,81 @@ class LadiPlayer(LadiManager):
     def on_quit(self, *args, **kwargs):
         Gtk.main_quit()
 
+    def _run_select_studio_dialog(self, title, *args):
+        studio_list = self.get_ladish_controller().studio_list()
+        if not studio_list:
+            dlg = Gtk.MessageDialog(None,Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                                        Gtk.MessageType.INFO,
+                                        Gtk.ButtonsType.CLOSE,
+                                        _('No studio is available.'))
+            dlg.set_title(title)
+            dlg.run()
+            dlg.destroy()
+            return None
+        #dlg = self.builder.get_object('dialog_select_studio')
+        dlg = Gtk.Dialog()
+        treeview = Gtk.TreeView()
+
+        dlg.set_title(title)
+        dlg.get_content_area().pack_start(child=treeview,
+                                         expand=True,
+                                         fill=True,
+                                         padding=10)
+        model = Gtk.ListStore(GObject.TYPE_STRING)
+        renderer = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn('Available studios', renderer, text=0)
+
+        dlg.set_title(title)
+        dlg.add_button(Gtk.STOCK_OK, Gtk.ResponseType.OK)
+        dlg.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+        treeview.set_model(model)
+        treeview.append_column(column)
+        treeview.set_cursor(Gtk.TreePath(path=0),
+                                    focus_column=column,
+                                    start_editing=False)
+        for studio in studio_list:
+            model.append((studio,))
+
+        dlg.show_all()
+        response = dlg.run()
+        ret = None
+        if response == Gtk.ResponseType.OK:
+            path, column = treeview.get_cursor()
+            ret = model[path][0]
+        dlg.hide()
+        return ret
+
+    def _set_toolbuttons_active(self, **kwargs):
+        buttons = self.status_buttons
+        if 'all' in kwargs:
+            status = kwargs['all']
+            for button in buttons:
+                buttons[button].set_sensitive(status)
+        else:
+            for button in kwargs:
+                buttons[button].set_sensitive(kwargs[button])
+
     def update_status_buttons(self, button=None):
         buttons = self.status_buttons
         if self.ladish_is_available():
-            # Buttons "start" and "stop"
-            if self.jack_is_started() and self.studio_is_started():
-                buttons['start'].set_sensitive(False)
-                buttons['stop'].set_sensitive(True)
-            else:
-                buttons['start'].set_sensitive(True)
-                buttons['stop'].set_sensitive(False)
             # Buttons "rename" and "unload"
             if self.studio_is_loaded():
-                buttons['unload'].set_sensitive(True)
-                buttons['rename'].set_sensitive(True)
+                self._set_toolbuttons_active(unload=True, rename=True)
+                # Buttons "start" and "stop"
+                if self.studio_is_started():
+                    self._set_toolbuttons_active(start=False, stop=True, save=True)
+                else:
+                    self._set_toolbuttons_active(start=True, stop=False, save=False)
+                    buttons['start'].set_tooltip(_('Start the loaded studio'))
             else:
-                buttons['unload'].set_sensitive(False)
-                buttons['rename'].set_sensitive(False)
+                self._set_toolbuttons_active(start=True,
+                                             stop=False,
+                                             save=False,
+                                             unload=False,
+                                             rename=False)
+                buttons['start'].set_tooltip(_('Start automatic studio'))
         else:
-            for b in buttons: b.set_sensitive(False)
+            self._set_buttons_active(all=False)
 
     def update(self, *args):
         try:
@@ -77,15 +133,20 @@ class LadiPlayer(LadiManager):
             raise err
         return True
 
+    def action_studio_new(self, action, *args):
+        self.studio_new()
+
     def action_studio_start(self, action, *args):
         if self.studio_is_loaded():
             if not self.studio_is_started():
                 self.studio_start()
                 self.update_status_buttons()
-        #else "start automatic studio" TODO
         else:
             self.jack_start()
             self.update_status_buttons()
+
+    def action_studio_save(self, action, *args):
+        self.studio_save()
 
     def action_studio_stop(self, action, *args):
         if self.studio_is_started():
@@ -93,15 +154,20 @@ class LadiPlayer(LadiManager):
             self.update_status_buttons()
 
     def action_studio_rename(self, action, *args):
-        if self.studio_is_loaded():
-            self.studio_rename()
-            self.update_status_buttons()
+        self.studio_rename()
+        self.update_status_buttons()
 
     def action_studio_load(self, action, *args):
-        pass
+        selection = self._run_select_studio_dialog(_('Load studio'))
+        if selection:
+            self.studio_load(None, None, selection)
+        return selection
 
     def action_studio_delete(self, action, *args):
-        pass
+        selection = self._run_select_studio_dialog(_('Delete studio'))
+        if selection:
+            self.studio_delete(None, None, selection)
+        return selection
 
     def action_studio_unload(self, action, *args):
         if self.studio_is_loaded():
@@ -142,7 +208,7 @@ class LadiPlayer(LadiManager):
         # Build the UI
         LadiManager.__init__(self, self.global_config.get_config_section ('ladiplayer'), False)
         # Build the UI
-        builder = Gtk.Builder()
+        self.builder = builder = Gtk.Builder()
         ui_path = find_data_file("ladiplayer.ui")
         builder.add_from_file(ui_path)
         sys.stderr.write( _("Loading interface from %s\n") % ui_path)
@@ -154,11 +220,6 @@ class LadiPlayer(LadiManager):
         self.status_buttons = status_buttons = {}
         for action in actiongroup_studio.list_actions():
             status_buttons[action.get_name()] = action
-        # Setup menus and submenus
-        builder.get_object("toolbutton_load").set_menu(Gtk.Menu())
-        builder.get_object("toolbutton_delete").set_menu(Gtk.Menu())
-        builder.get_object("imagemenuitem_load").set_submenu(Gtk.Menu())
-        builder.get_object("imagemenuitem_delete").set_submenu(Gtk.Menu())
         # Get the initial status
         self.update ()
         # Add the auto update callback

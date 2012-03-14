@@ -6,6 +6,7 @@
       <object class="GtkAction" id="new">
         <property name="label" translatable="yes">New studio...</property>
         <property name="stock_id">gtk-new</property>
+        <signal name="activate" handler="action_studio_new" swapped="no"/>
       </object>
       <accelerator key="n" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
     </child>
@@ -13,6 +14,7 @@
       <object class="GtkAction" id="delete">
         <property name="label" translatable="yes">Delete studio...</property>
         <property name="stock_id">gtk-delete</property>
+        <signal name="activate" handler="action_studio_delete" swapped="no"/>
       </object>
     </child>
     <child>
@@ -20,6 +22,7 @@
         <property name="label" translatable="yes">Save studio</property>
         <property name="tooltip" translatable="yes">Save the current studio</property>
         <property name="stock_id">gtk-save</property>
+        <signal name="activate" handler="action_studio_save" swapped="no"/>
       </object>
     </child>
     <child>
@@ -65,6 +68,7 @@
       <object class="GtkAction" id="load">
         <property name="label" translatable="yes">Load studio...</property>
         <property name="stock_id">gtk-open</property>
+        <signal name="activate" handler="action_studio_load" swapped="no"/>
       </object>
     </child>
   </object>
@@ -109,7 +113,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="_menu_studio_fill_list" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -126,9 +129,7 @@
                         <property name="related_action">delete</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="_menu_studio_fill_list" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -261,7 +262,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkMenuToolButton" id="toolbutton_load">
+              <object class="GtkToolButton" id="toolbutton_load">
                 <property name="related_action">load</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -269,7 +270,6 @@
                 <property name="related_action">load</property>
                 <property name="label" translatable="yes">toolbutton_load</property>
                 <property name="use_underline">True</property>
-                <signal name="show-menu" handler="_menu_studio_fill_list" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -290,14 +290,13 @@
               </packing>
             </child>
             <child>
-              <object class="GtkMenuToolButton" id="toolbutton_delete">
+              <object class="GtkToolButton" id="toolbutton_delete">
                 <property name="related_action">delete</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="related_action">delete</property>
                 <property name="label" translatable="yes">toolbutton_remove</property>
                 <property name="use_underline">True</property>
-                <signal name="show-menu" handler="_menu_studio_fill_list" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -319,7 +318,7 @@
                 <property name="related_action">start</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Start the loaded studio</property>
+                <property name="can_default">True</property>
                 <property name="related_action">start</property>
                 <property name="label" translatable="yes">toolbutton_start</property>
                 <property name="use_underline">True</property>
