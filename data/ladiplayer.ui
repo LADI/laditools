@@ -6,6 +6,7 @@
       <object class="GtkAction" id="a2j_start">
         <property name="label" translatable="yes">Start A2J bridge</property>
         <property name="short_label" translatable="yes">Start A2J</property>
+        <property name="stock_id">gtk-execute</property>
         <signal name="activate" handler="action_a2j_start" swapped="no"/>
       </object>
     </child>
@@ -13,6 +14,7 @@
       <object class="GtkAction" id="a2j_stop">
         <property name="label" translatable="yes">Stop A2J bridge</property>
         <property name="short_label" translatable="yes">Stop A2J</property>
+        <property name="stock_id">gtk-stop</property>
         <signal name="activate" handler="action_a2j_stop" swapped="no"/>
       </object>
     </child>
@@ -20,6 +22,7 @@
       <object class="GtkAction" id="a2j_reactivate">
         <property name="label" translatable="yes">Reactivate A2J</property>
         <property name="short_label" translatable="yes">Restart A2J</property>
+        <property name="stock_id">gtk-refresh</property>
         <signal name="activate" handler="action_a2j_reactivate" swapped="no"/>
       </object>
     </child>
