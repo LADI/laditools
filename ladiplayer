@@ -283,6 +283,10 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
     def action_a2j_reactivate(self, action, *args):
         self.a2j_reactivate()
 
+    def on_open_settings(self, *args):
+        pass
+        #TODO
+
     def __init__(self):
         # Handle the configuration
         self.global_config = LadiConfiguration(laditray = self._default_config)

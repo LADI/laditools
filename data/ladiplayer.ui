@@ -312,49 +312,22 @@
                         </child>
                       </object>
                     </child>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkMenuItem" id="menuitem3">
-                <property name="use_action_appearance">False</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">_Tools</property>
-                <property name="use_underline">True</property>
-                <child type="submenu">
-                  <object class="GtkMenu" id="menu2">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkMenuItem" id="menuitem5">
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem2">
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Launch gladish</property>
-                        <property name="label" translatable="yes">gladish</property>
-                        <property name="use_underline">True</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="menuitem6">
+                      <object class="GtkImageMenuItem" id="imagemenuitem9">
+                        <property name="label">gtk-preferences</property>
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Launch LADI log viewer</property>
-                        <property name="label" translatable="yes">Logs</property>
                         <property name="use_underline">True</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkMenuItem" id="menuitem7">
-                        <property name="use_action_appearance">False</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Launch ladiconf</property>
-                        <property name="label" translatable="yes">LADI Configuration</property>
-                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_open_settings" swapped="no"/>
                       </object>
                     </child>
                   </object>
