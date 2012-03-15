@@ -216,14 +216,9 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
         else:
             self.status_label.set_label(_('<i>Stopped</i>'))
 
-    def update(self, *args):
+    def update(self, *args, **kwargs):
         self.update_status_buttons()
-        return True
-        try:
-            self.update_status_buttons()
-        except Exception, err:
-            print "Ouch!", err
-            raise err
+        LadiManagerGtk.update(self, *args, **kwargs)
         return True
 
     def action_ladish_new(self, action, *args):

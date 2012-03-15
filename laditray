@@ -32,6 +32,7 @@ gettext.install(_gettext_domain)
 
 from laditools import get_version_string
 from laditools import LadiConfiguration
+from laditools import LadiManager
 
 from gi.repository import Gtk
 from gi.repository import GdkPixbuf
@@ -122,9 +123,8 @@ class laditray (Gtk.StatusIcon, LadiMenu):
             self.set_diagnose_text(repr(e))
             self.set_icon ("stopped")
             self.clear_jack_proxies()
-        # Take a look at the processes we've started so we don't get any zombies
-        for i in self.proc_list:
-            i.poll ()
+        finally:
+            LadiManager.update(self)
         return True
 
     def on_about(self, *args):

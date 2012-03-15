@@ -230,5 +230,15 @@ class LadiManager(LadiController):
             return True
         return False
 
+    def update(self, *args, **kwargs):
+        if self.__class__ == LadiManager:
+            raise NotImplementedError("This is a virtual method")
+        else:
+            # Take a look at the processes we've started so we don't get any zombies
+            for i in self.proc_list:
+                if i.poll () != None:
+                    self.proc_list.remove(i)
+            return True
+
     def studio_list(self, *args, **kwargs):
         return self.get_ladish_controller().studio_list()
