@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <!-- interface-requires gtk+ 3.0 -->
+  <object class="GtkAccelGroup" id="accelgroup1"/>
   <object class="GtkActionGroup" id="actiongroup_a2j">
     <child>
       <object class="GtkAction" id="a2j_start">
@@ -65,22 +66,24 @@
   <object class="GtkActionGroup" id="actiongroup_ladish">
     <child>
       <object class="GtkAction" id="new">
-        <property name="label" translatable="yes">New studio...</property>
+        <property name="label" translatable="yes">_New studio...</property>
+        <property name="short_label" translatable="yes">New</property>
         <property name="stock_id">gtk-new</property>
         <signal name="activate" handler="action_ladish_new" swapped="no"/>
       </object>
-      <accelerator key="n" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
     </child>
     <child>
       <object class="GtkAction" id="delete">
-        <property name="label" translatable="yes">Delete studio...</property>
+        <property name="label" translatable="yes">_Delete studio...</property>
+        <property name="short_label" translatable="yes">Delete</property>
         <property name="stock_id">gtk-delete</property>
         <signal name="activate" handler="action_ladish_delete" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkAction" id="save">
-        <property name="label" translatable="yes">Save studio</property>
+        <property name="label" translatable="yes">_Save studio</property>
+        <property name="short_label" translatable="yes">Save</property>
         <property name="tooltip" translatable="yes">Save the current studio</property>
         <property name="stock_id">gtk-save</property>
         <signal name="activate" handler="action_ladish_save" swapped="no"/>
@@ -127,7 +130,8 @@
     </child>
     <child>
       <object class="GtkAction" id="load">
-        <property name="label" translatable="yes">Load studio...</property>
+        <property name="label" translatable="yes">_Load studio...</property>
+        <property name="short_label" translatable="yes">Load</property>
         <property name="stock_id">gtk-open</property>
         <signal name="activate" handler="action_ladish_load" swapped="no"/>
       </object>
@@ -138,6 +142,9 @@
     <property name="title" translatable="yes">LADI Player</property>
     <property name="resizable">False</property>
     <property name="has_resize_grip">False</property>
+    <accel-groups>
+      <group name="accelgroup1"/>
+    </accel-groups>
     <signal name="destroy" handler="on_quit" swapped="no"/>
     <child>
       <object class="GtkBox" id="box1">
@@ -210,6 +217,8 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <property name="accel_group">accelgroup1</property>
+                        <accelerator key="q" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <signal name="activate" handler="on_quit" swapped="no"/>
                       </object>
                     </child>
