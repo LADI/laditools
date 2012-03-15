@@ -136,9 +136,10 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
                 # Buttons "start" and "stop"
                 if self.studio_is_started():
                     self.ladish_toolbuttons_set_active(start=False, stop=True, save=True)
+                    buttons['stop'].set_tooltip(_('Stop studio %s') % self.studio_name())
                 else:
                     self.ladish_toolbuttons_set_active(start=True, stop=False, save=False)
-                    buttons['start'].set_tooltip(_('Start the loaded studio'))
+                    buttons['start'].set_tooltip(_('Start studio %s') % self.studio_name())
             else:
                 self.ladish_toolbuttons_set_active(start=True,
                                              stop=False,
@@ -147,7 +148,7 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
                                              rename=False)
                 buttons['start'].set_tooltip(_('Start automatic studio'))
         else:
-            self.ladish_toolbuttons_set_active(ladish_all=False)
+            self.ladish_toolbuttons_set_active(all=False)
 
     def jack_status_buttons_update(self):
         if not self.jack_is_available():
