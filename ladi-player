@@ -298,7 +298,7 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
 
         # Build the UI
         builder = Gtk.Builder()
-        ui_path = find_data_file("ladiplayer.ui")
+        ui_path = find_data_file("ladi-player.ui")
         builder.add_from_file(ui_path)
         sys.stderr.write( _("Loading interface from %s\n") % ui_path)
         sys.stderr.flush()
