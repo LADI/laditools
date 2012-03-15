@@ -285,8 +285,7 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
         self.a2j_reactivate()
 
     def on_open_settings(self, *args):
-        pass
-        #TODO
+        self.launcher_exec(command=["ladiconf"])
 
     def __init__(self):
         # Handle the configuration
