@@ -53,6 +53,7 @@ class LadiPlayer(LadiManagerGtk):
 Copyright \xa9 2007-2010 Marc-Olivier Barre <marco@marcochapeau.org>
 Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
         ad = Gtk.AboutDialog.new()
+        ad.set_transient_for(self.window_main)
         ad.set_program_name("LADITools")
         ad.set_comments(_("LADITools is a set of tools aiming to achieve the goals of the LADI project to improve desktop integration and user workflow of Linux audio system based on JACK and ladish."))
         ad.set_logo(logo_pixbuf)
