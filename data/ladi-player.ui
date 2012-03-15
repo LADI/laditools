@@ -68,6 +68,7 @@
       <object class="GtkAction" id="new">
         <property name="label" translatable="yes">_New studio...</property>
         <property name="short_label" translatable="yes">New</property>
+        <property name="tooltip" translatable="yes">Create new studio</property>
         <property name="stock_id">gtk-new</property>
         <signal name="activate" handler="action_ladish_new" swapped="no"/>
       </object>
@@ -76,6 +77,7 @@
       <object class="GtkAction" id="delete">
         <property name="label" translatable="yes">_Delete studio...</property>
         <property name="short_label" translatable="yes">Delete</property>
+        <property name="tooltip" translatable="yes">Delete studio</property>
         <property name="stock_id">gtk-delete</property>
         <signal name="activate" handler="action_ladish_delete" swapped="no"/>
       </object>
@@ -92,30 +94,32 @@
     <child>
       <object class="GtkAction" id="rename">
         <property name="label" translatable="yes">Rename studio</property>
+        <property name="short_label" translatable="yes">Rename</property>
+        <property name="tooltip" translatable="yes">Rename the current studio</property>
         <property name="stock_id">gtk-edit</property>
         <signal name="activate" handler="action_ladish_rename" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkAction" id="start">
-        <property name="label" translatable="yes">Start studio</property>
-        <property name="short_label" translatable="yes">Start studio</property>
+        <property name="label" translatable="yes">Start the studio</property>
+        <property name="short_label" translatable="yes">Start</property>
         <property name="stock_id">gtk-media-play</property>
         <signal name="activate" handler="action_ladish_start" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkAction" id="stop">
-        <property name="label" translatable="yes">Stop the loaded studio</property>
-        <property name="short_label" translatable="yes">Stop studio</property>
+        <property name="label" translatable="yes">Stop the studio</property>
+        <property name="short_label" translatable="yes">Stop</property>
         <property name="stock_id">gtk-media-stop</property>
         <signal name="activate" handler="action_ladish_stop" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkAction" id="unload">
-        <property name="label" translatable="yes">Unload the current studio</property>
-        <property name="short_label" translatable="yes">Unload studio</property>
+        <property name="label" translatable="yes">Unload the studio</property>
+        <property name="short_label" translatable="yes">Unload</property>
         <property name="stock_id">gtk-close</property>
         <signal name="activate" handler="action_ladish_unload" swapped="no"/>
       </object>
@@ -124,6 +128,7 @@
       <object class="GtkAction" id="reactivate_ladishd">
         <property name="label" translatable="yes">Reactivate ladishd</property>
         <property name="short_label" translatable="yes">Restart ladishd</property>
+        <property name="tooltip" translatable="yes">Restart ladishd</property>
         <property name="stock_id">gtk-refresh</property>
         <signal name="activate" handler="action_ladish_reactivate" swapped="no"/>
       </object>
@@ -132,6 +137,7 @@
       <object class="GtkAction" id="load">
         <property name="label" translatable="yes">_Load studio...</property>
         <property name="short_label" translatable="yes">Load</property>
+        <property name="tooltip" translatable="yes">Load a studio</property>
         <property name="stock_id">gtk-open</property>
         <signal name="activate" handler="action_ladish_load" swapped="no"/>
       </object>
