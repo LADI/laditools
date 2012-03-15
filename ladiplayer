@@ -34,12 +34,13 @@ from laditools import LadiConfiguration
 from gi.repository import Gtk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
-from laditools.gtk import LadiManager
+from laditools import LadiManager
+from laditools.gtk import LadiManagerGtk
 from laditools.gtk import find_data_file
 
 timeout_add = GObject.timeout_add
 
-class LadiPlayer(LadiManager):
+class LadiPlayer(LadiManagerGtk):
 
     # Default configuration
     _default_config = {
@@ -211,7 +212,7 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
             # Set a started status
             self.status_label.set_label (status_text)
         else:
-            self.status_label.set_label(_('<i>JACK is not running</i>'))
+            self.status_label.set_label(_('<i>Stopped</i>'))
 
     def update(self, *args):
         self.update_status_buttons()
@@ -250,13 +251,13 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
     def action_ladish_load(self, action, *args):
         selection = self._run_select_studio_dialog(_('Load studio'))
         if selection:
-            self.studio_load(None, None, selection)
+            self.studio_load(studio=selection)
         return selection
 
     def action_ladish_delete(self, action, *args):
         selection = self._run_select_studio_dialog(_('Delete studio'))
         if selection:
-            self.studio_delete(None, None, selection)
+            LadiManager.studio_delete(self, studio=selection)
         return selection
 
     def action_ladish_unload(self, action, *args):
@@ -293,7 +294,8 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
         self.ladiplayer_param_dict = self.global_config.get_config_section ('ladiplayer')
         #autostart = bool(eval(self.ladiplayer_param_dict['autostart']))
 
-        LadiManager.__init__(self, self.global_config.get_config_section ('ladiplayer'), False)
+        #LadiManagerGtk.__init__(self, self.global_config.get_config_section ('ladiplayer'), False)
+        LadiManagerGtk.__init__(self, False)
 
         # Build the UI
         builder = Gtk.Builder()
