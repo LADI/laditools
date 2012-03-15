@@ -16,9 +16,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from .a2jmenu import A2jMenu
+from .manager import LadiManagerGtk
 from .menu import LadiMenu
 from .utils import find_data_file
 
 __all__ = ["A2jMenu",
+           "LadiManagerGtk",
            "LadiMenu",
            "find_data_file"]

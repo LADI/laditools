@@ -31,7 +31,7 @@ from . import LadishProxy
 
 class LadiManager(LadiController):
 
-    def __init__(self, jack_autostart = False):
+    def __init__(self, jack_autostart):
         self.proxy_jack_controller = None
         self.proxy_jack_configure = None
         self.proxy_a2j_controller = None
@@ -39,6 +39,9 @@ class LadiManager(LadiController):
         self.jack_autostart = jack_autostart
 
         self.proc_list = []
+
+        if jack_autostart:
+            self.jack_start()
 
     def is_available(self):
         return (self.ladish_is_available, self.jack_is_available, self.a2j_is_available)
@@ -223,7 +226,7 @@ class LadiManager(LadiController):
     def launcher_exec(self, *args, **kwargs):
         if 'command' in kwargs:
             command = kwargs['command']
-            self.proc_list.append(subprocess.Popen(exec_path))
+            self.proc_list.append(subprocess.Popen(command))
             return True
         return False
 

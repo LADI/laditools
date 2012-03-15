@@ -24,81 +24,19 @@ import subprocess
 from gi.repository import Gtk
 from gi.repository import GObject
 from .. import _gettext_domain
-from .. import LadiConfiguration
-from .. import JackConfigProxy
-from .. import JackController
-from .. import A2jController
-from .. import LadishProxy
-from .. import LadiManager
+from .manager import LadiManagerGtk
 
 # Default launcher menu :
 menu_default = {"Logs": "ladilog"}
 
-class LadiMenu(LadiManager):
-    def __init__(self, menu_config_array, jack_autostart = False):
-        LadiManager.__init__(self, jack_autostart)
+class LadiMenu(LadiManagerGtk):
+    def __init__(self, menu_config_array, jack_autostart):
+        LadiManagerGtk.__init__(self, jack_autostart)
         # Handle the configuration and grab custom menu items
         self.menu_array = menu_config_array
         # Add some defaults if we don't already have a menu
         if not self.menu_array:
             self.menu_array = menu_default
-
-        if jack_autostart:
-            self.jack_start ()
-
-    def set_diagnose_text(self, text):
-        self.diagnose_text = text
-
-    def clear_diagnose_text(self):
-        self.diagnose_text = ""
-
-    def name_dialog(self, title, label, text):
-        dlg = Gtk.Dialog(
-            title,
-            None,
-            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT)
-        dlg.add_buttons (Gtk.STOCK_CANCEL,
-                         Gtk.ResponseType.REJECT,
-                         Gtk.STOCK_OK,
-                         Gtk.ResponseType.ACCEPT)
-
-        hbox = Gtk.HBox()
-        hbox.pack_start(Gtk.Label(label), True, True, 0)
-        entry = Gtk.Entry()
-        entry.set_text(text)
-        hbox.pack_start(entry, True, True, 0)
-        dlg.vbox.pack_start(hbox, True, True, 0)
-        dlg.show_all()
-        #entry.set_activates_default(True)
-        #dlg.set_default_response(Gtk.ResponseType.OK)
-        ret = dlg.run()
-        new_text = entry.get_text()
-        dlg.destroy()
-        if ret == Gtk.ResponseType.ACCEPT:
-            return True, new_text
-        else:
-            return False, text
-
-    def studio_new(self):
-        accept, name = self.name_dialog(_("New studio"), _("Studio name"), "")
-        if accept:
-            LadiManager.studio_new(self, name=name)
-
-    def studio_rename(self):
-        accept, name = self.name_dialog(_("Rename studio"),
-                                        _("Studio name"),
-                                        self.get_ladish_controller().studio_name())
-        if accept:
-            LadiManager.studio_rename(self, name=name)
-
-    def studio_delete(self, item, event, studio):
-        dlg = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.YES_NO, "")
-        dlg.set_markup(_("<b><big>Confirm studio delete</big></b>"))
-        dlg.format_secondary_text(_("Studio \"%s\" will be deleted. Are you sure?") % studio)
-        ret = dlg.run()
-        dlg.destroy()
-        if ret == Gtk.ResponseType.YES:
-            LadiManager.studio_delete(self, studio=studio)
 
     def on_menu_show_diagnose(self, widget, data=None):
         dlg = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.CLOSE, self.diagnose_text)
@@ -121,13 +59,10 @@ class LadiMenu(LadiManager):
             error.destroy()
 
     def on_menu_launcher(self, widget, command):
-        LadiManager.launcher_exec(self, command.split())
+        LadiManagerGtk.launcher_exec(self, command=command.split())
 
     def menu_clear(self, menu):
         menu.foreach(lambda item,none: menu.remove(item), None)
-
-    def studio_configure(self, item, event, module):
-        LadiManager.launcher_exec(self, ['ladiconf', '-m', module])
 
     def configure_list_fill(self, widget, function):
         menu = widget.get_submenu()
@@ -151,7 +86,8 @@ class LadiMenu(LadiManager):
                 menu.append(item)
                 item.connect("button-release-event", function, module)
         except Exception, err:
-            print str(err)
+            sys.stderr.write(str(err))
+            sys.stderr.flush()
         if not menu.get_children():
             item = Gtk.MenuItem(_("Empty config list"))
             item.set_sensitive(False)
@@ -256,6 +192,12 @@ class LadiMenu(LadiManager):
                 item.connect("activate", callback, exec_path)
         menu.show_all()
         return menu
+
+    def studio_load(self, item, event, studio):
+        LadiManagerGtk.studio_load(self, item=item, event=event, studio=studio)
+
+    def studio_delete(self, item, event, studio):
+        LadiManagerGtk.studio_delete(self, item=item, event=event, studio=studio)
 
     def menu_activate(self):
         menu = self.create_menu()
