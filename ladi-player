@@ -305,7 +305,7 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
         sys.stderr.flush()
 
         # Retrieve objects
-        self.ui = ui = builder.get_object("main_window")
+        self.window_main = builder.get_object("window_main")
         actiongroup_ladish = builder.get_object("actiongroup_ladish")
         actiongroup_jack = builder.get_object("actiongroup_jack")
         actiongroup_a2j = builder.get_object("actiongroup_a2j")
@@ -331,7 +331,7 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
         builder.connect_signals(self)
 
     def run(self):
-        self.ui.show_all()
+        self.window_main.show_all()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=_('graphical front-end that allows users to start, stop and'
