@@ -136,6 +136,15 @@
         <signal name="activate" handler="action_ladish_load" swapped="no"/>
       </object>
     </child>
+    <child>
+      <object class="GtkAction" id="launch_gladish">
+        <property name="label" translatable="yes">Show connections</property>
+        <property name="short_label" translatable="yes">Connections</property>
+        <property name="tooltip" translatable="yes">Launch gladish</property>
+        <property name="icon_name">gladish</property>
+        <signal name="activate" handler="action_ladish_launch_gladish" swapped="no"/>
+      </object>
+    </child>
   </object>
   <object class="GtkWindow" id="window_main">
     <property name="can_focus">False</property>
@@ -557,6 +566,20 @@
                 <property name="can_focus">False</property>
                 <property name="related_action">reactivate_ladishd</property>
                 <property name="label" translatable="yes">toolbutton_reactivate_ladishd</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="toolbutton_launch_gladish">
+                <property name="related_action">launch_gladish</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="related_action">launch_gladish</property>
+                <property name="label" translatable="yes">toolbutton1</property>
                 <property name="use_underline">True</property>
               </object>
               <packing>
