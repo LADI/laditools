@@ -549,6 +549,31 @@
               </packing>
             </child>
             <child>
+              <object class="GtkSeparatorToolItem" id="separatortoolitem3">
+                <property name="use_action_appearance">False</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="use_action_appearance">False</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="toolbutton_launch_gladish">
+                <property name="related_action">launch_gladish</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="related_action">launch_gladish</property>
+                <property name="label" translatable="yes">toolbutton_launch_gladish</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkSeparatorToolItem" id="separatortoolitem2">
                 <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
@@ -566,20 +591,6 @@
                 <property name="can_focus">False</property>
                 <property name="related_action">reactivate_ladishd</property>
                 <property name="label" translatable="yes">toolbutton_reactivate_ladishd</property>
-                <property name="use_underline">True</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="toolbutton_launch_gladish">
-                <property name="related_action">launch_gladish</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="related_action">launch_gladish</property>
-                <property name="label" translatable="yes">toolbutton1</property>
                 <property name="use_underline">True</property>
               </object>
               <packing>
