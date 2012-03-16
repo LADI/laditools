@@ -1,0 +1,713 @@
+#!/usr/bin/python
+
+# LADITools - Linux Audio Desktop Integration Tools
+# ladi-control-center - A configuration GUI for your Linux Audio Desktop
+# Copyright (C) 2011-2012 Alessio Treglia <quadrispro@ubuntu.com>
+# Copyright (C) 2007-2010, Marc-Olivier Barre <marco@marcochapeau.org>
+# Copyright (C) 2007-2009, Nedko Arnaudov <nedko@arnaudov.name>
+# Copyright (C) 2008, Krzysztof Foltman <wdev@foltman.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import os
+import sys
+import signal
+import gettext
+import argparse
+
+from laditools import _gettext_domain
+gettext.install(_gettext_domain)
+
+from laditools import get_version_string
+from laditools import check_ladish
+from laditools import LadiConfiguration
+from laditools import LadishProxy
+from laditools import LadishStatusType
+from laditools import LadishProxyError
+from laditools import JackConfigProxy
+from laditools import LadiApp
+
+from gi.repository import Gtk
+from gi.repository import Gdk
+from gi.repository import GObject
+
+from laditools.gtk import find_data_file
+
+sig_handler = signal.getsignal(signal.SIGTERM)
+signal.signal(signal.SIGINT, sig_handler)
+
+(COLUMN_NAME,
+ COLUMN_PARAMETER,
+ COLUMN_SHORTDESC,
+ COLUMN_LONGDESC,
+ COLUMN_ISSET) = range (5)
+
+def _check_ladish():
+    try:
+        ret = check_ladish()
+    except LadishProxyError as e:
+        sys.stderr.write("%s\n" % str(e))
+        sys.stderr.flush()
+        sys.exit(1)
+    except Exception as e:
+        sys.stderr.write(_("ladish proxy creation failed: %s\n") % str(e))
+        sys.stderr.flush()
+        sys.exit(1)
+    if ret == LadishStatusType.STUDIO_STOPPED:
+        # Everything is OK, there's no need to print out a message
+        #sys.stderr.write(_("ladish studio is loaded and not started\n"))
+        #sys.stderr.flush()
+        return False
+    elif ret == LadishStatusType.NOT_AVAILABLE:
+        sys.stderr.write(_("ladish is not available\n"))
+        sys.stderr.flush()
+        sys.exit(1)
+    else:
+        if ret == LadishStatusType.NO_STUDIO_LOADED:
+            msg = _("JACK can only be configured with a loaded and stopped studio. Please create a new studio or load and stop an existing one.")
+            sys.stderr.write(msg + "\n")
+            title = _("No studio present")
+        elif ret == LadishStatusType.STUDIO_RUNNING:
+            msg = _("JACK can only be configured with a stopped studio. Please stop your studio first.")
+            sys.stderr.write(msg + "\n")
+            title = _("Studio is running")
+        else:
+            sys.stderr(_("Unexpected error!\n"))
+        try:
+            mdlg = Gtk.MessageDialog(type = Gtk.MessageType.ERROR,
+                                     buttons = Gtk.ButtonsType.CLOSE,
+                                     message_format = msg)
+            mdlg.set_title(title)
+            mdlg.run()
+            mdlg.hide()
+        except:
+            pass
+        finally:
+            sys.stderr.flush()
+            sys.exit(1)
+
+class parameter(object):
+    def __init__(self, path):
+        self.path = path
+        self.name = path[-1:]
+
+    def get_name(self):
+        return self.name
+
+    def get_type(self):
+        return jack.get_param_type(self.path)
+
+    def get_value(self):
+        return jack.get_param_value(self.path)
+
+    def set_value(self, value):
+        jack.set_param_value(self.path, value)
+
+    def reset_value(self):
+        jack.reset_param_value(self.path)
+
+    def get_short_description(self):
+        return jack.get_param_short_description(self.path)
+
+    def get_long_description(self):
+        descr = jack.get_param_long_description(self.path)
+        if not descr:
+            descr = self.get_short_description()
+        return descr
+
+    def has_range(self):
+        return jack.param_has_range(self.path)
+
+    def get_range(self):
+        return jack.param_get_range(self.path)
+
+    def has_enum(self):
+        return jack.param_has_enum(self.path)
+
+    def is_strict_enum(self):
+        return jack.param_is_strict_enum(self.path)
+
+    def is_fake_values_enum(self):
+        return jack.param_is_fake_value(self.path)
+
+    def get_enum_values(self):
+        return jack.param_get_enum_values(self.path)
+
+class configure_command(object):
+    def __init__(self):
+        pass
+
+    def get_description(self):
+        pass
+
+    def get_window_title(self):
+        return self.get_description();
+
+class parameter_enum_value(GObject.GObject):
+    def __init__(self, is_fake_value, value, description):
+        GObject.GObject.__init__(self)
+        self.is_fake_value = is_fake_value
+        self.value = value
+        self.description = description
+
+    def get_description(self):
+        if self.is_fake_value:
+            return self.description
+
+        return str(self.value) + " - " + self.description
+
+class parameter_store(GObject.GObject):
+    def __init__(self, param):
+        GObject.GObject.__init__(self)
+        self.param = param
+        self.name = self.param.get_name()
+        self.is_set, self.default_value, self.value = self.param.get_value()
+        self.modified = False
+        self.has_range = self.param.has_range()
+        self.is_strict = self.param.is_strict_enum()
+        self.is_fake_value = self.param.is_fake_values_enum()
+
+        self.enum_values = []
+
+        if self.has_range:
+            self.range_min, self.range_max = self.param.get_range()
+        else:
+            for enum_value in self.param.get_enum_values():
+                self.enum_values.append(parameter_enum_value(self.is_fake_value, enum_value[0], enum_value[1]))
+
+    def get_name(self):
+        return self.name
+
+    def get_type(self):
+        return self.param.get_type()
+
+    def get_value(self):
+        return self.value
+
+    def get_default_value(self):
+        if not self.is_fake_value:
+            return str(self.default_value)
+
+        for enum_value in self.get_enum_values():
+            if enum_value.value == self.default_value:
+                return enum_value.get_description()
+
+        return "???"
+
+    def set_value(self, value):
+        self.value = value
+        self.modified = True
+
+    def reset_value(self):
+        self.value = self.default_value
+
+    def get_short_description(self):
+        return self.param.get_short_description()
+
+    def maybe_save_value(self):
+        if self.modified:
+            self.param.set_value(self.value)
+            self.modified = False
+
+    def get_range(self):
+        return self.range_min, self.range_max
+
+    def has_enum(self):
+        return len(self.enum_values) != 0
+
+    def is_strict_enum(self):
+        return self.is_strict
+
+    def get_enum_values(self):
+        return self.enum_values
+
+GObject.type_register(parameter_store)
+
+def combobox_get_active_text(combobox, model_index = 0):
+    model = combobox.get_model()
+    active = combobox.get_active()
+    if active < 0:
+        return None
+    return model[active][model_index]
+
+class cell_renderer_param(Gtk.CellRendererPixbuf):
+    __gproperties__ = { "parameter": (GObject.TYPE_OBJECT,
+                                      "Parameter",
+                                      "Parameter",
+                                      GObject.PARAM_READWRITE) }
+
+    def __init__(self):
+        Gtk.CellRendererPixbuf.__init__(self)
+        self.parameter = None
+        self.set_property('mode', Gtk.CellRendererMode.EDITABLE)
+        self.set_property('mode', Gtk.CellRendererMode.ACTIVATABLE)
+        self.renderer_text = Gtk.CellRendererText()
+        self.renderer_toggle = Gtk.CellRendererToggle()
+        self.renderer_combo = Gtk.CellRendererCombo()
+        self.renderer_spinbutton = Gtk.CellRendererSpin()
+        for r in (self.renderer_text, self.renderer_combo, self.renderer_spinbutton):
+            r.connect("edited", self.on_edited)
+        self.renderer = None
+        self.edit_widget = None
+
+    def do_set_property(self, pspec, value):
+        if pspec.name == 'parameter':
+            if value.get_type() == 'b':
+                self.set_property('mode', Gtk.CellRendererMode.ACTIVATABLE)
+            else: 
+                self.set_property('mode', Gtk.CellRendererMode.EDITABLE)
+        else:
+            sys.stderr.write(pspec.name)
+        setattr(self, pspec.name, value)
+
+    def do_get_property(self, pspec):
+        return getattr(self, pspec.name)
+
+    def choose_renderer(self):
+        typechar = self.parameter.get_type()
+        value = self.parameter.get_value()
+
+        if typechar == "b":
+            self.renderer = self.renderer_toggle
+            self.renderer.set_activatable(True)
+            self.renderer.set_active(value)
+            self.renderer.set_property("xalign", 0.0)
+            return
+
+        if self.parameter.has_enum():
+            self.renderer = self.renderer_combo
+
+            m = Gtk.ListStore(str, parameter_enum_value)
+
+            for value in self.parameter.get_enum_values():
+                m.append([value.get_description(), value])
+
+            self.renderer.set_property("model",m)
+            self.renderer.set_property('text-column', 0)
+            self.renderer.set_property('editable', True)
+            self.renderer.set_property('has_entry', not self.parameter.is_strict_enum())
+
+            value = self.parameter.get_value()
+            if self.parameter.is_fake_value:
+                text = "???"
+                for enum_value in self.parameter.get_enum_values():
+                    if enum_value.value == value:
+                        text = enum_value.get_description()
+                        break
+            else:
+                text = str(value)
+
+            self.renderer.set_property('text', text)
+
+            return
+
+        if typechar == 'u' or typechar == 'i':
+            self.renderer = self.renderer_spinbutton
+            self.renderer.set_property('text', str(value))
+            self.renderer.set_property('editable', True)
+            if self.parameter.has_range:
+                range_min, range_max = self.parameter.get_range()
+                self.renderer.set_property('adjustment', Gtk.Adjustment(value, range_min, range_max, 1, abs(int((range_max - range_min) / 10))))
+            else:
+                self.renderer.set_property('adjustment', Gtk.Adjustment(value, 0, 100000, 1, 1000))
+            return
+
+        self.renderer = self.renderer_text
+        self.renderer.set_property('editable', True)
+        self.renderer.set_property('text', self.parameter.get_value())
+
+    def do_render(self, ctx, widget, bg_area, cell_area, flags):
+        self.choose_renderer()
+        return self.renderer.render(ctx, widget, bg_area, cell_area, flags)
+
+    def do_get_size(self, widget, cell_area=None):
+        self.choose_renderer()
+        return self.renderer.get_size(widget, cell_area)
+
+    def do_activate(self, event, widget, path, background_area, cell_area, flags):
+        self.choose_renderer()
+        if self.parameter.get_type() == 'b':
+            self.parameter.set_value(not self.parameter.get_value())
+            widget.get_model()[path][COLUMN_ISSET] = "modified"
+        return True
+
+    def on_edited(self, renderer, path, value_str):
+        parameter = self.edit_parameter
+        widget = self.edit_widget
+        model = self.edit_tree.get_model()
+        self.edit_widget = None
+        typechar = parameter.get_type()
+        if type(widget) == Gtk.ComboBox:
+            value = combobox_get_active_text(widget, 1)
+            if value == None:
+                return
+            value_str = value.value
+        elif type(widget) == Gtk.ComboBoxText:
+            enum_value = combobox_get_active_text(widget, 1)
+            if enum_value:
+                value_str = enum_value.value
+            else:
+                value_str = widget.get_active_text()
+
+        if typechar == 'u' or typechar == 'i':
+            try:
+                value = int(value_str)
+            except ValueError, e:
+                # Hide the widget (because it may display something else than what user typed in)
+                widget.hide()
+                # Display the error
+                mdlg = Gtk.MessageDialog(buttons = Gtk.ButtonsType.OK, message_format = "Invalid value. Please enter an integer number.")
+                mdlg.run()
+                mdlg.hide()
+                # Return the focus back to the tree to prevent buttons from stealing it
+                self.edit_tree.grab_focus()
+                return
+        else:
+            value = value_str
+        parameter.set_value(value)
+        model[path][COLUMN_ISSET] = "modified"
+        self.edit_tree.grab_focus()
+
+    def do_start_editing(self, event, widget, path, background_area, cell_area, flags):
+        # this happens when edit requested using keyboard
+        if not event:
+            event = Gdk.Event(Gdk.NOTHING)
+
+        self.choose_renderer()
+        ret = self.renderer.start_editing(event, widget, path, background_area, cell_area, flags)
+        self.edit_widget = ret
+        self.edit_tree = widget
+        self.edit_parameter = self.parameter
+        return ret
+
+GObject.type_register(cell_renderer_param)
+
+class jack_params_configure_command(configure_command):
+    def __init__(self, path):
+        self.path = path
+        self.is_setting = False
+
+    def reset_value(self, row_path):
+        row = self.liststore[row_path]
+        param = row[COLUMN_PARAMETER]
+        param.reset_value()
+        row[COLUMN_ISSET] = "reset"
+
+    def do_row_activated(self, treeview, path, view_column):
+        if view_column == self.tvcolumn_is_set:
+            self.reset_value(path)
+            
+    def do_button_press_event(self, tree, event):
+        if event.type != Gdk.EventType._2BUTTON_PRESS:
+            return False
+        # this is needed for proper double-click handling in the list; don't ask me why, I don't know
+        # it's probably because _2BUTTON_PRESS event is still delivered to tree view, automatically deactivating
+        # the newly created edit widget (which gets created on second BUTTON_PRESS but before _2BUTTON_PRESS)
+        # deactivating the widget causes it to be deleted
+        return True
+
+    def do_key_press_event(self, tree, event):
+        (row_path, cur) = self.treeview.get_cursor()
+
+        # if Delete was pressed, reset the value
+        #if event.get_state() == 0 and event.keyval == Gdk.KEY_Delete:
+        if event.keyval == Gdk.KEY_Delete:
+            self.reset_value(row_path)
+            tree.queue_draw()
+            return True
+
+        # prevent ESC from activating the editor
+        if event.string < " ":
+            return False
+
+        # single-key data entry: if the control is a text entry, spin button or combo box/combo box entry,
+        # then edit the current and set the text value to what user has already typed in
+        (row_path, cur) = self.treeview.get_cursor()
+        param = self.liststore[row_path][COLUMN_PARAMETER]
+        ptype = param.get_type()
+
+        # we don't care about booleans
+        if ptype == 'b':
+            return False
+
+        # accept only digits for integer input (or a minus, but only if it's a signed field)
+        if ptype in ('i', 'u'):
+            if not (event.string.isdigit() or (event.string == "-" and ptype == 'i')):
+                return False
+
+        # Start cell editing
+        # MAYBE: call a specially crafted cell_renderer_param method for this
+        self.treeview.set_cursor_on_cell(row_path, self.tvcolumn_value, self.renderer_value.renderer, True)
+
+        # cell_renderer_param::on_start_editing() should set edit_widget.
+        # if edit operation has failed (didn't create a widget), pass the key on
+        # MAYBE: call a specially crafted cell_renderer_param method to do this check
+        if self.renderer_value.edit_widget == None:
+            return
+
+        widget = self.renderer_value.edit_widget
+        if type(widget) in (Gtk.Entry, Gtk.ComboBoxText):
+            # (combo or plain) text entry - set the content and move the cursor to the end
+            sl = len(event.string)
+            widget.set_text(event.string)
+            widget.select_region(sl, sl)
+            return True
+
+        if type(self.renderer_value.edit_widget) == Gtk.SpinButton:
+            # spin button - set the value and move the cursor to the end
+            if event.string == "-":
+                # special case for minus sign (which can't be converted to float)
+                widget.set_text(event.string)
+            else:
+                widget.set_value(float(event.string))
+            sl = len(widget.get_text())
+            widget.select_region(sl, sl)
+            return True
+            
+        if type(self.renderer_value.edit_widget) == Gtk.ComboBox:
+            # combo box - select the first item that starts with typed character
+            model = widget.get_model()
+            item = -1
+            iter = model.get_iter_root()
+            while iter != None:
+                if model.get_value(iter, 0).startswith(event.string):
+                    item = model.get_path(iter)[0]
+                    break
+                iter = model.iter_next(iter)
+            widget.set_active(item)
+            return True
+
+        return False
+
+    def on_cursor_changed(self, tree):
+        (row_path, cur) = self.treeview.get_cursor()
+
+        if not self.is_setting and cur != None and cur.get_title() != self.tvcolumn_value.get_title():
+            self.is_setting = True
+            try:
+                self.treeview.set_cursor_on_cell(row_path, self.tvcolumn_value, self.renderer_value.renderer, False)
+            finally:
+                self.is_setting = False
+
+    def ok_clicked(self, dlg):
+        if self.renderer_value.edit_widget:
+            self.renderer_value.edit_widget.editing_done()
+
+    def _on_query_tooltip(self, treeview, x, y, keyboard_tip, tooltip):
+        """Handle tooltips for the cells"""
+        try:
+            result, out_x, out_y, model, path, iter = treeview.get_tooltip_context(x, y, keyboard_tip)
+            if not path:
+                return False
+        except TypeError:
+            return False
+
+        text = self.liststore[path][COLUMN_LONGDESC]
+        if self.liststore[path][COLUMN_ISSET] == "default":
+            pass
+        else:
+            text += '\n\n'
+            if self.liststore[path][COLUMN_ISSET] == "reset":
+                text += _("<i>Value will be reset to %s</i>") % \
+                    self.liststore[path][COLUMN_PARAMETER].get_default_value()
+            else:
+                text += _("<i>Double-click to schedule reset of value to %s</i>") % \
+                    self.liststore[path][COLUMN_PARAMETER].get_default_value()
+
+        tooltip.set_icon_from_icon_name(Gtk.STOCK_DIALOG_INFO, Gtk.IconSize.DIALOG)
+        tooltip.set_markup(text)
+        treeview.set_tooltip_row(tooltip, path)
+        return True
+
+    def do_destroy(self, *args):
+        for row in self.liststore:
+            param = row[COLUMN_PARAMETER]
+            reset = (row[COLUMN_ISSET] == "reset")
+            if reset:
+                param.param.reset_value()
+            else:
+                if param.modified:
+                    param.maybe_save_value()
+
+    def build_ui(self, *args, **kwargs):
+
+        self.liststore = Gtk.ListStore(GObject.TYPE_STRING,
+            parameter_store,
+            GObject.TYPE_STRING,
+            GObject.TYPE_STRING,
+            GObject.TYPE_STRING)
+        self.treeview = Gtk.TreeView(self.liststore)
+        self.treeview.set_rules_hint(True)
+        self.treeview.set_has_tooltip(True)
+        self.treeview.set_enable_search(False)
+
+        renderer_text = Gtk.CellRendererText()
+        renderer_toggle = Gtk.CellRendererToggle()
+        renderer_value = cell_renderer_param()
+        self.renderer_value = renderer_value # save for use in event handler methods
+
+        self.tvcolumn_parameter = Gtk.TreeViewColumn('Parameter', renderer_text, text=COLUMN_NAME)
+        self.tvcolumn_is_set = Gtk.TreeViewColumn('Status', renderer_text, text=COLUMN_ISSET)
+        self.tvcolumn_value = Gtk.TreeViewColumn('Value', renderer_value, parameter=COLUMN_PARAMETER)
+        self.tvcolumn_description = Gtk.TreeViewColumn('Description', renderer_text, text=COLUMN_SHORTDESC)
+
+        self.tvcolumn_value.set_resizable(True)
+        self.tvcolumn_value.set_min_width(100)
+
+        self.treeview.append_column(self.tvcolumn_parameter)
+        self.treeview.append_column(self.tvcolumn_is_set)
+        self.treeview.append_column(self.tvcolumn_value)
+        self.treeview.append_column(self.tvcolumn_description)
+
+        param_names = jack.get_param_names(self.path)
+        for name in param_names:
+            param = parameter(self.path + [name])
+            store = parameter_store(param)
+            if store.is_set:
+                is_set = "set"
+            else:
+                is_set = "default"
+            self.liststore.append([name, store, param.get_short_description(), param.get_long_description(), is_set])
+
+        self.treeview.connect("row-activated", self.do_row_activated)
+        self.treeview.connect("cursor-changed", self.on_cursor_changed)
+        self.treeview.connect("key-press-event", self.do_key_press_event)
+        self.treeview.connect("button-press-event", self.do_button_press_event)
+        self.treeview.connect("query-tooltip", self._on_query_tooltip)
+        self.treeview.connect("destroy", self.do_destroy)
+
+        if len(param_names):
+            # move cursor to first row and 'value' column
+            self.treeview.set_cursor(Gtk.TreePath(path=0),
+                                     focus_column=self.tvcolumn_value,
+                                     start_editing=False)
+
+        return self.treeview
+
+class jack_engine_params_configure_command(jack_params_configure_command):
+    def __init__(self):
+        jack_params_configure_command.__init__(self, ['engine'])
+
+    def get_description(self):
+        return _('JACK engine parameters')
+
+class jack_driver_params_configure_command(jack_params_configure_command):
+    def __init__(self):
+        jack_params_configure_command.__init__(self, ['driver'])
+
+    def get_description(self):
+        return _('JACK driver parameters')
+
+    def get_window_title(self):
+        return _('JACK "%s" driver parameters') % jack.get_selected_driver()
+
+class jack_internal_params_configure_command(jack_params_configure_command):
+    def __init__(self, name):
+        self.name = name
+        jack_params_configure_command.__init__(self, ['internals', name])
+
+    def get_description(self):
+        return _('JACK "%s" parameters') % self.name
+
+class ControlCenter(LadiApp):
+
+    appname = "LADI Control Center"
+
+    def show_panels(self, *args, **kwargs):
+        if not 'modules' in kwargs:
+            return None
+        mods = kwargs['modules']
+        window = Gtk.Window.new(Gtk.WindowType.TOPLEVEL)
+        window.set_resizable(False)
+        window.set_title(self.appname)
+        notebook = Gtk.Notebook()
+        notebook.set_tab_pos(Gtk.PositionType.LEFT)
+
+        if 'select' in kwargs:
+            selected = kwargs['select']
+        else:
+            selected = None
+
+        page_count = 0
+
+        for mod in mods:
+            treeview = mods[mod].build_ui()
+            container = Gtk.ScrolledWindow()
+            container.set_policy(hscrollbar_policy=Gtk.PolicyType.NEVER,
+                                 vscrollbar_policy=Gtk.PolicyType.NEVER)
+            container.add(treeview)
+            container.show_all()
+            #vbox.show_all()
+            notebook.append_page(container, Gtk.Label(mod))
+            if selected and selected == mod:
+                notebook.set_current_page(page_count)
+            page_count += 1
+
+        window.add(notebook)
+
+        window.show_all()
+        window.connect('destroy', Gtk.main_quit)
+        Gtk.main()
+
+    def activate(self, *args, **kwargs):
+
+        global jack
+
+        jack = JackConfigProxy()
+        _check_ladish()
+
+        GObject.type_register(parameter_enum_value)
+
+        modules = {'engine' : jack_engine_params_configure_command(),
+                   'params' : jack_driver_params_configure_command()}
+        for internal in jack.read_container(['internals']):
+            modules[str(internal)] = jack_internal_params_configure_command(internal)
+
+        modules = {'engine' : jack_engine_params_configure_command(),
+                   'params' : jack_driver_params_configure_command()}
+        for internal in jack.read_container(['internals']):
+            modules[str(internal)] = jack_internal_params_configure_command(internal)
+
+        parser = argparse.ArgumentParser(description=_('Convenient graphical interface for configuring JACK'),
+                                     epilog=_('This program is part of the LADITools suite.'))
+        parser.add_argument('-m', '--module', nargs=1, metavar='MODULE', help=_('select the module to configure'))
+        parser.add_argument('-l', '--list-modules', action='store_true', help=_('list available modules'))
+        parser.add_argument('--version', action='version', version="%(prog)s " + get_version_string())
+
+        options = parser.parse_args()
+
+        if options.list_modules and options.module:
+            sys.stderr.write(_("Conflicting options, type %s --help for a list of options.") % sys.argv[0] + '\n')
+            sys.stderr.flush()
+            return 2
+
+        if options.list_modules:
+            sys.stderr.write(_("Available modules: "))
+            sys.stderr.write(' '.join(modules) + '\n')
+            sys.stderr.flush()
+        elif options.module:
+            module = options.module[0]
+            if not module in modules:
+                sys.stderr.write(_("Module %(mod)s is not available, type '%(cmd)s -l' for a list of available modules.") % {'mod' : module, 'cmd' : sys.argv[0]} + "\n")
+                sys.stderr.flush()
+                return 2
+            else:
+                self.show_panels(modules=modules, select=module)
+        else:
+            self.show_panels(modules=modules)
+
+        return 3
+
+if __name__ == '__main__':
+    ControlCenter()()
