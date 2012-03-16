@@ -627,7 +627,7 @@ def show_panels(*args, **kwargs):
         return None
     mods = kwargs['modules']
     window = Gtk.Window.new(Gtk.WindowType.TOPLEVEL)
-    window.set_resizable(False)
+    window.set_resizable(True)
     notebook = Gtk.Notebook()
     notebook.set_tab_pos(Gtk.PositionType.LEFT)
 
@@ -641,8 +641,10 @@ def show_panels(*args, **kwargs):
     for mod in mods:
         treeview = mods[mod].run({})
         container = Gtk.ScrolledWindow()
-        container.set_policy(hscrollbar_policy=Gtk.PolicyType.NEVER,
-                             vscrollbar_policy=Gtk.PolicyType.NEVER)
+        container.set_min_content_width(400)
+        container.set_min_content_height(400)
+        container.set_policy(hscrollbar_policy=Gtk.PolicyType.AUTOMATIC,
+                             vscrollbar_policy=Gtk.PolicyType.AUTOMATIC)
         container.add(treeview)
         container.show_all()
         #vbox.show_all()
