@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 # LADITools - Linux Audio Desktop Integration Tools
-# ladiconf - A configuration GUI for your Linux Audio Desktop
+# ladi-control-center - A configuration GUI for your Linux Audio Desktop
 # Copyright (C) 2011-2012 Alessio Treglia <quadrispro@ubuntu.com>
 # Copyright (C) 2007-2010, Marc-Olivier Barre <marco@marcochapeau.org>
 # Copyright (C) 2007-2009, Nedko Arnaudov <nedko@arnaudov.name>
@@ -154,7 +154,7 @@ class configure_command(object):
         return self.get_description();
 
     def run(self, args):
-        pass
+        return self.activate()
 
 class parameter_enum_value(GObject.GObject):
     def __init__(self, is_fake_value, value, description):
@@ -532,13 +532,17 @@ class jack_params_configure_command(configure_command):
         treeview.set_tooltip_row(tooltip, path)
         return True
 
-    def run(self, args):
-#        dlg = Gtk.Dialog()
-#        dlg.set_title(self.get_window_title())
-#        dlg.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
-#        dlg.add_button(Gtk.STOCK_OK, Gtk.ResponseType.OK).connect("clicked", self.ok_clicked)
+    def do_destroy(self, *args):
+        for row in self.liststore:
+            param = row[COLUMN_PARAMETER]
+            reset = (row[COLUMN_ISSET] == "reset")
+            if reset:
+                param.param.reset_value()
+            else:
+                if param.modified:
+                    param.maybe_save_value()
 
-        #dlg.set_transient_for(window)
+    def activate(self, *args, **kwargs):
 
         self.liststore = Gtk.ListStore(GObject.TYPE_STRING,
             parameter_store,
@@ -568,10 +572,6 @@ class jack_params_configure_command(configure_command):
         self.treeview.append_column(self.tvcolumn_value)
         self.treeview.append_column(self.tvcolumn_description)
 
-#        vbox = Gtk.VBox.new(False, 0)
-        #dlg.
-#        vbox.pack_start(self.treeview, True, False, 0)
-
         param_names = jack.get_param_names(self.path)
         for name in param_names:
             param = parameter(self.path + [name])
@@ -587,28 +587,15 @@ class jack_params_configure_command(configure_command):
         self.treeview.connect("key-press-event", self.do_key_press_event)
         self.treeview.connect("button-press-event", self.do_button_press_event)
         self.treeview.connect("query-tooltip", self._on_query_tooltip)
+        self.treeview.connect("destroy", self.do_destroy)
 
         if len(param_names):
             # move cursor to first row and 'value' column
             self.treeview.set_cursor(Gtk.TreePath(path=0),
                                      focus_column=self.tvcolumn_value,
                                      start_editing=False)
-        return self.treeview
 
-#        dlg.show_all()
-#        ret = dlg.run()
-#        if ret == Gtk.ResponseType.OK:
-#            for row in self.liststore:
-#                param = row[COLUMN_PARAMETER]
-#                reset = row[COLUMN_ISSET] == "reset"
-#                if reset:
-#                    #print "%s -> reset" % param.get_name()
-#                    param.param.reset_value()
-#                else:
-#                    if param.modified:
-#                        #print "%s -> %s" % (param.get_name(), param.get_value())
-#                        param.maybe_save_value()
-#        dlg.hide()
+        return self.treeview
 
 class jack_engine_params_configure_command(jack_params_configure_command):
     def __init__(self):
@@ -635,48 +622,39 @@ class jack_internal_params_configure_command(jack_params_configure_command):
     def get_description(self):
         return _('JACK "%s" parameters') % self.name
 
-def show_panel(mod):
-    w = Gtk.Window.new(Gtk.WindowType.TOPLEVEL)
-    vbox = mod.run({})
-    w.add(vbox)
-    
-    w.show_all()
-    w.connect('destroy', Gtk.main_quit)
-    Gtk.main()
+def show_panels(*args, **kwargs):
+    if not 'modules' in kwargs:
+        return None
+    mods = kwargs['modules']
+    window = Gtk.Window.new(Gtk.WindowType.TOPLEVEL)
+    window.set_resizable(False)
+    notebook = Gtk.Notebook()
+    notebook.set_tab_pos(Gtk.PositionType.LEFT)
 
-def show_panels(mods):
-    w = Gtk.Window.new(Gtk.WindowType.TOPLEVEL)
-    n = Gtk.Notebook()
-    
+    if 'select' in kwargs:
+        selected = kwargs['select']
+    else:
+        selected = None
+
+    page_count = 0
+
     for mod in mods:
         treeview = mods[mod].run({})
         container = Gtk.ScrolledWindow()
-        container.set_policy(hscrollbar_policy=Gtk.PolicyType.AUTOMATIC,
-                             vscrollbar_policy=Gtk.PolicyType.AUTOMATIC)
+        container.set_policy(hscrollbar_policy=Gtk.PolicyType.NEVER,
+                             vscrollbar_policy=Gtk.PolicyType.NEVER)
         container.add(treeview)
         container.show_all()
         #vbox.show_all()
-        n.append_page(container, Gtk.Label(mod))
+        notebook.append_page(container, Gtk.Label(mod))
+        if selected and selected == mod:
+            notebook.set_current_page(page_count)
+        page_count += 1
 
-    w.add(n)
+    window.add(notebook)
     
-    w.show_all()
-    w.connect('destroy', Gtk.main_quit)
-    Gtk.main()
-
-def show_rack(args):
-    commands = args['commands']
-    w = Gtk.Window.new(Gtk.WindowType.TOPLEVEL)
-    buttons_widget = Gtk.VBox.new(homogeneous=True, spacing=0)
-    w.add(buttons_widget)
-
-    for command in commands:
-        button = Gtk.Button(command.get_description())
-        button.connect('clicked', command.run)
-        buttons_widget.add(button)
-
-    w.show_all()
-    w.connect('destroy', Gtk.main_quit)
+    window.show_all()
+    window.connect('destroy', Gtk.main_quit)
     Gtk.main()
 
 if __name__ == "__main__":
@@ -691,10 +669,6 @@ if __name__ == "__main__":
                'params' : jack_driver_params_configure_command()}
     for internal in jack.read_container(['internals']):
         modules[str(internal)] = jack_internal_params_configure_command(internal)
-
-    #show_panel(jack_engine_params_configure_command())
-    show_panels(modules)
-    sys.exit(0)
 
     modules = {'engine' : jack_engine_params_configure_command(),
                'params' : jack_driver_params_configure_command()}
@@ -725,8 +699,8 @@ if __name__ == "__main__":
             sys.stderr.flush()
             sys.exit(2)
         else:
-            modules[module].run({})
+            show_panels(modules=modules, select=module)
     else:
-        show_rack({'commands' : modules.values()})
+        show_panels(modules=modules)
 
     sys.exit(0)
