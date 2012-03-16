@@ -39,7 +39,7 @@ class LadiManagerGtk(LadiManager):
     def clear_diagnose_text(self):
         self.diagnose_text = ""
 
-    def name_dialog(self, title, label, text):
+    def name_dialog(self, title, label, oldname):
         dlg = Gtk.Dialog(
             title,
             None,
@@ -52,19 +52,19 @@ class LadiManagerGtk(LadiManager):
         hbox = Gtk.HBox()
         hbox.pack_start(Gtk.Label(label), True, True, 0)
         entry = Gtk.Entry()
-        entry.set_text(text)
+        entry.set_text(oldname)
         hbox.pack_start(entry, True, True, 0)
         dlg.vbox.pack_start(hbox, True, True, 0)
         dlg.show_all()
         #entry.set_activates_default(True)
         #dlg.set_default_response(Gtk.ResponseType.OK)
         ret = dlg.run()
-        new_text = entry.get_text()
+        newname = entry.get_text().strip()
         dlg.destroy()
-        if ret == Gtk.ResponseType.ACCEPT:
-            return True, new_text
+        if ret == Gtk.ResponseType.ACCEPT and newname and (not newname in self.studio_list()) and newname != oldname:
+            return True, newname
         else:
-            return False, text
+            return False, oldname
 
     def studio_new(self, *args, **kwargs):
         accept, name = self.name_dialog(_("New studio"), _("Studio name"), "")
