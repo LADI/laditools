@@ -59,7 +59,7 @@ class LadiMenu(LadiManagerGtk):
             error.destroy()
 
     def on_menu_launcher(self, widget, command):
-        LadiManagerGtk.launcher_exec(self, command=command.split())
+        LadiManagerGtk.launcher_exec(self, command=[self._launcher_which(command)])
 
     def menu_clear(self, menu):
         menu.foreach(lambda item,none: menu.remove(item), None)
