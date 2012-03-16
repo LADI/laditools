@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 # LADITools - Linux Audio Desktop Integration Tools
-# ladilog - A log viewer for your Linux Audio Desktop
+# ladi-system-log - A log viewer for your Linux Audio Desktop
 # Copyright (C) 2011-2012 Alessio Treglia <quadrispro@ubuntu.com>
 # Copyright (C) 2007-2010, Marc-Olivier Barre <marco@marcochapeau.org>
 # Copyright (C) 2007-2009, Nedko Arnaudov <nedko@arnaudov.name>
@@ -121,7 +121,7 @@ class ladilog(object):
         self.max_lines = int (max_lines_text)
         # Load the glade file
         builder = Gtk.Builder()
-        builder.add_from_file(find_data_file("ladilog_ui.ui"))
+        builder.add_from_file(find_data_file("ladi-system-log.ui"))
         sys.stderr.write( _("Loading interface from %s\n") % find_data_file("ladilog_ui.ui"))
         sys.stderr.flush()
         # Get the ui ready for action
