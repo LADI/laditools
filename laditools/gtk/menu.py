@@ -118,11 +118,15 @@ class LadiMenu(LadiManagerGtk):
     def create_menu(self):
         menu_items = []
 
+        ladish_available = self.ladish_is_available()
+        jack_available = self.jack_is_available()
+        a2j_available = self.a2j_is_available()
+
         if self.diagnose_text:
             menu_items.append((Gtk.ImageMenuItem(_("Diagnose")), self.on_menu_show_diagnose, None))
             menu_items.append((Gtk.SeparatorMenuItem.new(), None, None))
 
-        if self.ladish_is_available():
+        if ladish_available:
             menu_items.append((Gtk.ImageMenuItem(_("Start gladish")), self.on_menu_launcher, "gladish"))
 
         menu_items.append((Gtk.ImageMenuItem("Configure ..."), self.configure_list_fill, self.studio_configure))
@@ -137,7 +141,7 @@ class LadiMenu(LadiManagerGtk):
 
         menu = Gtk.Menu()
         menu_items.append((Gtk.SeparatorMenuItem.new(),))
-        if self.ladish_is_available():
+        if ladish_available:
             menu_items.append((Gtk.ImageMenuItem(_("New studio...")), self.on_menu_command, self.studio_new))
             menu_items.append((Gtk.ImageMenuItem(_("Load studio")), self.studio_list_fill, self.studio_load))
             menu_items.append((Gtk.SeparatorMenuItem.new(), None, None))
@@ -155,20 +159,20 @@ class LadiMenu(LadiManagerGtk):
             menu_items.append((Gtk.ImageMenuItem(_("Delete studio")), self.studio_list_fill, self.studio_delete))
             menu_items.append((Gtk.ImageMenuItem(_("Reactivate ladishd")), self.on_menu_command, self.ladish_reactivate))
             menu_items.append((Gtk.SeparatorMenuItem.new(), None, None))
-        if self.jack_is_available():
+        if jack_available:
             if not self.jack_is_started():
-                if not self.ladish_is_available():
+                if not ladish_available:
                     menu_items.append((Gtk.ImageMenuItem(_("Start JACK server")), self.on_menu_command, self.jack_start))
             else:
                 menu_items.append((Gtk.ImageMenuItem(_("Reset Xruns")), self.on_menu_command, self.jack_reset_xruns))
-                if not self.ladish_is_available():
+                if not ladish_available:
                     menu_items.append((Gtk.ImageMenuItem(_("Stop JACK server")), self.on_menu_command, self.jack_stop))
             menu_items.append((Gtk.ImageMenuItem(_("Reactivate JACK")), self.on_menu_command, self.jack_reactivate))
             menu_items.append((Gtk.SeparatorMenuItem.new(), None, None))
-        if self.a2j_is_available():
+        if a2j_available:
             # when a2jmidid is used in used with ladish, a2j script should be used
             # for managing bridge "active" lifetime
-            if not self.ladish_is_available():
+            if not ladish_available:
                 if not self.a2j_is_started():
                     menu_items.append((Gtk.ImageMenuItem(_("Start A2J bridge")), self.on_menu_command, self.a2j_start))
                 else:
