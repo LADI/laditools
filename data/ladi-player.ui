@@ -126,7 +126,7 @@
     </child>
     <child>
       <object class="GtkAction" id="reactivate_ladishd">
-        <property name="label" translatable="yes">Reactivate ladishd</property>
+        <property name="label" translatable="yes">_Reactivate ladishd</property>
         <property name="short_label" translatable="yes">Restart ladishd</property>
         <property name="tooltip" translatable="yes">Restart ladishd</property>
         <property name="stock_id">gtk-refresh</property>
@@ -142,13 +142,24 @@
         <signal name="activate" handler="action_ladish_load" swapped="no"/>
       </object>
     </child>
+  </object>
+  <object class="GtkActionGroup" id="actiongroup_launcher">
     <child>
-      <object class="GtkAction" id="launch_gladish">
-        <property name="label" translatable="yes">Show connections</property>
-        <property name="short_label" translatable="yes">Connections</property>
-        <property name="tooltip" translatable="yes">Launch gladish</property>
+      <object class="GtkAction" id="gladish">
+        <property name="label" translatable="yes">Session editor</property>
+        <property name="short_label" translatable="yes">gladish</property>
+        <property name="tooltip" translatable="yes">Open the session editor</property>
         <property name="icon_name">gladish</property>
-        <signal name="activate" handler="action_ladish_launch_gladish" swapped="no"/>
+        <signal name="activate" handler="action_launcher_gladish" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="ladilog">
+        <property name="label" translatable="yes">File log viewer</property>
+        <property name="short_label" translatable="yes">ladilog</property>
+        <property name="tooltip" translatable="yes">Open the file log viewer</property>
+        <property name="stock_id">gtk-file</property>
+        <signal name="activate" handler="action_launcher_ladilog" swapped="no"/>
       </object>
     </child>
   </object>
@@ -219,6 +230,21 @@
                     </child>
                     <child>
                       <object class="GtkSeparatorMenuItem" id="separatormenuitem1">
+                        <property name="use_action_appearance">False</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="imagemenuitem12">
+                        <property name="related_action">reactivate_ladishd</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem4">
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -347,6 +373,29 @@
                     </child>
                     <child>
                       <object class="GtkSeparatorMenuItem" id="separatormenuitem2">
+                        <property name="use_action_appearance">False</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="imagemenuitem8">
+                        <property name="related_action">gladish</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="imagemenuitem11">
+                        <property name="related_action">ladilog</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem3">
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -567,10 +616,10 @@
             </child>
             <child>
               <object class="GtkToolButton" id="toolbutton_launch_gladish">
-                <property name="related_action">launch_gladish</property>
+                <property name="related_action">gladish</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="related_action">launch_gladish</property>
+                <property name="related_action">gladish</property>
                 <property name="label" translatable="yes">toolbutton_launch_gladish</property>
                 <property name="use_underline">True</property>
               </object>

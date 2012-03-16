@@ -265,10 +265,6 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
     def action_ladish_reactivate(self, action, *args):
         self.ladish_reactivate()
 
-    def action_ladish_launch_gladish(self, action, *args):
-        print "ciao"
-        self.launcher_exec(command=['gladish'])
-
     def action_jack_start(self, action, *args):
         self.jack_start()
     def action_jack_stop(self, action, *args):
@@ -287,6 +283,18 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
 
     def on_open_settings(self, *args):
         self.launcher_exec(command=["ladiconf"])
+
+    def _launcher_which(self, command):
+        for path in (':'.join(('.', os.getenv('PATH')))).split(':'):
+            if command in os.listdir(path):
+                return os.path.join(path, command)
+        return None
+
+    def action_launcher_gladish(self, action, *args):
+        self.launcher_exec(command=self._launcher_which('gladish'))
+
+    def action_launcher_ladilog(self, action, *args):
+        self.launcher_exec(command=self._launcher_which('ladilog'))
 
     def __init__(self):
         # Handle the configuration
@@ -309,12 +317,14 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
         actiongroup_ladish = builder.get_object("actiongroup_ladish")
         actiongroup_jack = builder.get_object("actiongroup_jack")
         actiongroup_a2j = builder.get_object("actiongroup_a2j")
+        actiongroup_launcher = builder.get_object("actiongroup_launcher")
         self.status_label = builder.get_object('toolbutton_label_status')
 
         # Setup status buttons
         self.ladish_status_buttons = ladish_status_buttons = {}
         self.jack_status_buttons = jack_status_buttons = {}
         self.a2j_status_buttons = a2j_status_buttons = {}
+        self.launcher_status_buttons = launcher_status_buttons = {}
 
         for action in actiongroup_ladish.list_actions():
             ladish_status_buttons[action.get_name()] = action
