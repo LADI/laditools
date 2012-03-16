@@ -1,0 +1,9 @@
+[Desktop Entry]
+_Name=LADI Control Center
+Type=Application
+_Comment=Configure the LADI system
+Terminal=false
+Exec=ladi-control-center
+Icon=ladi-control-center
+Categories=GNOME;GTK;Settings;
+_GenericName=LADI configuration
