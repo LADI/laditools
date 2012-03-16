@@ -144,13 +144,13 @@ class LadiMenu(LadiManagerGtk):
             if self.studio_is_loaded():
                 if self.studio_is_started():
                     menu_items.append((Gtk.ImageMenuItem(_("Stop studio")), self.on_menu_command, self.studio_stop))
+                    menu_items.append((Gtk.ImageMenuItem(_("Save studio")), self.on_menu_command, self.studio_save))
                 else:
                     menu_items.append((Gtk.ImageMenuItem(_("Start studio")), self.on_menu_command, self.studio_start))
             else:
                 menu_items.append((Gtk.ImageMenuItem(_("Start automatic studio")), self.on_menu_command, self.jack_start))
             if self.studio_is_loaded():
                 menu_items.append((Gtk.ImageMenuItem(_("Rename studio...")), self.on_menu_command, self.studio_rename))
-                menu_items.append((Gtk.ImageMenuItem(_("Save studio")), self.on_menu_command, self.studio_save))
                 menu_items.append((Gtk.ImageMenuItem(_("Unload studio")), self.on_menu_command, self.studio_unload))
             menu_items.append((Gtk.SeparatorMenuItem.new(), None, None))
             menu_items.append((Gtk.ImageMenuItem(_("Delete studio")), self.studio_list_fill, self.studio_delete))
