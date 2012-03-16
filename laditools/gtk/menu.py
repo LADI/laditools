@@ -27,7 +27,7 @@ from .. import _gettext_domain
 from .manager import LadiManagerGtk
 
 # Default launcher menu :
-menu_default = {"Logs": "ladilog"}
+menu_default = {"Logs": "ladi-system-log"}
 
 class LadiMenu(LadiManagerGtk):
     def __init__(self, menu_config_array, jack_autostart):

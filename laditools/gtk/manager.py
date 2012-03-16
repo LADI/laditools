@@ -26,9 +26,6 @@ from gi.repository import GObject
 from .. import _gettext_domain
 from .. import LadiManager
 
-# Default launcher menu :
-menu_default = {"Logs": "ladilog"}
-
 class LadiManagerGtk(LadiManager):
     def __init__(self, jack_autostart):
         LadiManager.__init__(self, jack_autostart)
@@ -94,4 +91,4 @@ class LadiManagerGtk(LadiManager):
         return False
 
     def studio_configure(self, item, event, module):
-        LadiManager.launcher_exec(self, command=['ladiconf', '-m', module])
+        LadiManager.launcher_exec(self, command=['ladi-control-center', '-m', module])
