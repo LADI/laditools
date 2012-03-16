@@ -154,9 +154,9 @@
       </object>
     </child>
     <child>
-      <object class="GtkAction" id="ladilog">
+      <object class="GtkAction" id="ladi-system-log">
         <property name="label" translatable="yes">_File log viewer</property>
-        <property name="short_label" translatable="yes">ladilog</property>
+        <property name="short_label" translatable="yes">Log Viewer</property>
         <property name="tooltip" translatable="yes">Open the file log viewer</property>
         <property name="stock_id">gtk-file</property>
         <signal name="activate" handler="action_launcher_launch" swapped="no"/>
@@ -398,7 +398,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="imagemenuitem11">
-                        <property name="related_action">ladilog</property>
+                        <property name="related_action">ladi-system-log</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
