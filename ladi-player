@@ -326,10 +326,17 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
             jack_status_buttons[action.get_name()] = action
         for action in actiongroup_a2j.list_actions():
             a2j_status_buttons[action.get_name()] = action
+        for action in actiongroup_launcher.list_actions():
+            launcher_status_buttons[action.get_name()] = action
+
+        # Remove launchers for unavailable commands
+        for command in launcher_status_buttons:
+            if not self._launcher_which(command):
+                launcher_status_buttons[command].set_active(False)
 
         # Accelerators
 #        accelgroup = builder.get_object("accelgroup1")
-#        action = actiongroup_ladish.get_action("new")
+#        action = actiongroup_launcher.get_action("gladish")
 #        action.set_accel_group(accelgroup)
 #        action.set_accel_path("menu_studio")
 
