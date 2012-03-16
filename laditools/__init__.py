@@ -27,10 +27,12 @@ from .a2j import A2jController
 from .ladish import LadishProxy, LadishStatusType, LadishProxyError, check_ladish
 from .jack import JackController, JackConfigProxy, JackConfigParameter
 from .manager import LadiManager
+from .app import LadiApp
 
 from . import gtk
 
 __all__ = ["gtk",
+           "LadiApp",
            "LadiConfiguration",
            "LadiManager",
            "A2jController",
