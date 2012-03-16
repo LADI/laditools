@@ -18,6 +18,7 @@
 
 import os
 import sys
+import time
 import signal
 import gettext
 import argparse
@@ -127,6 +128,14 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
             for button in kwargs:
                 buttons[button].set_sensitive(kwargs[button])
 
+    def jack_is_started(self, *args, **kwargs):
+        while True:
+            try:
+                return LadiManagerGtk.jack_is_started(self, *args, **kwargs)
+            except:
+                time.sleep(0.5)
+                continue
+
     def ladish_toolbuttons_set_active(self, **kwargs): self._toolbuttons_set_active('ladish', **kwargs)
     def jack_toolbuttons_set_active(self, **kwargs): self._toolbuttons_set_active('jack', **kwargs)
     def a2j_toolbuttons_set_active(self, **kwargs): self._toolbuttons_set_active('a2j', **kwargs)
@@ -206,8 +215,9 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
         self.jack_status_buttons_update()
         self.a2j_status_buttons_update()
 
-        # Update status label
+        # Update status label and window icon
         if self.jack_is_started():
+            self.window_main.set_icon_from_file(find_data_file("started.svg"))
             if self.jack_is_realtime():
                 status_text = "RT | "
             else:
@@ -219,6 +229,7 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
             # Set a started status
             self.status_label.set_label (status_text)
         else:
+            self.window_main.set_icon_from_file(find_data_file("stopped.svg"))
             self.status_label.set_label(_('<i>Stopped</i>'))
 
     def update(self, *args, **kwargs):
@@ -226,15 +237,20 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
         LadiManagerGtk.update(self, *args, **kwargs)
         return True
 
+    def _set_starting_status(self):
+        self.window_main.set_icon_from_file(find_data_file("starting.svg"))
+
     def action_ladish_new(self, action, *args):
         self.studio_new()
 
     def action_ladish_start(self, action, *args):
         if self.studio_is_loaded():
             if not self.studio_is_started():
+                self._set_starting_status()
                 self.studio_start()
                 self.update_status_buttons()
         else:
+            self._set_starting_status()
             self.jack_start()
             self.update_status_buttons()
 
@@ -263,14 +279,21 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
         return selection
 
     def action_ladish_unload(self, action, *args):
-        if self.studio_is_loaded():
-            self.studio_unload()
-            self.update_status_buttons()
+        while True:
+            try:
+                if self.studio_is_loaded():
+                    self.studio_unload()
+                    self.update_status_buttons()
+                    break
+            except:
+                time.sleep(0.5)
+                continue
 
     def action_ladish_reactivate(self, action, *args):
         self.ladish_reactivate()
 
     def action_jack_start(self, action, *args):
+        self._set_starting_status()
         self.jack_start()
     def action_jack_stop(self, action, *args):
         self.jack_stop()
