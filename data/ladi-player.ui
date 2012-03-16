@@ -163,7 +163,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkAction" id="ladiconf">
+      <object class="GtkAction" id="ladi-control-center">
         <property name="short_label" translatable="yes">ladiconf</property>
         <property name="tooltip" translatable="yes">Configure LADI</property>
         <property name="stock_id">gtk-preferences</property>
@@ -248,6 +248,7 @@
                         <property name="related_action">reactivate_ladishd</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </object>
                     </child>
@@ -391,6 +392,7 @@
                         <property name="related_action">gladish</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </object>
                     </child>
@@ -399,6 +401,7 @@
                         <property name="related_action">ladilog</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </object>
                     </child>
@@ -411,9 +414,10 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="imagemenuitem9">
-                        <property name="related_action">ladiconf</property>
+                        <property name="related_action">ladi-control-center</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </object>
                     </child>
