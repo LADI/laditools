@@ -35,6 +35,7 @@ from laditools import LadiConfiguration
 from laditools import LadiManager
 
 from gi.repository import Gtk
+from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
 from laditools.gtk import LadiMenu
@@ -48,6 +49,13 @@ class laditray (Gtk.StatusIcon, LadiMenu):
     _default_config = {
         'autostart' : False,
     }
+
+    def do_button_press_event(self, event):
+        if event.type != Gdk.EventType._2BUTTON_PRESS:
+            return False
+        print "giusto"
+        self.on_menu_launcher(None, "gladish")
+        return True
 
     def __init__ (self):
         # Handle the configuration
