@@ -76,34 +76,39 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
                                         Gtk.MessageType.INFO,
                                         Gtk.ButtonsType.CLOSE,
                                         _('No studio is available.'))
+            dlg.set_transient_for(self.window_main)
             dlg.set_title(title)
             dlg.run()
             dlg.destroy()
             return None
+
         dlg = Gtk.Dialog()
         treeview = Gtk.TreeView()
-
-        dlg.set_title(title)
-        dlg.get_content_area().pack_start(child=treeview,
-                                         expand=True,
-                                         fill=True,
-                                         padding=10)
         model = Gtk.ListStore(GObject.TYPE_STRING)
         renderer = Gtk.CellRendererText()
         column = Gtk.TreeViewColumn('Available studios', renderer, text=0)
 
-        dlg.set_title(title)
-        dlg.add_button(Gtk.STOCK_OK, Gtk.ResponseType.OK)
-        dlg.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
         treeview.set_model(model)
         treeview.append_column(column)
         treeview.set_cursor(Gtk.TreePath(path=0),
                                     focus_column=column,
                                     start_editing=False)
+
         for studio in studio_list:
             model.append((studio,))
 
+        dlg.set_transient_for(self.window_main)
+        dlg.set_modal(True)
+        dlg.set_destroy_with_parent(True)
+        dlg.set_title(title)
+        dlg.get_content_area().pack_start(child=treeview,
+                                         expand=True,
+                                         fill=True,
+                                         padding=10)
+        dlg.add_button(Gtk.STOCK_OK, Gtk.ResponseType.OK)
+        dlg.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
         dlg.show_all()
+
         response = dlg.run()
         ret = None
         if response == Gtk.ResponseType.OK:
