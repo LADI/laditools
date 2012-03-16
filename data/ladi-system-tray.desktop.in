@@ -1,0 +1,9 @@
+[Desktop Entry]
+_Name=LADI System Tray
+Type=Application
+_Comment=Manage and configure JACK and ladish
+Terminal=false
+Exec=ladi-system-tray
+Icon=ladi-system-tray
+Categories=GNOME;GTK;AudioVideo;
+_GenericName=LADI tray icon
