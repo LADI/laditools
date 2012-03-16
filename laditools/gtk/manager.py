@@ -23,8 +23,10 @@ import sys
 import subprocess
 from gi.repository import Gtk
 from gi.repository import GObject
-from .. import _gettext_domain
+from gi.repository import GdkPixbuf
+from .. import _gettext_domain, get_version_string
 from .. import LadiManager
+from .utils import find_data_file
 
 class LadiManagerGtk(LadiManager):
 
@@ -101,3 +103,24 @@ class LadiManagerGtk(LadiManager):
 
     def studio_configure(self, item, event, module):
         LadiManager.launcher_exec(self, command=['%s' % self._launcher_which('ladi-control-center') , '-m', module])
+
+    def on_about(self, *args, **kwargs):
+        logo_pixbuf = GdkPixbuf.Pixbuf.new_from_file(find_data_file("laditools_logo.svg"))
+        copyright_str = u"""Copyright \xa9 2011-2012 Alessio Treglia <quadrispro@ubuntu.com>
+Copyright \xa9 2007-2010 Marc-Olivier Barre <marco@marcochapeau.org>
+Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
+        ad = Gtk.AboutDialog.new()
+        if 'parent' in kwargs:
+            ad.set_transient_for(kwargs['parent'])
+        version_string = kwargs['version']
+        ad.set_program_name("LADITools")
+        ad.set_comments(_("LADITools is a set of tools aiming to achieve the goals of the LADI project to improve desktop integration and user workflow of Linux audio system based on JACK and ladish."))
+        ad.set_logo(logo_pixbuf)
+        ad.set_authors(["Marc-Olivier Barre", "Nedko Arnaudov", "Alessio Treglia"])
+        ad.set_copyright(copyright_str)
+        ad.set_version(version_string)
+        ad.set_license_type( Gtk.License.GPL_3_0)
+        ad.set_translator_credits(_("translator-credits"))
+        ad.set_website("https://launchpad.net/laditools/")
+        ad.run()
+        ad.destroy()
