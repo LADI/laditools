@@ -27,8 +27,17 @@ from .. import _gettext_domain
 from .. import LadiManager
 
 class LadiManagerGtk(LadiManager):
+
     def __init__(self, jack_autostart):
+
         LadiManager.__init__(self, jack_autostart)
+
+    def _launcher_which(self, command):
+        for path in (':'.join(('.', os.getenv('PATH')))).split(':'):
+            if command in os.listdir(path):
+                return os.path.join(path, command)
+
+        return None
 
     def set_diagnose_text(self, text):
         self.diagnose_text = text
@@ -91,4 +100,4 @@ class LadiManagerGtk(LadiManager):
         return False
 
     def studio_configure(self, item, event, module):
-        LadiManager.launcher_exec(self, command=['ladi-control-center', '-m', module])
+        LadiManager.launcher_exec(self, command=['%s' % self._launcher_which('ladi-control-center') , '-m', module])

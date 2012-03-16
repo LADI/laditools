@@ -309,12 +309,6 @@ Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
     def action_a2j_reactivate(self, action, *args):
         self.a2j_reactivate()
 
-    def _launcher_which(self, command):
-        for path in (':'.join(('.', os.getenv('PATH')))).split(':'):
-            if command in os.listdir(path):
-                return os.path.join(path, command)
-        return None
-
     def action_launcher_launch(self, action, *args):
         self.launcher_exec(command=self._launcher_which(action.get_name()))
 
