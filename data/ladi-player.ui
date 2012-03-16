@@ -5,7 +5,7 @@
   <object class="GtkActionGroup" id="actiongroup_a2j">
     <child>
       <object class="GtkAction" id="a2j_start">
-        <property name="label" translatable="yes">Start A2J bridge</property>
+        <property name="label" translatable="yes">_Start A2J bridge</property>
         <property name="short_label" translatable="yes">Start A2J</property>
         <property name="stock_id">gtk-execute</property>
         <signal name="activate" handler="action_a2j_start" swapped="no"/>
@@ -13,7 +13,7 @@
     </child>
     <child>
       <object class="GtkAction" id="a2j_stop">
-        <property name="label" translatable="yes">Stop A2J bridge</property>
+        <property name="label" translatable="yes">S_top A2J bridge</property>
         <property name="short_label" translatable="yes">Stop A2J</property>
         <property name="stock_id">gtk-stop</property>
         <signal name="activate" handler="action_a2j_stop" swapped="no"/>
@@ -21,7 +21,7 @@
     </child>
     <child>
       <object class="GtkAction" id="a2j_reactivate">
-        <property name="label" translatable="yes">Reactivate A2J</property>
+        <property name="label" translatable="yes">_Reactivate A2J</property>
         <property name="short_label" translatable="yes">Restart A2J</property>
         <property name="stock_id">gtk-refresh</property>
         <signal name="activate" handler="action_a2j_reactivate" swapped="no"/>
@@ -31,7 +31,7 @@
   <object class="GtkActionGroup" id="actiongroup_jack">
     <child>
       <object class="GtkAction" id="jack_start">
-        <property name="label" translatable="yes">Start JACK server</property>
+        <property name="label" translatable="yes">_Start JACK server</property>
         <property name="short_label" translatable="yes">Start JACK</property>
         <property name="stock_id">gtk-execute</property>
         <signal name="activate" handler="action_jack_start" swapped="no"/>
@@ -39,7 +39,7 @@
     </child>
     <child>
       <object class="GtkAction" id="jack_reset_xruns">
-        <property name="label" translatable="yes">Reset Xruns</property>
+        <property name="label" translatable="yes">Reset _Xruns</property>
         <property name="short_label" translatable="yes">Reset Xruns</property>
         <property name="tooltip" translatable="yes">Clear Xruns and DSP load</property>
         <property name="stock_id">gtk-clear</property>
@@ -48,7 +48,7 @@
     </child>
     <child>
       <object class="GtkAction" id="jack_stop">
-        <property name="label" translatable="yes">Stop JACK server</property>
+        <property name="label" translatable="yes">S_top JACK server</property>
         <property name="short_label" translatable="yes">Stop JACK</property>
         <property name="stock_id">gtk-stop</property>
         <signal name="activate" handler="action_jack_stop" swapped="no"/>
@@ -56,7 +56,7 @@
     </child>
     <child>
       <object class="GtkAction" id="jack_reactivate">
-        <property name="label" translatable="yes">Reactivate JACK</property>
+        <property name="label" translatable="yes">_Reactivate JACK</property>
         <property name="short_label" translatable="yes">Restart JACK</property>
         <property name="stock_id">gtk-refresh</property>
         <signal name="activate" handler="action_jack_reactivate" swapped="no"/>
@@ -146,20 +146,28 @@
   <object class="GtkActionGroup" id="actiongroup_launcher">
     <child>
       <object class="GtkAction" id="gladish">
-        <property name="label" translatable="yes">Session editor</property>
+        <property name="label" translatable="yes">Session _editor</property>
         <property name="short_label" translatable="yes">gladish</property>
         <property name="tooltip" translatable="yes">Open the session editor</property>
         <property name="icon_name">gladish</property>
-        <signal name="activate" handler="action_launcher_gladish" swapped="no"/>
+        <signal name="activate" handler="action_launcher_launch" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkAction" id="ladilog">
-        <property name="label" translatable="yes">File log viewer</property>
+        <property name="label" translatable="yes">_File log viewer</property>
         <property name="short_label" translatable="yes">ladilog</property>
         <property name="tooltip" translatable="yes">Open the file log viewer</property>
         <property name="stock_id">gtk-file</property>
-        <signal name="activate" handler="action_launcher_ladilog" swapped="no"/>
+        <signal name="activate" handler="action_launcher_launch" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="ladiconf">
+        <property name="short_label" translatable="yes">ladiconf</property>
+        <property name="tooltip" translatable="yes">Configure LADI</property>
+        <property name="stock_id">gtk-preferences</property>
+        <signal name="activate" handler="action_launcher_launch" swapped="no"/>
       </object>
     </child>
   </object>
@@ -283,7 +291,7 @@
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">JACK</property>
+                        <property name="label" translatable="yes">_JACK</property>
                         <property name="use_underline">True</property>
                         <child type="submenu">
                           <object class="GtkMenu" id="menu5">
@@ -334,7 +342,7 @@
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">A2J</property>
+                        <property name="label" translatable="yes">_A2J</property>
                         <property name="use_underline">True</property>
                         <child type="submenu">
                           <object class="GtkMenu" id="menu6">
@@ -403,13 +411,10 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="imagemenuitem9">
-                        <property name="label">gtk-preferences</property>
-                        <property name="use_action_appearance">False</property>
+                        <property name="related_action">ladiconf</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="on_open_settings" swapped="no"/>
                       </object>
                     </child>
                   </object>
