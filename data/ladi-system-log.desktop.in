@@ -1,0 +1,9 @@
+[Desktop Entry]
+_Name=LADI Log File Viewer
+Type=Application
+_Comment=View or monitor LADI log files
+Terminal=false
+Exec=ladi-system-log
+Icon=ladi-system-log
+Categories=GNOME;GTK;Settings;
+_GenericName=Log file viewer

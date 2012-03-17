@@ -1,0 +1,9 @@
+[Desktop Entry]
+_Name=LADI Player
+Type=Application
+_Comment=Control LADI system
+Terminal=false
+Exec=ladi-player
+Icon=ladi-player
+Categories=GTK;AudioVideo;Audio;
+_GenericName=LADI system controller
