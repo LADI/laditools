@@ -40,13 +40,13 @@ from laditools import LadiConfiguration
 from gi.repository import Gtk
 from gi.repository import GObject
 
-from laditools.gtk import LadiManagerGtk
+from laditools.gtk import LadiMenu
 
 # Default configuration
 autostart_default = 0
 debug = False
 
-class wmladi (wmoo.Application, LadiManagerGtk):
+class wmladi (wmoo.Application, LadiMenu):
     def __init__ (self):
         # Handle the configuration
         self.global_config = LadiConfiguration ()
@@ -64,7 +64,9 @@ class wmladi (wmoo.Application, LadiManagerGtk):
             margin = 2,
             debug = False)
 
-        LadiManagerGtk.__init__(self, bool(autostart))
+        LadiMenu.__init__(self,
+                          self.global_config.get_config_section ('ladimenu'),
+                          bool(autostart))
 
         self.addCallback (self.on_button_release, 'buttonrelease', area=(0,0,64,64))
 
