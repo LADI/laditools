@@ -43,7 +43,7 @@ pkg_data_files = [('share/pixmaps',        ['data/ladilog.svg',
                                             'data/ladiconf.svg']),
                   ('share/laditools/data', glob.glob('data/*.ui')),
                   ('share/laditools/data', glob.glob('data/*.svg'))]
-pkg_scripts = ['g15ladi'
+pkg_scripts = ['g15ladi',
                'ladi-control-center',
                'ladi-player',
                'ladi-system-log',
