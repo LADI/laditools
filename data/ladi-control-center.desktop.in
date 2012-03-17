@@ -4,6 +4,6 @@ Type=Application
 _Comment=Configure the LADI system
 Terminal=false
 Exec=ladi-control-center
-Icon=ladi-control-center
+Icon=preferences-system
 Categories=GNOME;GTK;Settings;
 _GenericName=LADI configuration

@@ -627,6 +627,8 @@ def show_panels(*args, **kwargs):
         return None
     mods = kwargs['modules']
     window = Gtk.Window.new(Gtk.WindowType.TOPLEVEL)
+    window.set_title("LADI Settings")
+    window.set_icon_name('preferences-system')
     window.set_resizable(True)
     notebook = Gtk.Notebook()
     notebook.set_tab_pos(Gtk.PositionType.LEFT)
