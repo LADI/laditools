@@ -165,9 +165,7 @@ class wmladi (wmoo.Application, LadiMenu):
 
         self.put_lines (self.lines)
         wmoo.Application.update (self)
-        # Take a look at the processes we've started so we don't get any zombies
-        for i in self.proc_list:
-            i.poll ()
+        LadiMenu.update(self)
 
     def put_lines (self, lines):
         x = 3
