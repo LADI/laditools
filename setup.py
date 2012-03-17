@@ -46,11 +46,13 @@ pkg_data_files = [('share/pixmaps',        ['data/ladilog.svg',
                                             'data/started.svg',
                                             'data/starting.svg',
                                             'data/stopped.svg'])]
-pkg_scripts = ['laditray',
+pkg_scripts = ['g15ladi'
+               'ladi-control-center',
+               'ladi-player',
+               'ladi-system-log',
+               'ladi-system-tray',
                'g15ladi',
-               'wmladi',
-               'ladilog',
-               'ladiconf']
+               'wmladi',]
 
 os.environ['XGETTEXT_ARGS'] = "--language=Python"
 
