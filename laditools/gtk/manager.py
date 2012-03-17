@@ -69,7 +69,7 @@ class LadiManagerGtk(LadiManager):
         ret = dlg.run()
         newname = entry.get_text().strip()
         dlg.destroy()
-        if ret == Gtk.ResponseType.ACCEPT and newname and (not newname in self.studio_list()) and newname != oldname:
+        if ret == Gtk.ResponseType.ACCEPT and newname and (newname not in self.studio_list()) and newname != oldname:
             return True, newname
         else:
             return False, oldname
