@@ -104,6 +104,7 @@
       <object class="GtkAction" id="start">
         <property name="label" translatable="yes">Start the studio</property>
         <property name="short_label" translatable="yes">Start</property>
+        <property name="tooltip" translatable="yes">Start the loaded studio</property>
         <property name="stock_id">gtk-media-play</property>
         <signal name="activate" handler="action_ladish_start" swapped="no"/>
       </object>
@@ -112,6 +113,7 @@
       <object class="GtkAction" id="stop">
         <property name="label" translatable="yes">Stop the studio</property>
         <property name="short_label" translatable="yes">Stop</property>
+        <property name="tooltip" translatable="yes">Stop the studio</property>
         <property name="stock_id">gtk-media-stop</property>
         <signal name="activate" handler="action_ladish_stop" swapped="no"/>
       </object>
@@ -120,6 +122,7 @@
       <object class="GtkAction" id="unload">
         <property name="label" translatable="yes">Unload the studio</property>
         <property name="short_label" translatable="yes">Unload</property>
+        <property name="tooltip" translatable="yes">Unload the current studio</property>
         <property name="stock_id">gtk-close</property>
         <signal name="activate" handler="action_ladish_unload" swapped="no"/>
       </object>
