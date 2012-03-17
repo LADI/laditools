@@ -56,7 +56,7 @@ class laditray (Gtk.StatusIcon, LadiMenu):
     def do_button_press_event(self, event):
         if event.type != Gdk.EventType._2BUTTON_PRESS:
             return False
-        self.on_menu_launcher(None, "gladish")
+        self.on_menu_launch_handler(None, "gladish")
         return True
 
     def __init__ (self):

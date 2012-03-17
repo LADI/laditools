@@ -58,8 +58,13 @@ class LadiMenu(LadiManagerGtk):
             error.run()
             error.destroy()
 
-    def on_menu_launcher(self, widget, command):
-        LadiManagerGtk.launcher_exec(self, command=[self._launcher_which(command)])
+    def on_menu_launch_handler(self, widget, command):
+        commandline = command.split()
+        commandline[0] = command = self._launcher_which(commandline[0])
+        if not command in self.proc_list:
+            LadiManagerGtk.launcher_exec(self, command=commandline)
+        else:
+            LadiManagerGtk.launcher_kill(self, command=commandline)
 
     def menu_clear(self, menu):
         menu.foreach(lambda item,none: menu.remove(item), None)
@@ -127,7 +132,7 @@ class LadiMenu(LadiManagerGtk):
             menu_items.append((Gtk.SeparatorMenuItem.new(), None, None))
 
         if ladish_available:
-            menu_items.append((Gtk.ImageMenuItem(_("Start gladish")), self.on_menu_launcher, "gladish"))
+            menu_items.append((Gtk.ImageMenuItem(_("Start gladish")), self.on_menu_launch_handler, "gladish"))
 
         menu_items.append((Gtk.ImageMenuItem("Configure ..."), self.configure_list_fill, self.studio_configure))
         # Add the laucher entries at the beginning of the menu
@@ -137,7 +142,7 @@ class LadiMenu(LadiManagerGtk):
                 continue
             menu_label = item.capitalize() + "..."
             path = self.menu_array[item]
-            menu_items.append((Gtk.ImageMenuItem(menu_label), self.on_menu_launcher, path))
+            menu_items.append((Gtk.ImageMenuItem(menu_label), self.on_menu_launch_handler, path))
 
         menu = Gtk.Menu()
         menu_items.append((Gtk.SeparatorMenuItem.new(),))

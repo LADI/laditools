@@ -20,6 +20,7 @@
 
 import os
 import sys
+import time
 import subprocess
 from .controller import LadiController
 from . import _gettext_domain
@@ -38,7 +39,7 @@ class LadiManager(LadiController):
         self.proxy_ladish_controller = None
         self.jack_autostart = jack_autostart
 
-        self.proc_list = []
+        self.proc_list = {}
 
         if jack_autostart:
             self.jack_start()
@@ -225,9 +226,24 @@ class LadiManager(LadiController):
 
     def launcher_exec(self, *args, **kwargs):
         if 'command' in kwargs:
-            command = kwargs['command']
-            self.proc_list.append(subprocess.Popen(command))
+            commandline = kwargs['command']
+            command = commandline[0]
+            if command not in self.proc_list.keys():
+                self.proc_list[command] = subprocess.Popen(commandline)
             return True
+        return False
+
+    def launcher_kill(self, *args, **kwargs):
+        if 'command' in kwargs:
+            command = kwargs['command'][0]
+            if command in self.proc_list:
+                proc = self.proc_list[command]
+                try:
+                    proc.terminate()
+                    time.sleep(0.5)
+                    proc.kill()
+                except OSError:
+                    pass
         return False
 
     def update(self, *args, **kwargs):
@@ -235,9 +251,9 @@ class LadiManager(LadiController):
             raise NotImplementedError("This is a virtual method")
         else:
             # Take a look at the processes we've started so we don't get any zombies
-            for i in self.proc_list:
-                if i.poll () != None:
-                    self.proc_list.remove(i)
+            for i in self.proc_list.keys():
+                if self.proc_list[i].poll () != None:
+                    self.proc_list.pop(i)
             return True
 
     def studio_list(self, *args, **kwargs):
