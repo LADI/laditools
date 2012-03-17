@@ -4,6 +4,6 @@ Type=Application
 _Comment=Manage and configure JACK and ladish
 Terminal=false
 Exec=ladi-system-tray
-Icon=ladi-system-tray
+Icon=laditools
 Categories=GNOME;GTK;AudioVideo;
 _GenericName=LADI tray icon

@@ -41,11 +41,8 @@ The following tools are included:
 pkg_data_files = [('share/pixmaps',        ['data/ladilog.svg',
                                             'data/laditray.svg',
                                             'data/ladiconf.svg']),
-                  ('share/laditools/data', ['data/laditools_logo.svg',
-                                            'data/ladilog_ui.ui',
-                                            'data/started.svg',
-                                            'data/starting.svg',
-                                            'data/stopped.svg'])]
+                  ('share/laditools/data', glob.glob('data/*.ui')),
+                  ('share/laditools/data', glob.glob('data/*.svg'))]
 pkg_scripts = ['g15ladi'
                'ladi-control-center',
                'ladi-player',
