@@ -38,10 +38,7 @@ The following tools are included:
  * ladilog - a JACK, ladish and a2jmidid log viewer
  * ladiconf - a GUI to setup JACK's configuration
  * g15ladi - a JACK monitor for g15 keyboards"""
-pkg_data_files = [('share/pixmaps',        ['data/ladilog.svg',
-                                            'data/laditray.svg',
-                                            'data/ladiconf.svg']),
-                  ('share/laditools/data', glob.glob('data/*.ui')),
+pkg_data_files = [('share/laditools/data', glob.glob('data/*.ui')),
                   ('share/laditools/data', glob.glob('data/*.svg'))]
 pkg_scripts = ['g15ladi',
                'ladi-control-center',
