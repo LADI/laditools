@@ -26,17 +26,9 @@ from gi.repository import GObject
 from .. import _gettext_domain
 from .manager import LadiManagerGtk
 
-# Default launcher menu :
-menu_default = {"Logs": "ladi-system-log"}
-
 class LadiMenu(LadiManagerGtk):
-    def __init__(self, menu_config_array, jack_autostart):
+    def __init__(self, jack_autostart):
         LadiManagerGtk.__init__(self, jack_autostart)
-        # Handle the configuration and grab custom menu items
-        self.menu_array = menu_config_array
-        # Add some defaults if we don't already have a menu
-        if not self.menu_array:
-            self.menu_array = menu_default
 
     def on_menu_show_diagnose(self, widget, data=None):
         dlg = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.CLOSE, self.diagnose_text)
@@ -135,14 +127,6 @@ class LadiMenu(LadiManagerGtk):
             menu_items.append((Gtk.ImageMenuItem(_("Start gladish")), self.on_menu_launch_handler, "gladish"))
 
         menu_items.append((Gtk.ImageMenuItem("Configure ..."), self.configure_list_fill, self.studio_configure))
-        # Add the laucher entries at the beginning of the menu
-        for item in self.menu_array:
-            # Replace "Configure" static item with the new sub-menu
-            if item == 'configure':
-                continue
-            menu_label = item.capitalize() + "..."
-            path = self.menu_array[item]
-            menu_items.append((Gtk.ImageMenuItem(menu_label), self.on_menu_launch_handler, path))
 
         menu = Gtk.Menu()
         menu_items.append((Gtk.SeparatorMenuItem.new(),))
