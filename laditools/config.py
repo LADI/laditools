@@ -35,11 +35,6 @@ try:
 except:
     yaml = None
 
-config_dir = path.join(basedir.xdg_config_home, 'laditools')
-config_filename = path.join(config_dir, 'laditools.conf')
-if not exists (config_dir):
-    mkdir (config_dir, 0o755)
-
 class MalformedConfigError(Exception):
     def __init__(self):
         Exception.__init__(self, """Malformed configuration file, \
@@ -76,7 +71,7 @@ class LadiConfiguration(SafeConfigParser):
 
         return 0
 
-    def __init__ (self, **kwargs):
+    def __init__ (self, filename, **kwargs):
 
         SafeConfigParser.__init__(self)
 
@@ -88,6 +83,11 @@ class LadiConfiguration(SafeConfigParser):
                 for key in kwargs[app_name]:
                     value = kwargs[app_name][key]
                     self.set(app_name, key, str(value))
+
+        self.config_dir = config_dir = path.join(basedir.xdg_config_home, 'laditools')
+        self.config_filename = config_filename = path.join(config_dir, filename)
+        if not exists (config_dir):
+            mkdir (config_dir, 0o755)
 
         try:
             self.read(config_filename)
@@ -122,6 +122,6 @@ class LadiConfiguration(SafeConfigParser):
     # This writes the config file to the disk
     def save (self):
         """Write configuration to file."""
-        config_file = open (config_filename, 'w')
+        config_file = open (self.config_filename, 'w')
         self.write(config_file)
         config_file.close ()
