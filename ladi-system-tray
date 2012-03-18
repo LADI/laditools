@@ -58,12 +58,6 @@ class LadiStatusIcon (LadiMenu):
     def on_about(self, *args):
         LadiMenu.on_about(self, version=get_version_string())
 
-    def do_button_press_event(self, event):
-        if event.type != Gdk.EventType._2BUTTON_PRESS:
-            return False
-        self.on_menu_launch_handler(None, "gladish")
-        return True
-
     def set_tooltip_text(self, text): pass
 
     def __init__ (self):
@@ -122,6 +116,12 @@ class LadiStatusTray(Gtk.StatusIcon, LadiStatusIcon):
         # Make the menu popup when the icon is right clicked
         self.connect ("popup-menu", self.menu_activate)
         self.set_title(_("LADI System Tray"))
+
+    def do_button_press_event(self, event):
+        if event.type != Gdk.EventType._2BUTTON_PRESS:
+            return False
+        self.on_menu_launch_handler(None, "gladish")
+        return True
 
     def update (self, user_data = None):
         try:
