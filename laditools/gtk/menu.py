@@ -31,7 +31,11 @@ class LadiMenu(LadiManagerGtk):
         LadiManagerGtk.__init__(self, jack_autostart)
 
     def on_menu_show_diagnose(self, widget, data=None):
-        dlg = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.CLOSE, self.diagnose_text)
+        dlg = Gtk.MessageDialog(None,
+                                Gtk.DialogFlags.MODAL,
+                                Gtk.MessageType.ERROR,
+                                Gtk.ButtonsType.CLOSE,
+                                self.diagnose_text)
         dlg.set_title(_("Cannot communicate JACK D-Bus"))
         dlg.run()
         dlg.destroy()
