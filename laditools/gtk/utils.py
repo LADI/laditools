@@ -28,6 +28,8 @@ def find_data_file(path):
 
     paths = [
         os.path.join(sys.path[0], 'data', path),
+        os.path.join(sys.path[0], 'data', 'icons', path),
+        os.path.join(sys.prefix, 'share', 'icons', 'hicolor', path),
         os.path.join(sys.prefix, 'share', 'laditools', path),
         os.path.join(sys.prefix, 'share', 'laditools', 'data', path),
         ]
