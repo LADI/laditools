@@ -512,31 +512,35 @@ class jack_params_configure_command(configure_command):
         """Handle tooltips for the cells"""
         try:
             (path, column, out_x, out_y) = treeview.get_path_at_pos(x, y)
-            print path
-#            return False
             if not path:
                 return False
         except TypeError:
             return False
 
+        # Horrible-fix to skip the treeview's header row
+        intpath = int(path.to_string())
+        if intpath == 0:
+            return False
+        elif intpath > 0:
+            path = Gtk.TreePath(str(intpath - 1))
+
         text = ''
-        if column.get_title() == self.tvcolumn_value.get_title():
+        if column.get_title() in (self.tvcolumn_value.get_title(),
+                                  self.tvcolumn_parameter.get_title()):
             text = self.liststore[path][COLUMN_LONGDESC]
         elif column.get_title() == self.tvcolumn_is_set.get_title():
-            print self.liststore[path][COLUMN_ISSET]
             if self.liststore[path][COLUMN_ISSET] == "default":
                 return False
             if self.liststore[path][COLUMN_ISSET] == 'set':
-                text += _("<i>Double-click to schedule reset of value to %s</i>") % \
+                text += _("Double-click to schedule reset of value to %s") % \
                     self.liststore[path][COLUMN_PARAMETER].get_default_value()
-            else: # self.liststore[path][COLUMN_ISSET] == "reset":
-                text = _("<i>Value will be reset to %s</i>") % \
+            else:
+                text = _("Value will be reset to %s") % \
                     self.liststore[path][COLUMN_PARAMETER].get_default_value()
         else:
             return False
 
-        tooltip.set_icon_from_icon_name(Gtk.STOCK_DIALOG_INFO, Gtk.IconSize.DIALOG)
-        tooltip.set_markup(text)
+        tooltip.set_text(text)
         return True
 
     def do_destroy(self, *args):
