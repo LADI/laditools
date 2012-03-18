@@ -197,6 +197,39 @@ class LadiStatusIndicator(LadiStatusIcon):
         if newstate == "started": self.indicator.set_icon (self.started_pixbuf)
         if newstate == "starting": self.indicator.set_icon (self.starting_pixbuf)
 
+    def create_menu(self):
+        menu_items = []
+
+        ladish_available = self.ladish_is_available()
+
+        menu_items.append((Gtk.ImageMenuItem(_("LADI Player")), self.on_menu_launch_handler, "ladi-player"))
+        if ladish_available:
+            menu_items.append((Gtk.ImageMenuItem(_("Session editor")), self.on_menu_launch_handler, "gladish"))
+
+        menu_items.append((Gtk.SeparatorMenuItem.new(),))
+        menu_items.append((Gtk.ImageMenuItem(_("Settings")), self.on_menu_launch_handler, "ladi-control-center"))
+        menu_items.append((Gtk.ImageMenuItem(_("Log Viewer")), self.on_menu_launch_handler, "ladi-system-log"))
+
+        menu_items.append((Gtk.SeparatorMenuItem.new(),))
+        if hasattr(self, 'on_about'):
+            menu_items.append((Gtk.ImageMenuItem(_("About")), self.on_about, None))
+        menu_items.append((Gtk.ImageMenuItem(_("Quit")), self.on_menu_command, Gtk.main_quit))
+
+        menu = Gtk.Menu()
+        for menu_tuple in menu_items:
+            item = menu_tuple[0]
+            if len(menu_tuple) > 1:
+                callback = menu_tuple[1]
+                exec_path = menu_tuple[2]
+            menu.append(item)
+            if type(item) is not Gtk.SeparatorMenuItem:
+                if callback in (self.studio_list_fill, self.configure_list_fill):
+                    item.set_submenu(Gtk.Menu())
+                item.connect("activate", callback, exec_path)
+        menu.show_all()
+        return menu
+
+
     def __init__(self):
         LadiStatusIcon.__init__(self)
         self.indicator = indicator = AppIndicator3.Indicator.new('ladi-indicator',
