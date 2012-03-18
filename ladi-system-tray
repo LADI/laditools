@@ -38,12 +38,17 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
+try:
+    from gi.repository import AppIndicator3
+except:
+    AppIndicator3 = None
+
 from laditools.gtk import LadiMenu
 from laditools.gtk import find_data_file
 
 timeout_add = GObject.timeout_add
 
-class laditray (Gtk.StatusIcon, LadiMenu):
+class LadiStatusIcon (LadiMenu):
 
     # Default configuration
     _default_config = {
@@ -59,28 +64,18 @@ class laditray (Gtk.StatusIcon, LadiMenu):
         self.on_menu_launch_handler(None, "gladish")
         return True
 
+    def set_tooltip_text(self, text): pass
+
     def __init__ (self):
         # Handle the configuration
+        self.icon_state = ""
+        self.last_status_text = ""
+        self.diagnose_text = None
         self.global_config = LadiConfiguration(laditray = self._default_config)
         self.laditray_param_dict = self.global_config.get_config_section ('laditray')
         autostart = bool(eval(self.laditray_param_dict['autostart']))
         # Build the UI
         LadiMenu.__init__(self, self.global_config.get_config_section ('ladimenu'), autostart)
-        GObject.GObject.__init__ (self)
-        self.icon_state = ""
-        self.last_status_text = ""
-        # Create the needed pixbufs to manage the status icon's look
-        self.stopped_pixbuf = GdkPixbuf.Pixbuf.new_from_file(find_data_file("stopped.svg"))
-        self.starting_pixbuf = GdkPixbuf.Pixbuf.new_from_file(find_data_file("starting.svg"))
-        self.started_pixbuf = GdkPixbuf.Pixbuf.new_from_file(find_data_file("started.svg"))
-        self.set_icon ("stopped")
-        # Get the initial status
-        self.update ()
-        # Add the auto update callback
-        self.auto_updater = timeout_add (250, self.update, None)
-        # Make the menu popup when the icon is right clicked
-        self.connect ("popup-menu", self.menu_activate)
-        self.set_title(_("LADI System Tray"))
 
     def menu_activate(self, status_icon, button, activate_time, user_data=None):
         menu = self.create_menu()
@@ -96,18 +91,37 @@ class laditray (Gtk.StatusIcon, LadiMenu):
         self.set_tooltip_safe ("JACK is starting")
         self.set_icon ("starting")
 
-    def set_icon (self, newstate):
-        if self.icon_state == newstate:
-            return
-        self.icon_state = newstate
-        if newstate == "stopped": self.set_from_pixbuf (self.stopped_pixbuf)
-        if newstate == "started": self.set_from_pixbuf (self.started_pixbuf)
-        if newstate == "starting": self.set_from_pixbuf (self.starting_pixbuf)
-
     def set_tooltip_safe (self, text):
         if text != self.last_status_text:
             self.set_tooltip_text (text)
             self.last_status_text = text
+
+    def run(self):
+        Gtk.main ()
+        # Some default config might need to be injected in the config file,
+        # we handle all that before we quit.
+        self.global_config.set_config_section ('ladimenu', self.menu_array)
+        self.global_config.set_config_section ('laditray', self.laditray_param_dict)
+        self.global_config.save ()
+        return 0
+
+class LadiStatusTray(Gtk.StatusIcon, LadiStatusIcon):
+
+    def __init__(self):
+        LadiStatusIcon.__init__(self)
+        GObject.GObject.__init__ (self)
+        # Create the needed pixbufs to manage the status icon's look
+        self.stopped_pixbuf = GdkPixbuf.Pixbuf.new_from_file(find_data_file("stopped.svg"))
+        self.starting_pixbuf = GdkPixbuf.Pixbuf.new_from_file(find_data_file("starting.svg"))
+        self.started_pixbuf = GdkPixbuf.Pixbuf.new_from_file(find_data_file("started.svg"))
+        self.set_icon ("stopped")
+        # Get the initial status
+        self.update ()
+        # Add the auto update callback
+        self.auto_updater = timeout_add (250, self.update, None)
+        # Make the menu popup when the icon is right clicked
+        self.connect ("popup-menu", self.menu_activate)
+        self.set_title(_("LADI System Tray"))
 
     def update (self, user_data = None):
         try:
@@ -137,14 +151,69 @@ class laditray (Gtk.StatusIcon, LadiMenu):
             LadiManager.update(self)
         return True
 
-    def run(self):
-        Gtk.main ()
-        # Some default config might need to be injected in the config file,
-        # we handle all that before we quit.
-        self.global_config.set_config_section ('ladimenu', self.menu_array)
-        self.global_config.set_config_section ('laditray', self.laditray_param_dict)
-        self.global_config.save ()
-        return 0
+    def set_icon (self, newstate):
+        if self.icon_state == newstate:
+            return
+        self.icon_state = newstate
+        if newstate == "stopped": self.set_from_pixbuf (self.stopped_pixbuf)
+        if newstate == "started": self.set_from_pixbuf (self.started_pixbuf)
+        if newstate == "starting": self.set_from_pixbuf (self.starting_pixbuf)
+
+class LadiStatusIndicator(LadiStatusIcon):
+
+    def update (self, user_data = None):
+        try:
+            if self.jack_is_started():
+                # Get Realtime status
+                if self.jack_is_realtime():
+                    status_text = "RT | "
+                else:
+                    status_text = ""
+                # Get DSP Load
+                status_text += str (round (float (self.jack_get_load()),1)) + "% | "
+                # Get Xruns
+                status_text += str (self.jack_get_xruns())
+                # Set a started status
+                self.set_tooltip_safe (status_text)
+                self.set_icon ("started")
+            else:
+                self.set_tooltip_safe ("JACK is stopped")
+                self.set_icon ("stopped")
+            self.clear_diagnose_text()
+        except Exception, e:
+            self.set_tooltip_safe ("JACK is sick")
+            self.set_diagnose_text(repr(e))
+            self.set_icon ("stopped")
+            self.clear_jack_proxies()
+        finally:
+            LadiManager.update(self)
+        return True
+
+    def set_icon (self, newstate):
+        if self.icon_state == newstate:
+            return
+        self.icon_state = newstate
+        if newstate == "stopped": self.indicator.set_icon (self.stopped_pixbuf)
+        if newstate == "started": self.indicator.set_icon (self.started_pixbuf)
+        if newstate == "starting": self.indicator.set_icon (self.starting_pixbuf)
+
+    def __init__(self):
+        LadiStatusIcon.__init__(self)
+        self.indicator = indicator = AppIndicator3.Indicator.new('ladi-indicator',
+                                                             find_data_file('scalable/apps/laditools.svg'),
+                                                             AppIndicator3.IndicatorCategory.APPLICATION_STATUS)
+        self.menu = menu = self.create_menu()
+        self.stopped_pixbuf = find_data_file("stopped.svg")
+        self.starting_pixbuf = find_data_file("starting.svg")
+        self.started_pixbuf = find_data_file("started.svg")
+
+        indicator.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
+        indicator.set_menu(menu)
+        menu.show()
+        # Get the initial status
+        self.update ()
+        # Add the auto update callback
+        self.auto_updater = timeout_add (250, self.update, None)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=_('system tray icon that allows users to start, stop and'
@@ -154,5 +223,8 @@ if __name__ == "__main__":
 
     parser.parse_args()
 
-    laditray().run()
+    if AppIndicator3:
+        LadiStatusIndicator().run()
+    else:
+        LadiStatusTray().run()
     sys.exit(0)
