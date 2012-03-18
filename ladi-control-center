@@ -46,6 +46,8 @@ from laditools.gtk import find_data_file
 sig_handler = signal.getsignal(signal.SIGTERM)
 signal.signal(signal.SIGINT, sig_handler)
 
+tooltips_active = False
+
 (COLUMN_NAME,
  COLUMN_PARAMETER,
  COLUMN_SHORTDESC,
@@ -586,7 +588,8 @@ class jack_params_configure_command(configure_command):
         self.treeview.connect("cursor-changed", self.on_cursor_changed)
         self.treeview.connect("key-press-event", self.do_key_press_event)
         self.treeview.connect("button-press-event", self.do_button_press_event)
-        self.treeview.connect("query-tooltip", self._on_query_tooltip)
+        if tooltips_active:
+            self.treeview.connect("query-tooltip", self._on_query_tooltip)
         self.treeview.connect("destroy", self.do_destroy)
 
         if len(param_names):
@@ -627,10 +630,15 @@ def show_panels(*args, **kwargs):
         return None
     mods = kwargs['modules']
     window = Gtk.Window.new(Gtk.WindowType.TOPLEVEL)
+    vbox = Gtk.VBox()
+    hbox = Gtk.HBox()
+    notebook = Gtk.Notebook()
+
+    vbox.pack_start(hbox, True, True, 12)
+    hbox.pack_start(notebook, True, True, 2)
     window.set_title("LADI Settings")
     window.set_icon_name('preferences-system')
     window.set_resizable(True)
-    notebook = Gtk.Notebook()
     notebook.set_tab_pos(Gtk.PositionType.LEFT)
 
     if 'select' in kwargs:
@@ -655,7 +663,7 @@ def show_panels(*args, **kwargs):
             notebook.set_current_page(page_count)
         page_count += 1
 
-    window.add(notebook)
+    window.add(vbox)
     
     window.show_all()
     window.connect('destroy', Gtk.main_quit)
