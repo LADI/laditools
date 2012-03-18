@@ -46,7 +46,7 @@ from laditools.gtk import find_data_file
 sig_handler = signal.getsignal(signal.SIGTERM)
 signal.signal(signal.SIGINT, sig_handler)
 
-tooltips_active = False
+tooltips_active = True
 
 (COLUMN_NAME,
  COLUMN_PARAMETER,
@@ -511,27 +511,32 @@ class jack_params_configure_command(configure_command):
     def _on_query_tooltip(self, treeview, x, y, keyboard_tip, tooltip):
         """Handle tooltips for the cells"""
         try:
-            result, out_x, out_y, model, path, iter = treeview.get_tooltip_context(x, y, keyboard_tip)
+            (path, column, out_x, out_y) = treeview.get_path_at_pos(x, y)
+            print path
+#            return False
             if not path:
                 return False
         except TypeError:
             return False
 
-        text = self.liststore[path][COLUMN_LONGDESC]
-        if self.liststore[path][COLUMN_ISSET] == "default":
-            pass
-        else:
-            text += '\n\n'
-            if self.liststore[path][COLUMN_ISSET] == "reset":
-                text += _("<i>Value will be reset to %s</i>") % \
-                    self.liststore[path][COLUMN_PARAMETER].get_default_value()
-            else:
+        text = ''
+        if column.get_title() == self.tvcolumn_value.get_title():
+            text = self.liststore[path][COLUMN_LONGDESC]
+        elif column.get_title() == self.tvcolumn_is_set.get_title():
+            print self.liststore[path][COLUMN_ISSET]
+            if self.liststore[path][COLUMN_ISSET] == "default":
+                return False
+            if self.liststore[path][COLUMN_ISSET] == 'set':
                 text += _("<i>Double-click to schedule reset of value to %s</i>") % \
                     self.liststore[path][COLUMN_PARAMETER].get_default_value()
+            else: # self.liststore[path][COLUMN_ISSET] == "reset":
+                text = _("<i>Value will be reset to %s</i>") % \
+                    self.liststore[path][COLUMN_PARAMETER].get_default_value()
+        else:
+            return False
 
         tooltip.set_icon_from_icon_name(Gtk.STOCK_DIALOG_INFO, Gtk.IconSize.DIALOG)
         tooltip.set_markup(text)
-        treeview.set_tooltip_row(tooltip, path)
         return True
 
     def do_destroy(self, *args):
@@ -582,7 +587,11 @@ class jack_params_configure_command(configure_command):
                 is_set = "set"
             else:
                 is_set = "default"
-            self.liststore.append([name, store, param.get_short_description(), param.get_long_description(), is_set])
+            self.liststore.append([name,
+                                   store,
+                                   param.get_short_description(),
+                                   param.get_long_description(),
+                                   is_set])
 
         self.treeview.connect("row-activated", self.do_row_activated)
         self.treeview.connect("cursor-changed", self.on_cursor_changed)
