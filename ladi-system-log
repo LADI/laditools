@@ -38,6 +38,7 @@ gettext.install(_gettext_domain)
 
 from laditools import get_version_string
 from laditools import LadiConfiguration
+from laditools import LadiApp
 
 from gi.repository import Gtk
 from gi.repository import GObject
@@ -73,7 +74,14 @@ def read_last(lfile, lines):
     lfile.seek(endpos, 0)
     return backlog
 
-class ladilog(object):
+class LadiSystemLog(LadiApp):
+
+    _appname = 'ladi-system-log'
+    _appname_long = _("LADI Log Viewer")
+    _appid = 'org.linuxaudio.ladi.logviewer'
+
+    _default_config = { 'max_lines' : max_lines_default }
+
     def __init__ (self):
         self.log_files = [
             {
@@ -90,22 +98,13 @@ class ladilog(object):
             'name': 'A2J',
             'config_name': 'a2j_log',
             'config_default': os.sep.join([os.environ['HOME'], ".log", "a2j", "a2j.log"])
-            }
+            },
             ]
         # Handle the configuration
-        self.global_config = LadiConfiguration ()
-        self.param_dict = self.global_config.get_config_section ('ladilog')
-
         for log in self.log_files:
-            if self.param_dict != None:
-                if log['config_name'] not in self.param_dict:
-                    self.param_dict[log['config_name']] = log['config_default']
-            else:
-                self.param_dict = {}
-                self.param_dict[log['config_name']] = log['config_default']
-
-        if 'max_lines' not in self.param_dict:
-            self.param_dict['max_lines'] = max_lines_default
+            self._default_config[log['config_name']] = log['config_default']
+        self.global_config = LadiConfiguration (self.appname, self._default_config)
+        self.param_dict = self.global_config.get_config_section (self.appname)
 
         for log in self.log_files[:]:
             log['logfile_path'] = self.param_dict[log['config_name']]
@@ -195,7 +194,7 @@ class ladilog(object):
 
     def run (self):
         Gtk.main ()
-        self.global_config.set_config_section ("ladilog", self.param_dict)
+        self.global_config.set_config_section (self.appname, self.param_dict)
         self.global_config.save ()
         return 0
 
@@ -206,7 +205,7 @@ if __name__ == '__main__':
     parser.add_argument('--version', action='version', version="%(prog)s " + get_version_string())
 
     parser.parse_args()
-    ladilog().run()
+    LadiSystemLog().run()
     sys.exit(0)
 #except Exception, e:
 #    error = Gtk.MessageDialog(None,
