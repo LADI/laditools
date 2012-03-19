@@ -1,0 +1,30 @@
+#!/bin/bash
+
+icondir="icons"
+scalabledir="$icondir/scalable"
+sizelist="16 22 24 32 48 64 96 128 256"
+categories=
+
+for category in `find $scalabledir -mindepth 1 -maxdepth 1 -type d` ; do
+    categories="$categories `basename $category`" ;
+done
+
+echo "Categories found: $categories"
+echo -n "Creating filesystem hieararchy... "
+
+for size in $sizelist ; do
+    echo -n "$size "
+    sizedir="$icondir/$size"
+    for category in $categories ; do
+        sizecategorydir="$sizedir/$category"
+        mkdir -p $sizecategorydir
+        for path in `ls $scalabledir/$category/*.svg` ; do
+            filename="`basename $path`"
+            newfilename=`echo $filename | sed 's/svg/png/'`
+            rsvg -w $size -h $size $scalabledir/$category/$filename \
+                $sizecategorydir/$newfilename
+        done 
+    done
+done
+
+echo -e "\nOK"
