@@ -617,17 +617,17 @@ class jack_engine_params_configure_command(jack_params_configure_command):
         jack_params_configure_command.__init__(self, ['engine'])
 
     def get_description(self):
-        return _('JACK engine parameters')
+        return _('JACK engine')
 
 class jack_driver_params_configure_command(jack_params_configure_command):
     def __init__(self):
         jack_params_configure_command.__init__(self, ['driver'])
 
     def get_description(self):
-        return _('JACK driver parameters')
+        return _('JACK driver')
 
     def get_window_title(self):
-        return _('JACK "%s" driver parameters') % jack.get_selected_driver()
+        return _('JACK "%s" driver') % jack.get_selected_driver()
 
 class jack_internal_params_configure_command(jack_params_configure_command):
     def __init__(self, name):
@@ -635,7 +635,7 @@ class jack_internal_params_configure_command(jack_params_configure_command):
         jack_params_configure_command.__init__(self, ['internals', name])
 
     def get_description(self):
-        return _('JACK "%s" parameters') % self.name
+        return _('JACK "%s"') % self.name
 
 def show_panels(*args, **kwargs):
     if not 'modules' in kwargs:
