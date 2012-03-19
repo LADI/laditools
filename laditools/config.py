@@ -52,7 +52,7 @@ class LadiConfiguration(SafeConfigParser):
     def _migrate_configuration(self):
         """Migrate configuration from old YAML coding style to the new one."""
         try:
-            with open (config_filename, 'r') as config_file:
+            with open (self.config_filename, 'r') as config_file:
                 appdict = yaml.load (config_file)
         except:
             sys.stderr.write("Config file doesn't exist, creating a new one...\n")
@@ -71,20 +71,17 @@ class LadiConfiguration(SafeConfigParser):
 
         return 0
 
-    def __init__ (self, filename, **kwargs):
+    def __init__ (self, app_name, defaults = {}, filename = None):
 
         SafeConfigParser.__init__(self)
 
         # First setup default values for apps specified
         # by the call to the contructor
-        if kwargs:
-            for app_name in kwargs:
-                self.add_section(app_name)
-                for key in kwargs[app_name]:
-                    value = kwargs[app_name][key]
-                    self.set(app_name, key, str(value))
+        self.set_config_section(app_name, defaults)
 
         self.config_dir = config_dir = path.join(basedir.xdg_config_home, 'laditools')
+        if not filename:
+            filename = app_name + '.conf'
         self.config_filename = config_filename = path.join(config_dir, filename)
         if not exists (config_dir):
             mkdir (config_dir, 0o755)
@@ -116,8 +113,9 @@ class LadiConfiguration(SafeConfigParser):
         """Save the section named <app_name> into the global configuration."""
         if not self.has_section(app_name):
             self.add_section(app_name)
-        for k in param_dict:
-            self.set(app_name, k, str(param_dict[k]))
+        for key in param_dict:
+            value = param_dict[key]
+            self.set(app_name, key, str(value))
 
     # This writes the config file to the disk
     def save (self):
