@@ -55,6 +55,28 @@ if not os.getenv("LADI_RELEASE") and \
     commit = subprocess.check_output(["sh", get_commit_script]).strip()
     laditools_version += "~" + commit
 
+iconsizelist = "16 22 24 32 48 64 96 128 256".split()
+
+class build_icons_extra(build_icons.build_icons):
+    def run(self):
+        icondir = os.path.join('data', 'icons')
+        scalabledir = os.path.join(icondir, "scalable")
+        categories = os.listdir(scalabledir)
+
+        for size in iconsizelist:
+            sizedir = os.path.join(icondir, "%(size)sx%(size)s" % {'size':size})
+            for category in categories:
+                sizecategorydir = os.path.join(sizedir, category)
+                self.spawn(['mkdir', '-p', sizecategorydir])
+                for filename in os.listdir(os.path.join(scalabledir, category)):
+                    newfilename = filename.rstrip('svg') + 'png'
+                    self.spawn(['rsvg',
+                                '-w', size, '-h', size,
+                                os.path.join(scalabledir, category, filename),
+                                os.path.join(sizecategorydir, newfilename)])
+
+        build_icons.build_icons.run(self)
+
 class clean_extra(clean_i18n.clean_i18n):
     def run(self):
         clean_i18n.clean_i18n.run(self)
@@ -67,6 +89,13 @@ class clean_extra(clean_i18n.clean_i18n):
             for d in dirs:
                 if d == '__pycache__':
                     self.spawn(['rm', '-r', os.path.join(path,d)])
+
+        for path, dirs, files in os.walk('./data/icons'):
+            if path.endswith('icons'):
+                for d in dirs:
+                    if d != 'scalable':
+                        self.spawn(['rm', '-r', os.path.join(path,d)])
+                break
 
 setup(name='laditools',
     version=laditools_version,
@@ -83,6 +112,6 @@ setup(name='laditools',
     cmdclass={
         'build' : build_extra.build_extra,
         'build_i18n' :  build_i18n.build_i18n,
-        'build_icons' : build_icons.build_icons,
+        'build_icons' : build_icons_extra,
         'clean' : clean_extra}
 )
