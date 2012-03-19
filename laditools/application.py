@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import signal
+
 class LadiApp(object):
 
     @property
@@ -25,3 +27,9 @@ class LadiApp(object):
 
     @property
     def appid(self): return self._appid
+
+    def activate(self): raise NotImplementedError
+    def quit(self): raise NotImplementedError
+
+    def __init__(self):
+        signal.signal(signal.SIGINT, self.quit)
