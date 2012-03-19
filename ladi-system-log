@@ -198,7 +198,6 @@ class LadiSystemLog(LadiApp):
         self.global_config.save ()
         return 0
 
-#try:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=_('JACK, ladish and a2jmidid log viewer'),
                                      epilog=_('This program is part of the LADITools suite.'))
@@ -207,11 +206,3 @@ if __name__ == '__main__':
     parser.parse_args()
     LadiSystemLog().run()
     sys.exit(0)
-#except Exception, e:
-#    error = Gtk.MessageDialog(None,
-#                              Gtk.DialogFlags.MODAL,
-#                              Gtk.MessageType.ERROR,
-#                              Gtk.ButtonsType.OK,
-#                              _("Unexpected error\n\n") + repr(e))
-#    error.run()
-#    sys.exit(1)
