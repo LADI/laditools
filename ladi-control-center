@@ -31,7 +31,6 @@ gettext.install(_gettext_domain)
 
 from laditools import get_version_string
 from laditools import check_ladish
-from laditools import LadiConfiguration
 from laditools import LadishProxy
 from laditools import LadishStatusType
 from laditools import LadishProxyError
