@@ -36,6 +36,7 @@ gettext.install(_gettext_domain)
 
 from laditools import get_version_string
 from laditools import LadiConfiguration
+from laditools import LadiApp
 
 from gi.repository import Gtk
 from gi.repository import GObject
@@ -46,27 +47,30 @@ from laditools.gtk import LadiMenu
 autostart_default = 0
 debug = False
 
-class wmladi (wmoo.Application, LadiMenu):
+class wmladi (wmoo.Application, LadiMenu, LadiApp):
+
+    _appname = 'wmladi'
+    _appname_long = _("LADI WindowMaker dockapp")
+    _appid = 'org.linuxaudio.ladi.wmlami'
+
+    # Default configuration
+    _default_config = {
+        'autostart' : False,
+    }
+
     def __init__ (self):
         # Handle the configuration
-        self.global_config = LadiConfiguration ()
-        self.param_dict = self.global_config.get_config_section ('wmladi')
-        if self.param_dict != None:
-            if 'autostart' not in self.param_dict:
-               self.param_dict['autostart'] = str (autostart_default)
-        else:
-            self.param_dict = {}
-            self.param_dict['autostart'] = str (autostart_default)
-        autostart = self.param_dict['autostart']
+        self.global_config = LadiConfiguration (self.appname,
+                                                self._default_config)
+        self.config_dict = self.global_config.get_config_section (self.appname)
+        autostart = bool(eval(self.config_dict['autostart']))
         wmoo.Application.__init__ (
             self,
             #background = os.path.dirname(sys.argv[0]) + os.sep + "wmjackctl.xpm",
             margin = 2,
             debug = False)
 
-        LadiMenu.__init__(self,
-                          self.global_config.get_config_section ('ladimenu'),
-                          bool(autostart))
+        LadiMenu.__init__(self, autostart)
 
         self.addCallback (self.on_button_release, 'buttonrelease', area=(0,0,64,64))
 
@@ -215,8 +219,7 @@ class wmladi (wmoo.Application, LadiMenu):
 
     def run (self):
         self.run_gtk ()
-        self.global_config.set_config_section ('wmladi', self.param_dict)
-        self.global_config.set_config_section ('ladimenu', self.menu_array)
+        self.global_config.set_config_section (self.appname, self.config_dict)
         self.global_config.save ()
 
     def position_menu(self, menu, data):
