@@ -1,6 +1,6 @@
 #!/bin/bash
 
-icondir="icons"
+icondir="data/icons"
 scalabledir="$icondir/scalable"
 sizelist="16 22 24 32 48 64 96 128 256"
 categories=
