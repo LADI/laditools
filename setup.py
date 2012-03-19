@@ -47,7 +47,6 @@ pkg_scripts = ['g15ladi',
                'ladi-player',
                'ladi-system-log',
                'ladi-system-tray',
-               'g15ladi',
                'wmladi',]
 
 os.environ['XGETTEXT_ARGS'] = "--language=Python"
