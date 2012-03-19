@@ -33,11 +33,13 @@ pkg_short_desc = "Linux Audio Desktop Integration Tools"
 pkg_long_desc = """LADITools is a set of tools aiming to achieve the goals of the LADI project to improve desktop integration and user workflow of Linux audio system based on JACK and ladish. Those tools take advantage of the D-Bus interfaces recently added to JACK and ladish to ease the configuration and use of those two great softwares.
 
 The following tools are included:
- * laditray - a system tray icon that allows users to start, stop and
-              monitor JACK, as well as start some JACK related applications
- * ladilog - a JACK, ladish and a2jmidid log viewer
- * ladiconf - a GUI to setup JACK's configuration
- * g15ladi - a JACK monitor for g15 keyboards"""
+ * g15ladi             - a JACK monitor for g15 keyboards
+ * ladi-control-center - graphical configuration tool to setup JACK's configuration
+ * ladi-player         - convenient VLC-style application to control JACK and manage studios
+ * ladi-system-log     - JACK, ladish and a2jmidid log viewer
+ * ladi-system-tray    - system indicator that allows users to start, stop and monitor
+                         JACK, as well as start some JACK related applications
+ * wmladi              - Window Maker dockapp for controlling the LADI system"""
 pkg_data_files = [('share/laditools/data', glob.glob('data/*.ui')),
                   ('share/laditools/data', glob.glob('data/*.svg'))]
 pkg_scripts = ['g15ladi',
