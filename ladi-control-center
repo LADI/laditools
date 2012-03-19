@@ -689,16 +689,6 @@ if __name__ == "__main__":
 
     GObject.type_register(parameter_enum_value)
 
-    modules = {'engine' : jack_engine_params_configure_command(),
-               'params' : jack_driver_params_configure_command()}
-    for internal in jack.read_container(['internals']):
-        modules[str(internal)] = jack_internal_params_configure_command(internal)
-
-    modules = {'engine' : jack_engine_params_configure_command(),
-               'params' : jack_driver_params_configure_command()}
-    for internal in jack.read_container(['internals']):
-        modules[str(internal)] = jack_internal_params_configure_command(internal)
-
     parser = argparse.ArgumentParser(description=_('Convenient graphical interface for configuring JACK'),
                                      epilog=_('This program is part of the LADITools suite.'))
     parser.add_argument('-m', '--module', nargs=1, metavar='MODULE', help=_('select the module to configure'))
@@ -706,6 +696,11 @@ if __name__ == "__main__":
     parser.add_argument('--version', action='version', version="%(prog)s " + get_version_string())
 
     options = parser.parse_args()
+
+    modules = {'engine' : jack_engine_params_configure_command(),
+               'params' : jack_driver_params_configure_command()}
+    for internal in jack.read_container(['internals']):
+        modules[str(internal)] = jack_internal_params_configure_command(internal)
 
     if options.list_modules and options.module:
         sys.stderr.write(_("Conflicting options, type %s --help for a list of options.") % sys.argv[0] + '\n')
