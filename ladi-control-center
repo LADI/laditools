@@ -670,7 +670,11 @@ def show_panels(*args, **kwargs):
         container.add(treeview)
         container.show_all()
         #vbox.show_all()
-        notebook.append_page(container, Gtk.Label(mods[mod].get_description()))
+        try:
+            tab_label = mods[mod].get_window_title()
+        except:
+            tab_label = mods[mod].get_description()
+        notebook.append_page(container, Gtk.Label(tab_label))
         if selected and selected == mod:
             notebook.set_current_page(page_count)
         page_count += 1
