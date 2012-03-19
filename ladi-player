@@ -23,9 +23,6 @@ import signal
 import gettext
 import argparse
 
-sig_handler = signal.getsignal(signal.SIGTERM)
-signal.signal(signal.SIGINT, sig_handler)
-
 from laditools import _gettext_domain
 gettext.install(_gettext_domain)
 
@@ -55,10 +52,14 @@ class LadiPlayer(LadiManagerGtk, LadiApp):
     def on_about(self, *args):
         LadiManagerGtk.on_about(self, parent=self.window_main, version=get_version_string())
 
-    def on_quit(self, *args, **kwargs):
-        self.global_config.set_config_section (self.appname, self.config_dict)
+    def quit(self, *args):
+        self.global_config.set_config_section (self.appname,
+                                               self.config_dict)
         self.global_config.save()
         Gtk.main_quit()
+
+    def on_quit(self, *args, **kwargs):
+        self.quit()
 
     def _run_select_studio_dialog(self, title, *args):
         studio_list = self.get_ladish_controller().studio_list()
@@ -300,6 +301,7 @@ class LadiPlayer(LadiManagerGtk, LadiApp):
         self.launcher_exec(command=self._launcher_which(action.get_name()))
 
     def __init__(self):
+        LadiApp.__init__(self)
         # Handle the configuration
         self.global_config = LadiConfiguration(self.appname, self._default_config)
         self.config_dict = self.global_config.get_config_section (self.appname)
@@ -367,6 +369,7 @@ if __name__ == "__main__":
     parser.parse_args()
     GObject.threads_init()
 
+    Gtk.init(None)
     LadiPlayer().run()
     Gtk.main()
     sys.exit(0)
