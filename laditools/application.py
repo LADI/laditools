@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # LADITools - Linux Audio Desktop Integration Tools
-# ladi-system-tray - System tray integration for LADI
 # Copyright (C) 2011-2012 Alessio Treglia <quadrispro@ubuntu.com>
 #
 # This program is free software: you can redistribute it and/or modify
