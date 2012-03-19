@@ -71,6 +71,9 @@ class LadiStatusIcon (LadiMenu, LadiApp):
         self.icon_state = ""
         self.last_status_text = ""
         self.diagnose_text = None
+        self.status_icons = {'started'  : 'ladi-started',
+                             'stopped'  : 'ladi-stopped',
+                             'starting' : 'ladi-starting'}
         self.global_config = LadiConfiguration(self.appname,
                                                self._default_config,
                                                config_filename)
@@ -158,9 +161,7 @@ class LadiStatusTray(Gtk.StatusIcon, LadiStatusIcon):
         if self.icon_state == newstate:
             return
         self.icon_state = newstate
-        if newstate == "stopped": self.set_from_icon_name ("ladi-stopped")
-        if newstate == "started": self.set_from_icon_name ("ladi-started")
-        if newstate == "starting": self.set_from_icon_name ("ladi-starting")
+        self.set_from_icon_name(self.status_icons[newstate])
 
 class LadiStatusIndicator(LadiStatusIcon):
 
@@ -196,9 +197,7 @@ class LadiStatusIndicator(LadiStatusIcon):
         if self.icon_state == newstate:
             return
         self.icon_state = newstate
-        if newstate == "stopped": self.indicator.set_icon (self.stopped_pixbuf)
-        if newstate == "started": self.indicator.set_icon (self.started_pixbuf)
-        if newstate == "starting": self.indicator.set_icon (self.starting_pixbuf)
+        self.indicator.set_icon(self.status_icons[newstate])
 
     def create_menu(self):
         menu_items = []
@@ -239,9 +238,6 @@ class LadiStatusIndicator(LadiStatusIcon):
                                                              find_data_file('scalable/apps/laditools.svg'),
                                                              AppIndicator3.IndicatorCategory.APPLICATION_STATUS)
         self.menu = menu = self.create_menu()
-        self.stopped_pixbuf = find_data_file("stopped.svg")
-        self.starting_pixbuf = find_data_file("starting.svg")
-        self.started_pixbuf = find_data_file("started.svg")
 
         indicator.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
         indicator.set_menu(menu)
