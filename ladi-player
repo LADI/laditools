@@ -34,7 +34,6 @@ from laditools import LadiConfiguration
 from laditools import LadiApp
 
 from gi.repository import Gtk
-from gi.repository import GdkPixbuf
 from gi.repository import GObject
 from laditools import LadiManager
 from laditools.gtk import LadiManagerGtk
@@ -205,7 +204,7 @@ class LadiPlayer(LadiManagerGtk, LadiApp):
 
         # Update status label and window icon
         if self.jack_is_started():
-            self.window_main.set_icon_from_file(find_data_file("started.svg"))
+            self.window_main.set_icon_name("ladi-started")
             if self.jack_is_realtime():
                 status_text = "RT | "
             else:
@@ -217,7 +216,7 @@ class LadiPlayer(LadiManagerGtk, LadiApp):
             # Set a started status
             self.status_label.set_label (status_text)
         else:
-            self.window_main.set_icon_from_file(find_data_file("stopped.svg"))
+            self.window_main.set_icon_name("ladi-stopped")
             self.status_label.set_label(_('<i>Stopped</i>'))
 
     def update(self, *args, **kwargs):
@@ -226,7 +225,7 @@ class LadiPlayer(LadiManagerGtk, LadiApp):
         return True
 
     def _set_starting_status(self):
-        self.window_main.set_icon_from_file(find_data_file("starting.svg"))
+        self.window_main.set_icon_name("ladi-starting")
 
     def action_ladish_new(self, action, *args):
         self.studio_new()
