@@ -111,10 +111,6 @@ class LadiStatusTray(Gtk.StatusIcon, LadiStatusIcon):
     def __init__(self):
         LadiStatusIcon.__init__(self)
         GObject.GObject.__init__ (self)
-        # Create the needed pixbufs to manage the status icon's look
-        self.stopped_pixbuf = GdkPixbuf.Pixbuf.new_from_file(find_data_file("stopped.svg"))
-        self.starting_pixbuf = GdkPixbuf.Pixbuf.new_from_file(find_data_file("starting.svg"))
-        self.started_pixbuf = GdkPixbuf.Pixbuf.new_from_file(find_data_file("started.svg"))
         self.set_icon ("stopped")
         # Get the initial status
         self.update ()
@@ -162,9 +158,9 @@ class LadiStatusTray(Gtk.StatusIcon, LadiStatusIcon):
         if self.icon_state == newstate:
             return
         self.icon_state = newstate
-        if newstate == "stopped": self.set_from_pixbuf (self.stopped_pixbuf)
-        if newstate == "started": self.set_from_pixbuf (self.started_pixbuf)
-        if newstate == "starting": self.set_from_pixbuf (self.starting_pixbuf)
+        if newstate == "stopped": self.set_from_icon_name ("ladi-stopped")
+        if newstate == "started": self.set_from_icon_name ("ladi-started")
+        if newstate == "starting": self.set_from_icon_name ("ladi-starting")
 
 class LadiStatusIndicator(LadiStatusIcon):
 
