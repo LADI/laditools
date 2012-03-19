@@ -16,28 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from abc import *
-
-class __AppMeta:
-
-    __metaclass__ = ABCMeta
-
-    @abstractproperty
-    def appname(self): pass
-
-    @abstractproperty
-    def appname_long(self): pass
-
-    @abstractproperty
-    def appid(self): pass
-
-    @abstractmethod
-    def run(self): pass
-
-class LadiApp(__AppMeta):
+class LadiApp:
 
     @property
     def appname(self): return self._appname
+
+    @property
+    def appname_long(self): return self._appname_long
 
     @property
     def appid(self): return self._appid

@@ -33,11 +33,13 @@ gettext.install(_gettext_domain)
 from laditools import get_version_string
 from laditools import LadiConfiguration
 from laditools import LadiManager
+from laditools import LadiApp
 
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import GObject
+
 try:
     from gi.repository import AppIndicator3
 except:
@@ -48,7 +50,11 @@ from laditools.gtk import find_data_file
 
 timeout_add = GObject.timeout_add
 
-class LadiStatusIcon (LadiMenu):
+class LadiStatusIcon (LadiMenu, LadiApp):
+
+    _appname = 'ladi-system-tray'
+    _appname_long = _("LADI System Tray")
+    _appid = 'org.linuxaudio.ladi.systemtray'
 
     # Default configuration
     _default_config = {
@@ -60,16 +66,18 @@ class LadiStatusIcon (LadiMenu):
 
     def set_tooltip_text(self, text): pass
 
-    def __init__ (self):
+    def __init__ (self, config_filename = None):
         # Handle the configuration
         self.icon_state = ""
         self.last_status_text = ""
         self.diagnose_text = None
-        self.global_config = LadiConfiguration(laditray = self._default_config)
-        self.laditray_param_dict = self.global_config.get_config_section ('laditray')
-        autostart = bool(eval(self.laditray_param_dict['autostart']))
+        self.global_config = LadiConfiguration(self.appname,
+                                               self._default_config,
+                                               config_filename)
+        self.config_dict = self.global_config.get_config_section (self.appname)
+        autostart = bool(eval(self.config_dict['autostart']))
         # Build the UI
-        LadiMenu.__init__(self, self.global_config.get_config_section ('ladimenu'), autostart)
+        LadiMenu.__init__(self, autostart)
 
     def menu_activate(self, status_icon, button, activate_time, user_data=None):
         menu = self.create_menu()
@@ -94,8 +102,7 @@ class LadiStatusIcon (LadiMenu):
         Gtk.main ()
         # Some default config might need to be injected in the config file,
         # we handle all that before we quit.
-        self.global_config.set_config_section ('ladimenu', self.menu_array)
-        self.global_config.set_config_section ('laditray', self.laditray_param_dict)
+        self.global_config.set_config_section (self.appname, self.config_dict)
         self.global_config.save ()
         return 0
 
@@ -115,7 +122,7 @@ class LadiStatusTray(Gtk.StatusIcon, LadiStatusIcon):
         self.auto_updater = timeout_add (250, self.update, None)
         # Make the menu popup when the icon is right clicked
         self.connect ("popup-menu", self.menu_activate)
-        self.set_title(_("LADI System Tray"))
+        self.set_title(self.appname_long)
 
     def do_button_press_event(self, event):
         if event.type != Gdk.EventType._2BUTTON_PRESS:
