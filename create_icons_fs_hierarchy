@@ -13,8 +13,8 @@ echo "Categories found: $categories"
 echo -n "Creating filesystem hieararchy... "
 
 for size in $sizelist ; do
-    echo -n "$size "
-    sizedir="$icondir/$size"
+    echo -n "$size"x"$size"" "
+    sizedir="$icondir"/"$size"x"$size"
     for category in $categories ; do
         sizecategorydir="$sizedir/$category"
         mkdir -p $sizecategorydir
