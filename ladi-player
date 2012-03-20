@@ -361,6 +361,7 @@ class LadiPlayer(LadiManagerGtk, LadiApp):
 
     def run(self):
         self.window_main.show_all()
+        Gtk.main()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=_('graphical front-end that allows users to start, stop and'
@@ -369,10 +370,8 @@ if __name__ == "__main__":
     parser.add_argument('--version', action='version', version="%(prog)s " + get_version_string())
     parser.parse_args()
 
-    GObject.threads_init()
     Gtk.init(None)
 
     LadiPlayer().run()
-    Gtk.main()
 
     sys.exit(0)
