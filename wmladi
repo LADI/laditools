@@ -58,6 +58,9 @@ class wmladi (wmoo.Application, LadiMenu, LadiApp):
         'autostart' : False,
     }
 
+    def quit(self, *args):
+        Gtk.main_quit()
+
     def __init__ (self):
         # Handle the configuration
         self.global_config = LadiConfiguration (self.appname,
@@ -71,6 +74,8 @@ class wmladi (wmoo.Application, LadiMenu, LadiApp):
             debug = False)
 
         LadiMenu.__init__(self, autostart)
+        LadiApp.__init__(self)
+        self.connect_signals_quit()
 
         self.addCallback (self.on_button_release, 'buttonrelease', area=(0,0,64,64))
 
