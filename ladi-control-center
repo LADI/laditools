@@ -34,6 +34,7 @@ from laditools import LadishProxy
 from laditools import LadishStatusType
 from laditools import LadishProxyError
 from laditools import JackConfigProxy
+from laditools import JackConfigParameter as parameter
 from laditools import LadiApp
 
 from gi.repository import Gtk
@@ -93,53 +94,6 @@ def _check_ladish():
         finally:
             sys.stderr.flush()
             sys.exit(1)
-
-class parameter(object):
-    def __init__(self, path):
-        self.path = path
-        self.name = path[-1:]
-
-    def get_name(self):
-        return self.name
-
-    def get_type(self):
-        return jack.get_param_type(self.path)
-
-    def get_value(self):
-        return jack.get_param_value(self.path)
-
-    def set_value(self, value):
-        jack.set_param_value(self.path, value)
-
-    def reset_value(self):
-        jack.reset_param_value(self.path)
-
-    def get_short_description(self):
-        return jack.get_param_short_description(self.path)
-
-    def get_long_description(self):
-        descr = jack.get_param_long_description(self.path)
-        if not descr:
-            descr = self.get_short_description()
-        return descr
-
-    def has_range(self):
-        return jack.param_has_range(self.path)
-
-    def get_range(self):
-        return jack.param_get_range(self.path)
-
-    def has_enum(self):
-        return jack.param_has_enum(self.path)
-
-    def is_strict_enum(self):
-        return jack.param_is_strict_enum(self.path)
-
-    def is_fake_values_enum(self):
-        return jack.param_is_fake_value(self.path)
-
-    def get_enum_values(self):
-        return jack.param_get_enum_values(self.path)
 
 class configure_command(object):
     def __init__(self):
@@ -394,7 +348,8 @@ class cell_renderer_param(Gtk.CellRendererPixbuf):
 GObject.type_register(cell_renderer_param)
 
 class jack_params_configure_command(configure_command):
-    def __init__(self, path):
+    def __init__(self, jack, path):
+        self.jack = jack
         self.path = path
         self.is_setting = False
 
@@ -551,6 +506,8 @@ class jack_params_configure_command(configure_command):
 
     def activate(self, *args, **kwargs):
 
+        jack = self.jack
+
         self.liststore = Gtk.ListStore(GObject.TYPE_STRING,
             parameter_store,
             GObject.TYPE_STRING,
@@ -581,7 +538,7 @@ class jack_params_configure_command(configure_command):
 
         param_names = jack.get_param_names(self.path)
         for name in param_names:
-            param = parameter(self.path + [name])
+            param = parameter(jack, self.path + [name])
             store = parameter_store(param)
             if store.is_set:
                 is_set = "set"
@@ -610,15 +567,15 @@ class jack_params_configure_command(configure_command):
         return self.treeview
 
 class jack_engine_params_configure_command(jack_params_configure_command):
-    def __init__(self):
-        jack_params_configure_command.__init__(self, ['engine'])
+    def __init__(self, jack):
+        jack_params_configure_command.__init__(self, jack, ['engine'])
 
     def get_description(self):
         return _('JACK engine')
 
 class jack_driver_params_configure_command(jack_params_configure_command):
-    def __init__(self):
-        jack_params_configure_command.__init__(self, ['driver'])
+    def __init__(self, jack):
+        jack_params_configure_command.__init__(self, jack, ['driver'])
 
     def get_description(self):
         return _('JACK driver')
@@ -627,9 +584,9 @@ class jack_driver_params_configure_command(jack_params_configure_command):
         return _('JACK "%s" driver') % jack.get_selected_driver()
 
 class jack_internal_params_configure_command(jack_params_configure_command):
-    def __init__(self, name):
+    def __init__(self, jack, name):
         self.name = name
-        jack_params_configure_command.__init__(self, ['internals', name])
+        jack_params_configure_command.__init__(self, jack, ['internals', name])
 
     def get_description(self):
         return _('JACK "%s"') % self.name
@@ -650,12 +607,13 @@ class LadiControlCenter(LadiApp):
     def __init__(self):
 
         LadiApp.__init__(self)
+        jack = JackConfigProxy()
 
         # Init modules list
-        modules = {'engine' : jack_engine_params_configure_command(),
-                   'params' : jack_driver_params_configure_command()}
+        modules = {'engine' : jack_engine_params_configure_command(jack),
+                   'params' : jack_driver_params_configure_command(jack)}
         for internal in jack.read_container(['internals']):
-            modules[str(internal)] = jack_internal_params_configure_command(internal)
+            modules[str(internal)] = jack_internal_params_configure_command(jack, internal)
         self._modules = modules
 
     def _activate(self, **kwargs):
@@ -711,9 +669,6 @@ class LadiControlCenter(LadiApp):
         Gtk.main()
 
 if __name__ == "__main__":
-    global jack
-
-    jack = JackConfigProxy()
     _check_ladish()
 
     GObject.type_register(parameter_enum_value)
