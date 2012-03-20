@@ -30,9 +30,6 @@ import tty
 import gettext
 import argparse
 
-sig_handler = signal.getsignal(signal.SIGTERM)
-signal.signal(signal.SIGINT, sig_handler)
-
 from laditools import _gettext_domain
 gettext.install(_gettext_domain)
 
@@ -83,6 +80,8 @@ class LadiSystemLog(LadiApp):
     _default_config = { 'max_lines' : max_lines_default }
 
     def __init__ (self):
+        LadiApp.__init__(self)
+
         self.log_files = [
             {
             'name': 'JACK',
@@ -100,11 +99,16 @@ class LadiSystemLog(LadiApp):
             'config_default': os.sep.join([os.environ['HOME'], ".log", "a2j", "a2j.log"])
             },
             ]
+
         # Handle the configuration
         for log in self.log_files:
             self._default_config[log['config_name']] = log['config_default']
         self.global_config = LadiConfiguration (self.appname, self._default_config)
         self.param_dict = self.global_config.get_config_section (self.appname)
+
+        # Handle signals
+        signal.signal(signal.SIGTERM, self.quit)
+        signal.signal(signal.SIGINT, self.quit)
 
         for log in self.log_files[:]:
             log['logfile_path'] = self.param_dict[log['config_name']]
@@ -118,21 +122,24 @@ class LadiSystemLog(LadiApp):
 
         max_lines_text = self.param_dict['max_lines']
         self.max_lines = int (max_lines_text)
+
         # Load the glade file
         builder = Gtk.Builder()
         builder.add_from_file(find_data_file("ladi-system-log.ui"))
         sys.stderr.write( _("Loading interface from %s\n") % find_data_file("ladilog_ui.ui"))
         sys.stderr.flush()
+
         # Get the ui ready for action
-        self.event_dict = {"on_ladilog_ui_destroy" : self.on_quit,
+        self.event_dict = {"on_ladilog_ui_destroy" : self.quit,
             "on_ladilog_ui_delete" : self.on_delete,
-            "on_close_button_clicked" : self.on_quit,
+            "on_close_button_clicked" : self.quit,
             "on_clear_button_clicked" : self.on_clear_text,
             "on_purge_button_clicked" : self.on_purge}
         builder.connect_signals(self.event_dict)
 
         self.ui = ui = builder.get_object("ladilog_ui")
         self.logview_notebook = builder.get_object ("ladilog_notebook")
+
         # Create our terminal and display it
         for log in self.log_files:
             log['scrolled_window'] = sw = Gtk.ScrolledWindow()
@@ -163,7 +170,6 @@ class LadiSystemLog(LadiApp):
             finally:
                 sys.stderr.flush()
 
-        ui.show_all()
         self.auto_updater = timeout_add(250, self.update, None)
 
     def update(self, user_data = None):
@@ -179,7 +185,9 @@ class LadiSystemLog(LadiApp):
     def on_delete(self, widget=None, data=None):
         return False
 
-    def on_quit (self, data=None):
+    def quit (self, *args, **kwargs):
+        self.global_config.set_config_section (self.appname, self.param_dict)
+        self.global_config.save ()
         Gtk.main_quit ()
 
     def on_clear_text (self, data=None):
@@ -193,16 +201,14 @@ class LadiSystemLog(LadiApp):
         self.log_files[current_view]["term"].feed ("\033[2J\033[;f", -1)
 
     def run (self):
+        self.ui.show_all()
         Gtk.main ()
-        self.global_config.set_config_section (self.appname, self.param_dict)
-        self.global_config.save ()
-        return 0
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=_('JACK, ladish and a2jmidid log viewer'),
                                      epilog=_('This program is part of the LADITools suite.'))
     parser.add_argument('--version', action='version', version="%(prog)s " + get_version_string())
-
     parser.parse_args()
+
     LadiSystemLog().run()
     sys.exit(0)
