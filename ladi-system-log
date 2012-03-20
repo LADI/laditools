@@ -210,5 +210,8 @@ if __name__ == '__main__':
     parser.add_argument('--version', action='version', version="%(prog)s " + get_version_string())
     parser.parse_args()
 
+    Gtk.init(None)
+
     LadiSystemLog().run()
+
     sys.exit(0)
