@@ -192,7 +192,7 @@
     <accel-groups>
       <group name="accelgroup1"/>
     </accel-groups>
-    <signal name="destroy" handler="on_quit" swapped="no"/>
+    <signal name="destroy" handler="quit" swapped="no"/>
     <child>
       <object class="GtkBox" id="box1">
         <property name="visible">True</property>
@@ -290,7 +290,7 @@
                         <property name="use_stock">True</property>
                         <property name="accel_group">accelgroup1</property>
                         <accelerator key="q" signal="activate" modifiers="GDK_CONTROL_MASK"/>
-                        <signal name="activate" handler="on_quit" swapped="no"/>
+                        <signal name="activate" handler="quit" swapped="no"/>
                       </object>
                     </child>
                   </object>

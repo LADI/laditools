@@ -28,5 +28,5 @@ class LadiApp(object):
     @property
     def appid(self): return self._appid
 
-    def activate(self): raise NotImplementedError
+    def run(self): raise NotImplementedError
     def quit(self): raise NotImplementedError
