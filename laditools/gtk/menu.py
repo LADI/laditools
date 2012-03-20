@@ -27,8 +27,14 @@ from .. import _gettext_domain
 from .manager import LadiManagerGtk
 
 class LadiMenu(LadiManagerGtk):
-    def __init__(self, jack_autostart):
+
+    def __init__(self, jack_autostart, **kwargs):
+
         LadiManagerGtk.__init__(self, jack_autostart)
+
+        self.handler = { 'quit' : Gtk.main_quit, }
+        if 'quit_handler' in kwargs:
+            self.handler['quit'] = kwargs['quit']
 
     def on_menu_show_diagnose(self, widget, data=None):
         dlg = Gtk.MessageDialog(None,
@@ -174,7 +180,7 @@ class LadiMenu(LadiManagerGtk):
             menu_items.append((Gtk.SeparatorMenuItem.new(), None, None))
         if hasattr(self, 'on_about'):
             menu_items.append((Gtk.ImageMenuItem(_("About")), self.on_about, None))
-        menu_items.append((Gtk.ImageMenuItem(_("Quit")), self.on_menu_command, Gtk.main_quit))
+        menu_items.append((Gtk.ImageMenuItem(_("Quit")), self.on_menu_command, self.handler['quit']))
 
         for menu_tuple in menu_items:
             item = menu_tuple[0]

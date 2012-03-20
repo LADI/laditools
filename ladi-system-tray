@@ -63,6 +63,13 @@ class LadiStatusIcon (LadiMenu, LadiApp):
     def on_about(self, *args):
         LadiMenu.on_about(self, version=get_version_string())
 
+    def quit(self, *args, **kwargs):
+        # Some default config might need to be injected in the config file,
+        # we handle all that before we quit.
+        self.global_config.set_config_section (self.appname, self.config_dict)
+        self.global_config.save ()
+        Gtk.main_quit()
+
     def set_tooltip_text(self, text): pass
 
     def __init__ (self, config_filename = None):
@@ -79,7 +86,9 @@ class LadiStatusIcon (LadiMenu, LadiApp):
         self.config_dict = self.global_config.get_config_section (self.appname)
         autostart = bool(eval(self.config_dict['autostart']))
         # Build the UI
-        LadiMenu.__init__(self, autostart)
+        LadiMenu.__init__(self,
+                          autostart,
+                          quit = self.quit)
 
     def menu_activate(self, status_icon, button, activate_time, user_data=None):
         menu = self.create_menu()
@@ -102,11 +111,6 @@ class LadiStatusIcon (LadiMenu, LadiApp):
 
     def run(self):
         Gtk.main ()
-        # Some default config might need to be injected in the config file,
-        # we handle all that before we quit.
-        self.global_config.set_config_section (self.appname, self.config_dict)
-        self.global_config.save ()
-        return 0
 
 class LadiStatusTray(Gtk.StatusIcon, LadiStatusIcon):
 
@@ -214,7 +218,7 @@ class LadiStatusIndicator(LadiStatusIcon):
         menu_items.append((Gtk.SeparatorMenuItem.new(),))
         if hasattr(self, 'on_about'):
             menu_items.append((Gtk.ImageMenuItem(_("About")), self.on_about, None))
-        menu_items.append((Gtk.ImageMenuItem(_("Quit")), self.on_menu_command, Gtk.main_quit))
+        menu_items.append((Gtk.ImageMenuItem(_("Quit")), self.on_menu_command, self.quit))
 
         menu = Gtk.Menu()
         for menu_tuple in menu_items:
@@ -251,8 +255,9 @@ if __name__ == "__main__":
                                                     'monitor JACK, as well as start some JACK related applications'),
                                      epilog=_('This program is part of the LADITools suite.'))
     parser.add_argument('--version', action='version', version="%(prog)s " + get_version_string())
-
     parser.parse_args()
+
+    Gtk.init(None)
 
     if AppIndicator3:
         LadiStatusIndicator().run()
