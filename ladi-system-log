@@ -121,9 +121,10 @@ class LadiSystemLog(LadiApp):
         self.max_lines = int (max_lines_text)
 
         # Load the glade file
+        uifile = find_data_file('ladi-system-log.ui')
         builder = Gtk.Builder()
-        builder.add_from_file(find_data_file("ladi-system-log.ui"))
-        sys.stderr.write( _("Loading interface from %s\n") % find_data_file("ladilog_ui.ui"))
+        builder.add_from_file(uifile)
+        sys.stderr.write( _("Loading interface from %s\n") % uifile)
         sys.stderr.flush()
 
         # Get the ui ready for action
