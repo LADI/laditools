@@ -28,5 +28,16 @@ class LadiApp(object):
     @property
     def appid(self): return self._appid
 
+    def connect_signals_quit(self, signals=[], sig_handler=None):
+        if not signals:
+            signals = [signal.SIGTERM,
+                       signal.SIGINT]
+        if not sig_handler:
+            sig_handler = self.quit
+
+        for sig in signals:
+            signal.signal(sig, sig_handler)
+            signal.signal(sig, sig_handler)
+
     def run(self): raise NotImplementedError
     def quit(self): raise NotImplementedError

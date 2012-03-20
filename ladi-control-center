@@ -22,7 +22,6 @@
 
 import os
 import sys
-import signal
 import gettext
 import argparse
 
@@ -35,15 +34,13 @@ from laditools import LadishProxy
 from laditools import LadishStatusType
 from laditools import LadishProxyError
 from laditools import JackConfigProxy
+from laditools import LadiApp
 
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
 
 from laditools.gtk import find_data_file
-
-sig_handler = signal.getsignal(signal.SIGTERM)
-signal.signal(signal.SIGINT, sig_handler)
 
 tooltips_active = True
 
@@ -637,53 +634,81 @@ class jack_internal_params_configure_command(jack_params_configure_command):
     def get_description(self):
         return _('JACK "%s"') % self.name
 
-def show_panels(*args, **kwargs):
-    if not 'modules' in kwargs:
-        return None
-    mods = kwargs['modules']
-    window = Gtk.Window.new(Gtk.WindowType.TOPLEVEL)
-    vbox = Gtk.VBox()
-    hbox = Gtk.HBox()
-    notebook = Gtk.Notebook()
+class LadiControlCenter(LadiApp):
 
-    vbox.pack_start(hbox, True, True, 12)
-    hbox.pack_start(notebook, True, True, 2)
-    window.set_title("LADI Settings")
-    window.set_icon_name('preferences-system')
-    window.set_resizable(True)
-    notebook.set_tab_pos(Gtk.PositionType.LEFT)
+    _appname = 'ladi-control-center'
+    _appname_long = _("LADI Control Center")
+    _appid = 'org.linuxaudio.ladi.controlcenter'
 
-    if 'select' in kwargs:
-        selected = kwargs['select']
-    else:
-        selected = None
+    def quit(self, *args, **kwargs):
+        self.window.destroy()
+        Gtk.main_quit()
 
-    page_count = 0
+    @property
+    def modules(self): return self._modules
 
-    for mod in mods:
-        treeview = mods[mod].run({})
-        container = Gtk.ScrolledWindow()
-        container.set_min_content_width(400)
-        container.set_min_content_height(400)
-        container.set_policy(hscrollbar_policy=Gtk.PolicyType.AUTOMATIC,
-                             vscrollbar_policy=Gtk.PolicyType.AUTOMATIC)
-        container.add(treeview)
-        container.show_all()
-        #vbox.show_all()
-        try:
-            tab_label = mods[mod].get_window_title()
-        except:
-            tab_label = mods[mod].get_description()
-        notebook.append_page(container, Gtk.Label(tab_label))
-        if selected and selected == mod:
-            notebook.set_current_page(page_count)
-        page_count += 1
+    def __init__(self):
 
-    window.add(vbox)
-    
-    window.show_all()
-    window.connect('destroy', Gtk.main_quit)
-    Gtk.main()
+        LadiApp.__init__(self)
+
+        # Init modules list
+        modules = {'engine' : jack_engine_params_configure_command(),
+                   'params' : jack_driver_params_configure_command()}
+        for internal in jack.read_container(['internals']):
+            modules[str(internal)] = jack_internal_params_configure_command(internal)
+        self._modules = modules
+
+    def _activate(self, **kwargs):
+
+        if 'select' in kwargs:
+            selected = kwargs['select']
+        else:
+            selected = None
+
+        # Init UI
+        self.window = window = Gtk.Window.new(Gtk.WindowType.TOPLEVEL)
+        vbox = Gtk.VBox()
+        hbox = Gtk.HBox()
+        notebook = Gtk.Notebook()
+
+        vbox.pack_start(hbox, True, True, 12)
+        hbox.pack_start(notebook, True, True, 2)
+        window.set_title("LADI Settings")
+        window.set_icon_name('preferences-system')
+        window.set_resizable(True)
+        notebook.set_tab_pos(Gtk.PositionType.LEFT)
+
+        page_count = 0
+
+        modules = self.modules
+        for mod in modules:
+            treeview = modules[mod].run({})
+            container = Gtk.ScrolledWindow()
+            container.set_min_content_width(400)
+            container.set_min_content_height(400)
+            container.set_policy(hscrollbar_policy=Gtk.PolicyType.AUTOMATIC,
+                                 vscrollbar_policy=Gtk.PolicyType.AUTOMATIC)
+            container.add(treeview)
+            container.show_all()
+            #vbox.show_all()
+            try:
+                tab_label = modules[mod].get_window_title()
+            except:
+                tab_label = modules[mod].get_description()
+            notebook.append_page(container, Gtk.Label(tab_label))
+            if selected and selected == mod:
+                notebook.set_current_page(page_count)
+            page_count += 1
+
+        window.add(vbox)
+        window.connect('destroy', self.quit)
+
+        self.connect_signals_quit()
+
+    def run(self, **kwargs):
+        self._activate(**kwargs)
+        self.window.show_all()
+        Gtk.main()
 
 if __name__ == "__main__":
     global jack
@@ -695,22 +720,29 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description=_('Convenient graphical interface for configuring JACK'),
                                      epilog=_('This program is part of the LADITools suite.'))
-    parser.add_argument('-m', '--module', nargs=1, metavar='MODULE', help=_('select the module to configure'))
-    parser.add_argument('-l', '--list-modules', action='store_true', help=_('list available modules'))
-    parser.add_argument('--version', action='version', version="%(prog)s " + get_version_string())
+    parser.add_argument('-m',
+                        '--module',
+                        nargs=1,
+                        metavar='MODULE',
+                        help=_('select the module to configure'))
+    parser.add_argument('-l',
+                        '--list-modules',
+                        action='store_true',
+                        help=_('list available modules'))
+    parser.add_argument('--version',
+                        action='version',
+                        version="%(prog)s " + get_version_string())
 
     options = parser.parse_args()
 
-    modules = {'engine' : jack_engine_params_configure_command(),
-               'params' : jack_driver_params_configure_command()}
-    for internal in jack.read_container(['internals']):
-        modules[str(internal)] = jack_internal_params_configure_command(internal)
+    app = LadiControlCenter()
 
     if options.list_modules and options.module:
         sys.stderr.write(_("Conflicting options, type %s --help for a list of options.") % sys.argv[0] + '\n')
         sys.stderr.flush()
         sys.exit(2)
 
+    modules = app.modules
     if options.list_modules:
         sys.stderr.write(_("Available modules: "))
         sys.stderr.write(' '.join(modules) + '\n')
@@ -722,8 +754,8 @@ if __name__ == "__main__":
             sys.stderr.flush()
             sys.exit(2)
         else:
-            show_panels(modules=modules, select=module)
+            app.run(select=module)
     else:
-        show_panels(modules=modules)
+        app.run()
 
     sys.exit(0)

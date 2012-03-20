@@ -19,7 +19,6 @@
 import os
 import sys
 import time
-import signal
 import gettext
 import argparse
 
@@ -308,8 +307,7 @@ class LadiPlayer(LadiManagerGtk, LadiApp):
         LadiManagerGtk.__init__(self, autostart)
 
         # Handle signals
-        signal.signal(signal.SIGTERM, self.quit)
-        signal.signal(signal.SIGINT, self.quit)
+        self.connect_signals_quit()
 
         # Build the UI
         builder = Gtk.Builder()

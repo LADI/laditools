@@ -24,7 +24,6 @@ import sys
 import signal
 from subprocess import Popen, PIPE
 import pty
-from signal import SIGTERM
 import termios
 import tty
 import gettext
@@ -106,9 +105,7 @@ class LadiSystemLog(LadiApp):
         self.global_config = LadiConfiguration (self.appname, self._default_config)
         self.param_dict = self.global_config.get_config_section (self.appname)
 
-        # Handle signals
-        signal.signal(signal.SIGTERM, self.quit)
-        signal.signal(signal.SIGINT, self.quit)
+        self.connect_signals_quit()
 
         for log in self.log_files[:]:
             log['logfile_path'] = self.param_dict[log['config_name']]

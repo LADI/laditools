@@ -20,12 +20,8 @@
 
 import os
 import sys
-import signal
 import gettext
 import argparse
-
-sig_handler = signal.getsignal(signal.SIGTERM)
-signal.signal(signal.SIGINT, sig_handler)
 
 from laditools import _gettext_domain
 gettext.install(_gettext_domain)
@@ -89,6 +85,8 @@ class LadiStatusIcon (LadiMenu, LadiApp):
         LadiMenu.__init__(self,
                           autostart,
                           quit = self.quit)
+        LadiApp.__init__(self)
+        self.connect_signals_quit()
 
     def menu_activate(self, status_icon, button, activate_time, user_data=None):
         menu = self.create_menu()
