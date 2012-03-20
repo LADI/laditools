@@ -301,6 +301,7 @@ class LadiPlayer(LadiManagerGtk, LadiApp):
         self.launcher_exec(command=self._launcher_which(action.get_name()))
 
     def __init__(self):
+        # Initialize app
         LadiApp.__init__(self)
         # Handle the configuration
         self.global_config = LadiConfiguration(self.appname, self._default_config)
@@ -308,6 +309,10 @@ class LadiPlayer(LadiManagerGtk, LadiApp):
         autostart = bool(eval(self.config_dict['autostart']))
 
         LadiManagerGtk.__init__(self, autostart)
+
+        # Handle signals
+        signal.signal(signal.SIGTERM, self.quit)
+        signal.signal(signal.SIGINT, self.quit)
 
         # Build the UI
         builder = Gtk.Builder()

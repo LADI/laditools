@@ -30,7 +30,3 @@ class LadiApp(object):
 
     def activate(self): raise NotImplementedError
     def quit(self): raise NotImplementedError
-
-    def __init__(self):
-        signal.signal(signal.SIGTERM, self.quit)
-        signal.signal(signal.SIGINT, self.quit)
