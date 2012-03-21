@@ -1,0 +1,50 @@
+LADI Tools - Linux Audio Desktop Integration Tools
+--------------------------------------------------
+
+Laditools 1.0
+
+    This is the first stable release of LADI Tools.
+
+    This document is an attempt to list at least the most relevant changes
+    introduced since the latest almost-stable release candidate (was
+    1.0~rc2+20100724.gitf4d4a2).
+
+
+                            The Big Renaming
+
+    Apart from wladi and g15ladi, most of ladi* tools have been renamed:
+
+     * ladicontrol -> ladi-control-center
+     * ladilog     -> ladi-system-log
+     * laditray    -> ladi-system-tray
+
+    Moreover, a new component has joined the LADI Tools suite: ladi-player.
+    LADI Player is a convenient, graphical VLC-style application providing
+    an all-in-one control interface to start, stop and monitor JACK as well
+    as the session handler. It also provides basic controls for managing
+    studios.
+
+                              Goodbye PyGTK!
+
+    All the code was ported to GTK+ 3 and the new GObject Introspection
+    mechanism.
+
+                       Code refactoring and cleanup
+
+    The code has been reorganized in order to allow the use of Python
+    objects by 3rd party applications.
+
+    To start writing code using the classes provided by laditools, simply
+    do the following:
+
+       from laditools import *
+
+                  Two-in-one solution for LADI System Tray
+
+    Formerly laditray was an implementation of GtkStatusIcon to put
+    a nice right-clickable object into the system tray to allow users
+    access JACK controls easy way. Now it provides an additional [...]
+    TODO
+
+                         Project's new homepage
+    TODO
