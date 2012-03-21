@@ -362,8 +362,8 @@ class LadiPlayer(LadiManagerGtk, LadiApp):
         Gtk.main()
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=_('graphical front-end that allows users to start, stop and'
-                                                    'monitor JACK, as well as start some JACK related applications'),
+    parser = argparse.ArgumentParser(description=_('graphical front-end that allows users to start, stop and '
+                                                    'monitor JACK, as well as start some JACK related applications.'),
                                      epilog=_('This program is part of the LADITools suite.'))
     parser.add_argument('--version', action='version', version="%(prog)s " + get_version_string())
     parser.parse_args()
