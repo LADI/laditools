@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Let's make sure we'll place the file in an existing dir
 from os import environ, sep, mkdir, path
 from os.path import exists
 from xdg import BaseDirectory as basedir
