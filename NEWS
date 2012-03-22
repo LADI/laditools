@@ -11,6 +11,7 @@ Laditools 1.0
 
 
                             The Big Renaming
+                            ----------------
 
     Apart from wladi and g15ladi, most of ladi* tools have been renamed:
 
@@ -19,32 +20,56 @@ Laditools 1.0
      * laditray    -> ladi-system-tray
 
     Moreover, a new component has joined the LADI Tools suite: ladi-player.
-    LADI Player is a convenient, graphical VLC-style application providing
-    an all-in-one control interface to start, stop and monitor JACK as well
-    as the session handler. It also provides basic controls for managing
-    studios.
+    LADI Player is a convenient, graphical VLC-style application providing an
+    all-in-one control interface to start, stop and monitor JACK as well as
+    the session handler. It also provides basic controls for managing studios.
 
                               Goodbye PyGTK!
+                              --------------
 
     All the code was ported to GTK+ 3 and the new GObject Introspection
     mechanism.
 
                        Code refactoring and cleanup
+                       ----------------------------
 
-    The code has been reorganized in order to allow the use of Python
-    objects by 3rd party applications.
+    The code has been reorganized in order to allow the use of Python objects
+    by 3rd party applications.
 
-    To start writing code using the classes provided by laditools, simply
-    do the following:
+    To start writing code using the classes provided by laditools, simply do
+    the following:
 
        from laditools import *
 
                   Two-in-one solution for LADI System Tray
+                  ----------------------------------------
 
-    Formerly laditray was an implementation of GtkStatusIcon to put
-    a nice right-clickable object into the system tray to allow users
-    access JACK controls easy way. Now it provides an additional [...]
-    TODO
+    Formerly laditray was an implementation of GtkStatusIcon to put a nice
+    right-clickable icon into the system tray to allow users access JACK
+    controls easy way. It's been mostly rewritten and now it shows an
+    AppIndicator icon (if the library is available, see
+    http://unity.ubuntu.com/projects/appindicators/), or fall back to the
+    Freedesktop.org's old-fashioned System Tray Protocol Spec-compliant icon.
 
                          Project's new homepage
-    TODO
+                         ----------------------
+
+    The project's homepage is now hosted by Launchpad.net:
+
+        https://launchpad.net/laditools
+
+    The code is hosted by repo.or.cz and it's available here for browsing:
+
+        http://repo.or.cz/w/laditools.git
+
+    Please use the following links to contact the development team:
+
+     * Bugs and patches: https://bugs.launchpad.net/laditools
+     * Translations: https://translations.launchpad.net/laditools
+
+                            Conclusions
+                            -----------
+
+    Enjoy your LADI system! ;-)
+
+                            Alessio Treglia <quadrispro@ubuntu.com>
