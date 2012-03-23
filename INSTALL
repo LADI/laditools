@@ -1,15 +1,63 @@
-This should be enough for now :
+LADI Tools - Linux Audio Desktop Integration Tools
+--------------------------------------------------
 
-known dependencies : 
-- pygtk-2.12
-- pyYaml
-- a recent glade and it's python bindings
+LADI Tools is a set of tools aiming to achieve the goals of the LADI project
+to improve desktop integration and user workflow of Linux audio system based
+on JACK and LADISH. Those tools take advantage of the DBus interfaces of JACK2
+and LADISH to ease the configuration and use of your software studio.
 
-python setup.py install
+LADI Tools is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-If you want to know about more options you might want to try either
-python setup.py --help
- - or -
-python setup.py --help-commands
+For the complete text of the GNU General Public License version 3 see the
+file COPYING included in this tarball.
 
-If you're a package maintainer and need help with packaging you might want to ask on #jack or #LADI to either MarcOChapeau or nedko.
+How to get this software
+------------------------
+
+Bugfix updates and new releases are made available at:
+https://launchpad.net/laditools/+download
+
+Dependencies
+------------
+
+A version of the Python interpreter greater than or equal to 2.6 is needed
+to build, install and run LADI Tools. Python 3 support is not yet provided.
+
+Plus, the following dependencies must be satisfied:
+
+ - GTK+3            (>= 3.2.2,  http://www.gtk.org/)
+ - python-enum      (>= 0.4.4,  http://pypi.python.org/pypi/enum/)
+ - VTE              (>= 0.30.1, http://ftp.gnome.org/pub/GNOME/sources/vte/)
+
+Here is a list of optional dependencies:
+
+ - libappindicator  (>= 0.4.1,  http://unity.ubuntu.com/projects/appindicators/)
+
+Installation Instructions
+-------------------------
+
+Build and install laditools is a very simple task:
+
+    $ python setup.py install
+
+To install everything relative to an alternate root directory:
+
+    $ python setup.py install --root=$ALTROOT
+
+For more information about the available options, simply type:
+
+    $ python setup.py install --help install
+
+For information about distutils' advanced options, type:
+
+    $ python setup.py --help
+
+Installation Instructions
+-------------------------
+
+If you're a package maintainer and need help with packaging you might
+want to ask on Freenode's channgels #jack or #LADI to either nedko or
+or quadrispro.
