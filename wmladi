@@ -58,6 +58,9 @@ class wmladi (wmoo.Application, LadiMenu, LadiApp):
         'autostart' : False,
     }
 
+    def on_about(self, *args):
+        LadiMenu.on_about(self, version=get_version_string())
+
     def quit(self, *args):
         Gtk.main_quit()
 
