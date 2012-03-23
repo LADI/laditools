@@ -1,14 +1,17 @@
 LADI Tools - Linux Audio Desktop Integration Tools
 --------------------------------------------------
 
-Laditools 1.0
+Laditools 1.0 «Lady "O"»
 
     This is the first stable release of LADI Tools.
 
-    This document is an attempt to list at least the most relevant changes
-    introduced since the latest almost-stable release candidate (was
+    This document is an attempt to list the most relevant changes introduced
+    since the latest almost-stable release candidate (was
     1.0~rc2+20100724.gitf4d4a2).
 
+    Please note it is strongly recommended to upgrade from any previous
+    version as we will NOT provide bugfix updates for oldest snaphsot taken
+    from the no longer used SVN repository.
 
                             The Big Renaming
                             ----------------

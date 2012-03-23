@@ -55,9 +55,6 @@ For information about distutils' advanced options, type:
 
     $ python setup.py --help
 
-Installation Instructions
--------------------------
-
 If you're a package maintainer and need help with packaging you might
 want to ask on Freenode's channgels #jack or #LADI to either nedko or
 or quadrispro.
