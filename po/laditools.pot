@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-21 00:33+0100\n"
+"POT-Creation-Date: 2012-03-23 18:18+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -89,7 +89,7 @@ msgid "Convenient graphical interface for configuring JACK"
 msgstr ""
 
 #: ../ladi-control-center:677 ../ladi-player:367 ../ladi-system-log:207
-#: ../ladi-system-tray:254 ../wmladi:249
+#: ../ladi-system-tray:254 ../wmladi:252
 msgid "This program is part of the LADITools suite."
 msgstr ""
 
@@ -145,8 +145,8 @@ msgstr ""
 
 #: ../ladi-player:365
 msgid ""
-"graphical front-end that allows users to start, stop andmonitor JACK, as "
-"well as start some JACK related applications"
+"graphical front-end that allows users to start, stop and monitor JACK, as "
+"well as start some JACK related applications."
 msgstr ""
 
 #: ../ladi-system-log:76
@@ -212,11 +212,15 @@ msgid ""
 "as start some JACK related applications"
 msgstr ""
 
+#: ../ladi-system-tray:257
+msgid "Force fallback to system tray."
+msgstr ""
+
 #: ../wmladi:53
 msgid "LADI WindowMaker dockapp"
 msgstr ""
 
-#: ../wmladi:248
+#: ../wmladi:251
 msgid "Window maker dockapp for jackdbus"
 msgstr ""
 
