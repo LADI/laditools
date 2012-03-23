@@ -1,0 +1,54 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH LADITOOLS 1 "January 25, 2011"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+laditools \- A set of tools to control and monitor LADI (JACK+LASH) system
+.SH SYNOPSIS
+.B laditray
+.PP
+.B ladilog
+.PP
+.B ladiconf
+.PP
+.B g15ladi
+.SH DESCRIPTION
+\fBLADITools\fP is a collection of tools aiming to achieve the goals of the
+LADI project to improve desktop integration and user workflow of GNU/Linux
+audio system based on JACK and LASH. Those tools take advantage of the
+D-Bus interfaces recently added to JACK and LASH to ease the configuration
+and use of those two great softwares.
+.PP
+The following tools are included:
+.TP
+.B laditray
+A system tray icon that allows users to start, stop and monitor JACK,
+as well as start some JACK related applications.
+.TP
+.B ladilog
+A JACK, LASH and a2jmidid log viewer.
+.TP
+.B ladiconf
+A GUI to setup JACK's configuration.
+.TP
+.B g15ladi
+A JACK monitor for g15 keyboards.
+.SH AUTHOR
+laditools were written by Marc-Olivier Barre <marco@marcochapeau.org> and
+Nedko Arnaudov <nedko@arnaudov.name>.
+.PP
+This manual page was written by Alessio Treglia <alessio@debian.org>,
+for the Debian project (but may be used by others).
