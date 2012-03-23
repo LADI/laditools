@@ -58,6 +58,19 @@ if not os.getenv("LADI_RELEASE") and \
 
 iconsizelist = "16 22 24 32 48 64 96 128 256".split()
 
+class my_build_extra(build_extra.build_extra):
+    def run(self):
+        data_files = self.distribution.data_files
+
+        for manpage in glob.glob('data/*.[0-9]'):
+            filename = os.path.split(manpage)[-1]
+            subdir = 'man%s' % filename[-1]
+            path = os.path.join('share', 'man', subdir)
+            print manpage
+            data_files.append((path, (manpage,)))
+
+        build_extra.build_extra.run(self)
+
 class build_icons_extra(build_icons.build_icons):
     def run(self):
         icondir = os.path.join('data', 'icons')
@@ -111,7 +124,7 @@ setup(name='laditools',
     scripts=pkg_scripts,
     data_files=pkg_data_files,
     cmdclass={
-        'build' : build_extra.build_extra,
+        'build' : my_build_extra,
         'build_i18n' :  build_i18n.build_i18n,
         'build_icons' : build_icons_extra,
         'clean' : clean_extra}
