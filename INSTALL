@@ -23,7 +23,7 @@ https://launchpad.net/laditools/+download
 Dependencies
 ------------
 
-A version of the Python interpreter greater than or equal to 2.6 is needed
+A version of the Python interpreter greater than or equal to 2.7 is needed
 to build, install and run LADI Tools. Python 3 support is not yet provided.
 
 Plus, the following dependencies must be satisfied:
