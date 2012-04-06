@@ -84,10 +84,11 @@ class build_icons_extra(build_icons.build_icons):
                 self.spawn(['mkdir', '-p', sizecategorydir])
                 for filename in os.listdir(os.path.join(scalabledir, category)):
                     newfilename = filename.rstrip('svg') + 'png'
-                    self.spawn(['rsvg',
+                    self.spawn(['rsvg-convert',
+                                '-f', 'png',
                                 '-w', size, '-h', size,
                                 os.path.join(scalabledir, category, filename),
-                                os.path.join(sizecategorydir, newfilename)])
+                                '-o', os.path.join(sizecategorydir, newfilename)])
 
         build_icons.build_icons.run(self)
 
