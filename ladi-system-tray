@@ -249,7 +249,7 @@ class LadiStatusIndicator(LadiStatusIcon):
         self.auto_updater = timeout_add (250, self.update, None)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=_('system tray icon that allows users to start, stop and'
+    parser = argparse.ArgumentParser(description=_('system tray icon that allows users to start, stop and '
                                                     'monitor JACK, as well as start some JACK related applications'),
                                      epilog=_('This program is part of the LADITools suite.'))
     parser.add_argument('--no-appindicator',
