@@ -7,16 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: laditools\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-23 18:18+0100\n"
+"POT-Creation-Date: 2012-04-12 10:07+0200\n"
 "PO-Revision-Date: 2012-04-12 08:14+0000\n"
 "Last-Translator: Alessio Treglia <quadrispro@ubuntu.com>\n"
 "Language-Team: Italian <it@li.org>\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2012-04-13 14:57+0000\n"
 "X-Generator: Launchpad (build 15070)\n"
-"Language: it\n"
 
 #: ../ladi-control-center:62
 #, python-format
@@ -216,7 +216,7 @@ msgstr "Esci"
 
 #: ../ladi-system-tray:252
 msgid ""
-"system tray icon that allows users to start, stop andmonitor JACK, as well "
+"system tray icon that allows users to start, stop and monitor JACK, as well "
 "as start some JACK related applications"
 msgstr ""
 
