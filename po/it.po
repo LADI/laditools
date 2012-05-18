@@ -6,16 +6,17 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: laditools\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-03-23 18:18+0100\n"
-"PO-Revision-Date: 2012-03-23 18:32+0000\n"
+"PO-Revision-Date: 2012-04-12 08:14+0000\n"
 "Last-Translator: Alessio Treglia <quadrispro@ubuntu.com>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-03-24 04:54+0000\n"
-"X-Generator: Launchpad (build 14981)\n"
+"X-Launchpad-Export-Date: 2012-04-13 14:57+0000\n"
+"X-Generator: Launchpad (build 15070)\n"
+"Language: it\n"
 
 #: ../ladi-control-center:62
 #, python-format
@@ -139,11 +140,11 @@ msgstr "<i>Fermato</i>"
 
 #: ../ladi-player:254 ../laditools/gtk/menu.py:145
 msgid "Load studio"
-msgstr ""
+msgstr "Carica studio"
 
 #: ../ladi-player:260 ../laditools/gtk/menu.py:158
 msgid "Delete studio"
-msgstr ""
+msgstr "Rimuovi studio"
 
 #: ../ladi-player:316 ../ladi-system-log:127
 #, python-format
@@ -237,7 +238,7 @@ msgstr ""
 
 #: ../data/ladi-control-center.desktop.in.h:3
 msgid "LADI configuration"
-msgstr ""
+msgstr "Configurazione LADI"
 
 #: ../data/ladi-player.desktop.in.h:2
 msgid "Control LADI system"
@@ -245,15 +246,15 @@ msgstr ""
 
 #: ../data/ladi-player.desktop.in.h:3
 msgid "LADI system controller"
-msgstr ""
+msgstr "Controller del sistema LADI"
 
 #: ../data/ladi-system-log.desktop.in.h:1
 msgid "LADI Log File Viewer"
-msgstr ""
+msgstr "Visualizzatore di registri LADI"
 
 #: ../data/ladi-system-log.desktop.in.h:2
 msgid "View or monitor LADI log files"
-msgstr ""
+msgstr "Visualizza o monitora i file di registro LADI"
 
 #: ../data/ladi-system-log.desktop.in.h:3
 msgid "Log file viewer"
@@ -261,7 +262,7 @@ msgstr "Visualizzatore di file di registro"
 
 #: ../data/ladi-system-tray.desktop.in.h:2
 msgid "Manage and configure JACK and ladish"
-msgstr ""
+msgstr "Amministra e configura JACK e ladish"
 
 #: ../data/ladi-system-tray.desktop.in.h:3
 msgid "LADI tray icon"
@@ -281,7 +282,7 @@ msgstr ""
 
 #: ../laditools/gtk/manager.py:78
 msgid "New studio"
-msgstr ""
+msgstr "Nuovo studio"
 
 #: ../laditools/gtk/manager.py:78 ../laditools/gtk/manager.py:84
 msgid "Studio name"
@@ -289,11 +290,11 @@ msgstr ""
 
 #: ../laditools/gtk/manager.py:83 ../laditools/gtk/menu.py:153
 msgid "Rename studio"
-msgstr ""
+msgstr "Rinomina studio"
 
 #: ../laditools/gtk/manager.py:95
 msgid "<b><big>Confirm studio delete</big></b>"
-msgstr ""
+msgstr "<b><big>Conferma rimozione studio</big></b>"
 
 #: ../laditools/gtk/manager.py:96
 #, python-format
@@ -342,7 +343,7 @@ msgstr ""
 
 #: ../laditools/gtk/menu.py:120
 msgid "Empty studio list"
-msgstr ""
+msgstr "Lista vuota"
 
 #: ../laditools/gtk/menu.py:133
 msgid "Diagnose"
@@ -354,7 +355,7 @@ msgstr "Avvia gladish"
 
 #: ../laditools/gtk/menu.py:144
 msgid "New studio..."
-msgstr ""
+msgstr "Nuovo studio..."
 
 #: ../laditools/gtk/menu.py:149
 msgid "Stop studio"
