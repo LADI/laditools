@@ -560,9 +560,9 @@ class jack_params_configure_command(configure_command):
 
         if len(param_names):
             # move cursor to first row and 'value' column
-            self.treeview.set_cursor(Gtk.TreePath(path=0),
-                                     focus_column=self.tvcolumn_value,
-                                     start_editing=False)
+            self.treeview.set_cursor(Gtk.TreePath(path=0), # path
+                                     self.tvcolumn_value,  # focus_column
+                                     False)                # start_editing
 
         return self.treeview
 
