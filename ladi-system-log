@@ -160,7 +160,7 @@ class LadiSystemLog(LadiApp):
                 lines = read_last(log['log_file'], self.max_lines)
                 for line in lines:
                     line = line.strip('\r\n') + '\r\n'
-                    log["term"].feed(line, -1)
+                    log["term"].feed(line)
             except ValueError:
                 sys.stderr.write( _("You called Popen with invalid arguments... dumbass\n") )
             except:
@@ -175,7 +175,7 @@ class LadiSystemLog(LadiApp):
         for log in self.log_files:
             line = log['log_file'].readline()
             while line:
-                log["term"].feed(line + '\r', -1)
+                log["term"].feed(line + '\r')
                 line = log['log_file'].readline()
             log['log_file'].seek(log['log_file'].tell())
         return True
