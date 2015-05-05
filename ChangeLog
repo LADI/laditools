@@ -1,0 +1,10 @@
+2012-05-18  Alessio Treglia  <quadrispro@ubuntu.com>
+
+	* Version 1.0.1:
+	  - Bump Python requirment to 2.7
+	  - Fix GtkTreeView's set_cursor() call to avoid ladi-control-center
+	    crashes, see Debian bug#671366
+	  - Translations update
+	  - Small improvements to the buildsystem
+	  - Cosmetic fixes
+
