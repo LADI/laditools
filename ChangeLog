@@ -1,3 +1,9 @@
+2015-09-13  Alessio Treglia  <quadrispro@ubuntu.com>
+
+	* Version 1.1.0:
+	  - Fix call to feed() - in python it takes just the string to feed,
+	    not the length too.
+
 2012-05-18  Alessio Treglia  <quadrispro@ubuntu.com>
 
 	* Version 1.0.1:
