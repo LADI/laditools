@@ -7,3 +7,4 @@ Exec=ladi-system-log
 Icon=ladi-system-log
 Categories=GNOME;GTK;Settings;
 _GenericName=Log file viewer
+_Keywords=Audio;JACK;Log Viewer;Ladish;a2jmidid;
