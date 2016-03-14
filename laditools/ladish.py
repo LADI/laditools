@@ -28,10 +28,8 @@ control_obj_path = "/org/ladish/Control"
 studio_obj_path = "/org/ladish/Studio"
 service_name = name_base
 
-LadishStatusType = Enum("STUDIO_STOPPED",
-                        "NOT_AVAILABLE",
-                        "NO_STUDIO_LOADED",
-                        "STUDIO_RUNNING")
+LadishStatusType = Enum("LadishStatusType",
+                        "STUDIO_STOPPED NOT_AVAILABLE NO_STUDIO_LOADED STUDIO_RUNNING")
 
 class LadishProxyError(Exception): pass
 class LadishStudioException(Exception): pass
