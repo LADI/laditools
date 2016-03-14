@@ -7,3 +7,4 @@ Exec=ladi-player
 Icon=ladi-player
 Categories=GTK;AudioVideo;Audio;
 _GenericName=LADI system controller
+_Keywords=Audio;JACK;Player;Studio;

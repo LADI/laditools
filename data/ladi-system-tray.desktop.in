@@ -7,3 +7,4 @@ Exec=ladi-system-tray
 Icon=laditools
 Categories=GNOME;GTK;AudioVideo;
 _GenericName=LADI tray icon
+_Keywords=Audio;JACK;Player;Studio;Indicator;Start;Stop;Monitor;

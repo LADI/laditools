@@ -7,3 +7,4 @@ Exec=ladi-control-center
 Icon=preferences-system
 Categories=GNOME;GTK;Settings;
 _GenericName=LADI configuration
+_Keywords=Audio;JACK;Configuration;
