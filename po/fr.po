@@ -20,7 +20,7 @@ msgstr ""
 #: ../ladi-control-center:62
 #, python-format
 msgid "ladish proxy creation failed: %s\n"
-msgstr "création du proxy ladish échouée"
+msgstr "création du proxy ladish échouée : %s\n"
 
 #: ../ladi-control-center:71
 msgid "ladish is not available\n"
