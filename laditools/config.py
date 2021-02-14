@@ -25,7 +25,7 @@ import sys
 if sys.version_info.major == 3:
     from configparser import SafeConfigParser, MissingSectionHeaderError
 elif sys.version_info.major == 2:
-    from ConfigParser import SafeConfigParser, MissingSectionHeaderError
+    from configparser import SafeConfigParser, MissingSectionHeaderError
 else:
     raise Exception("Unsupported Python's interpreter version.")
 

@@ -149,7 +149,7 @@ class JackConfigProxy(LadiController):
                                 iface_name=conf_iface_name)
 
     def name_owner_changed (name = None, old_owner = None, new_owner = None):
-        print "Name changed : %r" % name
+        print("Name changed : %r" % name)
 
     def get_selected_driver (self):
         isset, default, value = self.controller_iface.GetParameterValue (['engine', 'driver'])

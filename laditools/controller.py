@@ -36,7 +36,7 @@ class LadiController(object):
         try:
             self.is_started ()
             return True
-        except Exception, err:
+        except Exception as err:
             sys.stderr.write(str(err) + '\n')
             sys.stderr.flush()
             return False

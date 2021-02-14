@@ -106,7 +106,7 @@ class LadiManagerGtk(LadiManager):
 
     def on_about(self, *args, **kwargs):
         logo_pixbuf = GdkPixbuf.Pixbuf.new_from_file(find_data_file("laditools_logo.svg"))
-        copyright_str = u"""Copyright \xa9 2011-2012 Alessio Treglia <quadrispro@ubuntu.com>
+        copyright_str = """Copyright \xa9 2011-2012 Alessio Treglia <quadrispro@ubuntu.com>
 Copyright \xa9 2007-2010 Marc-Olivier Barre <marco@marcochapeau.org>
 Copyright \xa9 2007-2010 Nedko Arnaudov <nedko@arnaudov.name>"""
         ad = Gtk.AboutDialog.new()

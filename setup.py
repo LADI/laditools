@@ -66,7 +66,7 @@ class my_build_extra(build_extra.build_extra):
             filename = os.path.split(manpage)[-1]
             subdir = 'man%s' % filename[-1]
             path = os.path.join('share', 'man', subdir)
-            print manpage
+            print(manpage)
             data_files.append((path, (manpage,)))
 
         build_extra.build_extra.run(self)

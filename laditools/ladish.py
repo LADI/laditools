@@ -74,7 +74,7 @@ class LadishProxy(LadiController):
         try:
             self.studio_is_loaded()
             return True
-        except Exception, e:
+        except Exception as e:
             return False
 
     def studio_list(self):

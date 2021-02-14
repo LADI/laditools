@@ -228,7 +228,7 @@ class LadiManager(LadiController):
         if 'command' in kwargs:
             commandline = kwargs['command']
             command = commandline[0]
-            if command not in self.proc_list.keys():
+            if command not in list(self.proc_list.keys()):
                 self.proc_list[command] = subprocess.Popen(commandline)
             return True
         return False
@@ -251,7 +251,7 @@ class LadiManager(LadiController):
             raise NotImplementedError("This is a virtual method")
         else:
             # Take a look at the processes we've started so we don't get any zombies
-            for i in self.proc_list.keys():
+            for i in list(self.proc_list.keys()):
                 if self.proc_list[i].poll () != None:
                     self.proc_list.pop(i)
             return True

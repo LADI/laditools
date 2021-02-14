@@ -49,7 +49,7 @@ class LadiMenu(LadiManagerGtk):
     def on_menu_command(self, widget, function):
         try:
             function()
-        except Exception, e:
+        except Exception as e:
             error = Gtk.MessageDialog(None,
                                       Gtk.DialogFlags.MODAL,
                                       Gtk.MessageType.ERROR,
@@ -92,7 +92,7 @@ class LadiMenu(LadiManagerGtk):
                 item.show()
                 menu.append(item)
                 item.connect("button-release-event", function, module)
-        except Exception, err:
+        except Exception as err:
             sys.stderr.write(str(err))
             sys.stderr.flush()
         if not menu.get_children():
@@ -110,7 +110,7 @@ class LadiMenu(LadiManagerGtk):
                 item.show()
                 menu.append(item)
                 item.connect("button-release-event", function, studio) # "activate" is not used because of focus bug in pygtk
-        except Exception, e:
+        except Exception as e:
             self.menu_clear(menu)
             item = Gtk.MenuItem(_("Error obtaining studio list"))
             item.set_sensitive(False)
