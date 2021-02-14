@@ -54,7 +54,7 @@ os.environ['XGETTEXT_ARGS'] = "--language=Python"
 if not os.getenv("LADI_RELEASE") and \
         os.path.isfile(get_commit_script):
     commit = subprocess.check_output(["sh", get_commit_script]).strip()
-    laditools_version += "~" + commit
+    laditools_version += "~" + str(commit)
 
 iconsizelist = "16 22 24 32 48 64 96 128 256".split()
 

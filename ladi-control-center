@@ -317,7 +317,7 @@ class cell_renderer_param(Gtk.CellRendererPixbuf):
         if typechar == 'u' or typechar == 'i':
             try:
                 value = int(value_str)
-            except ValueError, e:
+            except (ValueError, e):
                 # Hide the widget (because it may display something else than what user typed in)
                 widget.hide()
                 # Display the error

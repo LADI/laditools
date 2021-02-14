@@ -36,13 +36,19 @@ from laditools import get_version_string
 from laditools import LadiConfiguration
 from laditools import LadiApp
 
+import gi
+
+gi.require_version('Gtk', '3.0')
+from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository import GObject
+
+gi.require_version('Vte', '2.91')
 from gi.repository import Vte
 
 from laditools.gtk import find_data_file
 
-timeout_add = GObject.timeout_add
+timeout_add = GLib.timeout_add
 
 # Default configuration
 max_lines_default = 100
@@ -155,12 +161,12 @@ class LadiSystemLog(LadiApp):
         # Make it do something...
         for log in self.log_files:
             try:
-                log['log_file'] = open(log['logfile_path'], "rb")
+                log['log_file'] = open(log['logfile_path'], "r")
                 sys.stderr.write (_("Opening %s...\n") % log['logfile_path'])
                 lines = read_last(log['log_file'], self.max_lines)
                 for line in lines:
-                    line = line.strip('\r\n') + '\r\n'
-                    log["term"].feed(line, -1)
+                    line = line.strip('\r\n') + '\r\n';
+                    log["term"].feed(bytes(line, "utf-8"))
             except ValueError:
                 sys.stderr.write( _("You called Popen with invalid arguments... dumbass\n") )
             except:
@@ -175,7 +181,7 @@ class LadiSystemLog(LadiApp):
         for log in self.log_files:
             line = log['log_file'].readline()
             while line:
-                log["term"].feed(line + '\r', -1)
+                log["term"].feed(bytes(line + '\r', "utf-8"))
                 line = log['log_file'].readline()
             log['log_file'].seek(log['log_file'].tell())
         return True
@@ -190,13 +196,13 @@ class LadiSystemLog(LadiApp):
 
     def on_clear_text (self, data=None):
         current_view = self.logview_notebook.get_current_page ()
-        self.log_files[current_view]["term"].feed ("\033[2J\033[;f", -1)
+        self.log_files[current_view]["term"].feed(bytes("\033[2J\033[;f", "utf-8"))
 
     def on_purge (self, data=None):
         current_view = self.logview_notebook.get_current_page ()
         # Opens the file in write anew mode thus clearing the file and close it right away
         open (self.log_files[current_view]['logfile_path'], "w+")
-        self.log_files[current_view]["term"].feed ("\033[2J\033[;f", -1)
+        self.log_files[current_view]["term"].feed(bytes("\033[2J\033[;f", "utf-8"))
 
     def run (self):
         self.ui.show_all()

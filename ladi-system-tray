@@ -149,7 +149,7 @@ class LadiStatusTray(Gtk.StatusIcon, LadiStatusIcon):
                 self.set_tooltip_safe ("JACK is stopped")
                 self.set_icon ("stopped")
             self.clear_diagnose_text()
-        except Exception, e:
+        except (Exception, e):
             self.set_tooltip_safe ("JACK is sick")
             self.set_diagnose_text(repr(e))
             self.set_icon ("stopped")
@@ -185,7 +185,7 @@ class LadiStatusIndicator(LadiStatusIcon):
                 self.set_tooltip_safe ("JACK is stopped")
                 self.set_icon ("stopped")
             self.clear_diagnose_text()
-        except Exception, e:
+        except (Exception, e):
             self.set_tooltip_safe ("JACK is sick")
             self.set_diagnose_text(repr(e))
             self.set_icon ("stopped")
