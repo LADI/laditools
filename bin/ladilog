@@ -43,7 +43,7 @@ try:
     pygtk.require ('2.0')
     import gtk
     import vte
-except Exception, e:
+except Exception as e:
     error = gtk.MessageDialog (None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, _("You need to get you dependencies right before you run this program. Ask your package maintainer why this is happening to you\n%s") % repr(e))
     error.run ()
     exit (1)
@@ -113,9 +113,9 @@ class ladilog(object):
             # skip logfiles that dont exist
             if not os.access(log['logfile_path'], os.R_OK):
                 self.log_files.remove(log)
-                print _("Skipping '%s' because it does not exist") % log['logfile_path']
+                print(_("Skipping '%s' because it does not exist") % log['logfile_path'])
             else:
-                print _("Watching '%s'") % log['logfile_path']
+                print(_("Watching '%s'") % log['logfile_path'])
 
         max_lines_text = self.param_dict['max_lines']
         self.max_lines = int (max_lines_text)
@@ -149,9 +149,9 @@ class ladilog(object):
                     log["term"].feed(line)
 
             except ValueError:
-                print _("You called Popen with invalid arguments... dumbass")
+                print(_("You called Popen with invalid arguments... dumbass"))
             except:
-                print _("Unexpected error:"), sys.exc_info ()[0]
+                print(_("Unexpected error:"), sys.exc_info ()[0])
 
         for log in self.log_files:
             self.logview_notebook.append_page (log["term"])
@@ -191,7 +191,7 @@ class ladilog(object):
 
 try:
     ladilog().run()
-except Exception, e:
+except Exception as e:
     error = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, _("Unexpected error\n\n") + repr(e))
     error.run()
     exit(1)

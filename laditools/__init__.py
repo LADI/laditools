@@ -15,12 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from jack_controller import jack_controller
-from jack_configure import jack_configure
-from ladimenu import manager, find_data_file
-from a2j_controller import a2j_controller
-from a2j_menu import a2j_menu
-from ladish_controller import ladish_proxy
+from .jack_controller import jack_controller
+from .jack_configure import jack_configure
+from .ladimenu import manager, find_data_file
+from .a2j_controller import a2j_controller
+from .a2j_menu import a2j_menu
+from .ladish_controller import ladish_proxy
 # from error import error
-from config import config
-from TreeViewTooltips import TreeViewTooltips
+from .config import config
+from .TreeViewTooltips import TreeViewTooltips

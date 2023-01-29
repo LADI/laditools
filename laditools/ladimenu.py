@@ -23,11 +23,11 @@ pygtk.require('2.0')
 import gtk
 import gobject
 import subprocess
-from config import config
-from jack_configure import jack_configure
-from jack_controller import jack_controller
-from a2j_controller import a2j_controller
-from ladish_controller import ladish_proxy
+from .config import config
+from .jack_configure import jack_configure
+from .jack_controller import jack_controller
+from .a2j_controller import a2j_controller
+from .ladish_controller import ladish_proxy
 
 # Default launcher menu :
 menu_default = [{"Configure": "ladiconf"},
@@ -239,7 +239,7 @@ class manager:
     def on_menu_command(self, widget, function):
         try:
             function()
-        except Exception, e:
+        except Exception as e:
             error = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Error executing " + repr(function) + "Unexpected error\n\n" + repr(e))
             error.run()
             error.destroy()
@@ -259,8 +259,8 @@ class manager:
                 item.show()
                 menu.append(item)
                 item.connect("button-release-event", function, studio) # "activate" is not used because of focus bug in pygtk
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
             self.menu_clear(menu)
             item = gtk.MenuItem("Error obtaining studio list")
             item.set_sensitive(False)
@@ -284,8 +284,8 @@ class manager:
 
         # Add the laucher entries at the beginning of the menu
         for items in self.menu_array:
-            menu_label = items.keys()[0] + "..."
-            path = items.values()[0]
+            menu_label = list(items.keys())[0] + "..."
+            path = list(items.values())[0]
             menu_items.append((gtk.ImageMenuItem(menu_label), self.on_menu_launcher, path))
 
         menu = gtk.Menu()

@@ -292,7 +292,7 @@ class TreeViewTooltips:
     def get_tooltip(self, view, column, path):
         'See the module doc string for a description of this method'
         
-        raise NotImplemented, 'Subclass must implement get_tooltip()'
+        raise NotImplemented('Subclass must implement get_tooltip()')
 
 
 if __name__ == '__main__':

@@ -144,10 +144,10 @@ class wmladi (wmoo.Application, laditools.manager):
                     self.clear_line(5)
                     self.started = False
             self.clear_diagnose_text()
-        except Exception, e:
+        except Exception as e:
             self.set_diagnose_text(repr(e))
             if debug:
-                print repr (e)
+                print(repr (e))
             self.set_line(0, "JACK")
             self.set_line(1, "is sick")
             self.clear_line(2)

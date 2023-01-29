@@ -42,7 +42,7 @@ class jack_configure:
 #        self.bus.add_signal_receiver (self.name_owner_changed, dbus_interface = controller_interface_name, signal_name = "NameOwnerChanged")
 
     def name_owner_changed (name = None, old_owner = None, new_owner = None):
-        print "Name changed : %r" % name
+        print("Name changed : %r" % name)
 
     def get_selected_driver (self):
         isset, default, value = self.iface.GetParameterValue (['engine', 'driver'])

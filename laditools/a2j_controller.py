@@ -31,7 +31,7 @@ class a2j_controller:
         try:
             self.iface.is_started()
             return True
-        except Exception, e:
+        except Exception as e:
             #print repr(e)
             return False
 

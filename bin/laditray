@@ -107,7 +107,7 @@ class laditray (gtk.StatusIcon, laditools.manager):
                 self.set_tooltip_safe ("JACK is stopped")
                 self.set_icon ("stopped")
             self.clear_diagnose_text()
-        except Exception, e:
+        except Exception as e:
             self.set_tooltip_safe ("JACK is sick")
             self.set_diagnose_text(repr(e))
             self.set_icon ("stopped")

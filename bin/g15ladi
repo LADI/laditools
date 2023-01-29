@@ -194,8 +194,8 @@ class jackctl_g15:
                         status_line += " started in non-realtime mode"
                 else:
                     status_line += " stopped"
-        except Exception, e:
-            print repr(e)
+        except Exception as e:
+            print(repr(e))
             status_line = "JACK cannot be connected"
             if self.jack:
                 self.g15.clear(False)
