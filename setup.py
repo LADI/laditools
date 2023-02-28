@@ -28,7 +28,7 @@ from distutils.command.clean import clean
 from DistUtilsExtra.command import *
 
 laditools_version = "1.0"
-get_commit_script = "gitcommit.sh"
+#get_commit_script = "gitcommit.sh"
 pkg_short_desc = "Linux Audio Desktop Integration Tools"
 pkg_long_desc = """LADITools is a set of tools aiming to achieve the goals of the LADI project to improve desktop integration and user workflow of Linux audio system based on JACK and ladish. Those tools take advantage of the D-Bus interfaces recently added to JACK and ladish to ease the configuration and use of those two great softwares.
 
@@ -51,10 +51,10 @@ pkg_scripts = ['g15ladi',
 
 os.environ['XGETTEXT_ARGS'] = "--language=Python"
 
-if not os.getenv("LADI_RELEASE") and \
-        os.path.isfile(get_commit_script):
-    commit = subprocess.check_output(["sh", get_commit_script]).strip()
-    laditools_version += "~" + str(commit)
+#if not os.getenv("LADI_RELEASE") and \
+#        os.path.isfile(get_commit_script):
+#    commit = subprocess.check_output(["sh", get_commit_script]).strip()
+#    laditools_version += "~" + str(commit)
 
 iconsizelist = "16 22 24 32 48 64 96 128 256".split()
 
