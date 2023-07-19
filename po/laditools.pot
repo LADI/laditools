@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-12 10:08+0200\n"
+"POT-Creation-Date: 2023-07-19 19:29-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../ladi-control-center:62
-#, python-format
+#, c-format
 msgid "ladish proxy creation failed: %s\n"
 msgstr ""
 
@@ -51,58 +51,21 @@ msgid "Unexpected error!\n"
 msgstr ""
 
 #: ../ladi-control-center:486
-#, python-format
+#, c-format
 msgid "Double-click to schedule reset of value to %s"
 msgstr ""
 
 #: ../ladi-control-center:489
-#, python-format
+#, c-format
 msgid "Value will be reset to %s"
-msgstr ""
-
-#. 'engine' item
-#: ../ladi-control-center:574 ../laditools/gtk/menu.py:80
-msgid "JACK engine"
-msgstr ""
-
-#: ../ladi-control-center:581
-msgid "JACK driver"
-msgstr ""
-
-#. 'params' item
-#: ../ladi-control-center:584 ../laditools/gtk/menu.py:85
-#, python-format
-msgid "JACK \"%s\" driver"
-msgstr ""
-
-#: ../ladi-control-center:592 ../laditools/gtk/menu.py:91
-#, python-format
-msgid "JACK \"%s\""
 msgstr ""
 
 #: ../ladi-control-center:597 ../data/ladi-control-center.desktop.in.h:1
 msgid "LADI Control Center"
 msgstr ""
 
-#: ../ladi-control-center:676
-msgid "Convenient graphical interface for configuring JACK"
-msgstr ""
-
-#: ../ladi-control-center:677 ../ladi-player:367 ../ladi-system-log:207
-#: ../ladi-system-tray:254 ../wmladi:252
-msgid "This program is part of the LADITools suite."
-msgstr ""
-
-#: ../ladi-control-center:682
-msgid "select the module to configure"
-msgstr ""
-
-#: ../ladi-control-center:686
-msgid "list available modules"
-msgstr ""
-
 #: ../ladi-control-center:696
-#, python-format
+#, c-format
 msgid "Conflicting options, type %s --help for a list of options."
 msgstr ""
 
@@ -111,74 +74,46 @@ msgid "Available modules: "
 msgstr ""
 
 #: ../ladi-control-center:708
-#, python-format
 msgid ""
 "Module %(mod)s is not available, type '%(cmd)s -l' for a list of available "
 "modules."
 msgstr ""
 
-#: ../ladi-player:43 ../ladi-system-tray:208
-#: ../data/ladi-player.desktop.in.h:1
+#: ../ladi-player:43 ../ladi-system-tray:208 ../data/ladi-player.desktop.in.h:1
 msgid "LADI Player"
 msgstr ""
 
-#: ../ladi-player:66
-msgid "No studio is available."
-msgstr ""
-
-#: ../ladi-player:217
-msgid "<i>Stopped</i>"
-msgstr ""
-
-#: ../ladi-player:254 ../laditools/gtk/menu.py:145
-msgid "Load studio"
-msgstr ""
-
-#: ../ladi-player:260 ../laditools/gtk/menu.py:158
-msgid "Delete studio"
-msgstr ""
-
-#: ../ladi-player:316 ../ladi-system-log:127
-#, python-format
+#: ../ladi-player:316 ../ladi-system-log:133
+#, c-format
 msgid "Loading interface from %s\n"
 msgstr ""
 
-#: ../ladi-player:365
-msgid ""
-"graphical front-end that allows users to start, stop and monitor JACK, as "
-"well as start some JACK related applications."
-msgstr ""
-
-#: ../ladi-system-log:76
+#: ../ladi-system-log:82
 msgid "LADI Log Viewer"
 msgstr ""
 
-#: ../ladi-system-log:115
-#, python-format
+#: ../ladi-system-log:121
+#, c-format
 msgid "Skipping '%s' because it does not exist\n"
 msgstr ""
 
-#: ../ladi-system-log:117
-#, python-format
+#: ../ladi-system-log:123
+#, c-format
 msgid "Watching %s\n"
 msgstr ""
 
-#: ../ladi-system-log:159
-#, python-format
+#: ../ladi-system-log:165
+#, c-format
 msgid "Opening %s...\n"
 msgstr ""
 
-#: ../ladi-system-log:165
+#: ../ladi-system-log:171
 msgid "You called Popen with invalid arguments... dumbass\n"
 msgstr ""
 
-#: ../ladi-system-log:167
-#, python-format
+#: ../ladi-system-log:173
+#, c-format
 msgid "Unexpected error: %s\n"
-msgstr ""
-
-#: ../ladi-system-log:206
-msgid "JACK, ladish and a2jmidid log viewer"
 msgstr ""
 
 #: ../ladi-system-tray:51 ../data/ladi-system-tray.desktop.in.h:1
@@ -197,31 +132,17 @@ msgstr ""
 msgid "Log Viewer"
 msgstr ""
 
-#: ../ladi-system-tray:218 ../laditools/gtk/menu.py:182
+#: ../ladi-system-tray:218 ../laditools/gtk/menu.py:196
 msgid "About"
 msgstr ""
 
-#: ../ladi-system-tray:219 ../laditools/gtk/a2jmenu.py:31
-#: ../laditools/gtk/menu.py:183
+#: ../ladi-system-tray:219 ../laditools/gtk/a2jmenu.py:33
+#: ../laditools/gtk/menu.py:197
 msgid "Quit"
-msgstr ""
-
-#: ../ladi-system-tray:252
-msgid ""
-"system tray icon that allows users to start, stop and monitor JACK, as well "
-"as start some JACK related applications"
-msgstr ""
-
-#: ../ladi-system-tray:257
-msgid "Force fallback to system tray."
 msgstr ""
 
 #: ../wmladi:53
 msgid "LADI WindowMaker dockapp"
-msgstr ""
-
-#: ../wmladi:251
-msgid "Window maker dockapp for jackdbus"
 msgstr ""
 
 #: ../data/ladi-control-center.desktop.in.h:2
@@ -260,15 +181,15 @@ msgstr ""
 msgid "LADI tray icon"
 msgstr ""
 
-#: ../laditools/gtk/a2jmenu.py:27
+#: ../laditools/gtk/a2jmenu.py:29
 msgid "Start bridging"
 msgstr ""
 
-#: ../laditools/gtk/a2jmenu.py:28
+#: ../laditools/gtk/a2jmenu.py:30
 msgid "Stop bridging"
 msgstr ""
 
-#: ../laditools/gtk/a2jmenu.py:30
+#: ../laditools/gtk/a2jmenu.py:32
 msgid "Reactivate"
 msgstr ""
 
@@ -280,7 +201,7 @@ msgstr ""
 msgid "Studio name"
 msgstr ""
 
-#: ../laditools/gtk/manager.py:83 ../laditools/gtk/menu.py:153
+#: ../laditools/gtk/manager.py:83 ../laditools/gtk/menu.py:167
 msgid "Rename studio"
 msgstr ""
 
@@ -318,6 +239,22 @@ msgid ""
 "\n"
 msgstr ""
 
+#. 'engine' item
+#: ../laditools/gtk/menu.py:80
+msgid "JACK engine"
+msgstr ""
+
+#. 'params' item
+#: ../laditools/gtk/menu.py:85
+#, python-format
+msgid "JACK \"%s\" driver"
+msgstr ""
+
+#: ../laditools/gtk/menu.py:91
+#, python-format
+msgid "JACK \"%s\""
+msgstr ""
+
 #: ../laditools/gtk/menu.py:99
 msgid "Empty config list"
 msgstr ""
@@ -330,66 +267,82 @@ msgstr ""
 msgid "Empty studio list"
 msgstr ""
 
-#: ../laditools/gtk/menu.py:133
+#: ../laditools/gtk/menu.py:129
+msgid "Logs"
+msgstr ""
+
+#: ../laditools/gtk/menu.py:130
+msgid "Player"
+msgstr ""
+
+#: ../laditools/gtk/menu.py:146
 msgid "Diagnose"
 msgstr ""
 
-#: ../laditools/gtk/menu.py:137
+#: ../laditools/gtk/menu.py:150
 msgid "Start gladish"
 msgstr ""
 
-#: ../laditools/gtk/menu.py:144
+#: ../laditools/gtk/menu.py:158
 msgid "New studio..."
 msgstr ""
 
-#: ../laditools/gtk/menu.py:149
+#: ../laditools/gtk/menu.py:159
+msgid "Load studio"
+msgstr ""
+
+#: ../laditools/gtk/menu.py:163
 msgid "Stop studio"
 msgstr ""
 
-#: ../laditools/gtk/menu.py:150
+#: ../laditools/gtk/menu.py:164
 msgid "Save studio"
 msgstr ""
 
-#: ../laditools/gtk/menu.py:152
+#: ../laditools/gtk/menu.py:166
 msgid "Start studio"
 msgstr ""
 
-#: ../laditools/gtk/menu.py:154
+#: ../laditools/gtk/menu.py:168
 msgid "Unload studio"
 msgstr ""
 
-#: ../laditools/gtk/menu.py:156
+#: ../laditools/gtk/menu.py:170
 msgid "Start automatic studio"
 msgstr ""
 
-#: ../laditools/gtk/menu.py:159
+#: ../laditools/gtk/menu.py:172
+msgid "Delete studio"
+msgstr ""
+
+#: ../laditools/gtk/menu.py:173
 msgid "Reactivate ladishd"
 msgstr ""
 
-#: ../laditools/gtk/menu.py:164
+#: ../laditools/gtk/menu.py:178
 msgid "Start JACK server"
 msgstr ""
 
-#: ../laditools/gtk/menu.py:166
+#: ../laditools/gtk/menu.py:180
 msgid "Reset Xruns"
 msgstr ""
 
-#: ../laditools/gtk/menu.py:168
+#: ../laditools/gtk/menu.py:182
 msgid "Stop JACK server"
 msgstr ""
 
-#: ../laditools/gtk/menu.py:169
+#: ../laditools/gtk/menu.py:183
 msgid "Reactivate JACK"
 msgstr ""
 
-#: ../laditools/gtk/menu.py:176
+#: ../laditools/gtk/menu.py:190
 msgid "Start A2J bridge"
 msgstr ""
 
-#: ../laditools/gtk/menu.py:178
+#: ../laditools/gtk/menu.py:192
 msgid "Stop A2J bridge"
 msgstr ""
 
-#: ../laditools/gtk/menu.py:179
+#: ../laditools/gtk/menu.py:193
 msgid "Reactivate A2J"
 msgstr ""

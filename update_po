@@ -3,9 +3,10 @@
 oldpwd="`pwd`"
 
 cd po
+intltool-update --gettext-package laditools --pot
 for i in `ls *.po`
 do
-   intltool-update -g laditools -d `echo $i | sed -e 's/.po//'`
+   intltool-update --gettext-package laditools --dist `echo $i | sed -e 's/.po//'`
 done
 
 cd $oldpwd
