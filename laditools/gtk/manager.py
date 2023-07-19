@@ -101,7 +101,7 @@ class LadiManagerGtk(LadiManager):
             return True
         return False
 
-    def studio_configure(self, item, event, module):
+    def studio_configure(self, item, module):
         LadiManager.launcher_exec(self, command=['%s' % self._launcher_which('ladi-control-center') , '-m', module])
 
     def on_about(self, *args, **kwargs):

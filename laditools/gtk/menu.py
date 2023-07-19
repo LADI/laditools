@@ -80,18 +80,18 @@ class LadiMenu(LadiManagerGtk):
             item = Gtk.MenuItem(_("JACK engine"))
             item.show()
             menu.append(item)
-            item.connect("button-release-event", function, "engine")
+            item.connect("activate", function, "engine")
             # 'params' item
             item = Gtk.MenuItem(_('JACK "%s" driver') % jack.get_selected_driver())
             item.show()
             menu.append(item)
-            item.connect("button-release-event", function, "params")
+            item.connect("activate", function, "params")
             for internal in jack.read_container(['internals']):
                 module = str(internal)
                 item = Gtk.MenuItem(_('JACK "%s"') % module)
                 item.show()
                 menu.append(item)
-                item.connect("button-release-event", function, module)
+                item.connect("activate", function, module)
         except Exception as err:
             sys.stderr.write(str(err))
             sys.stderr.flush()
@@ -109,7 +109,7 @@ class LadiMenu(LadiManagerGtk):
                 item = Gtk.MenuItem(studio)
                 item.show()
                 menu.append(item)
-                item.connect("button-release-event", function, studio) # "activate" is not used because of focus bug in pygtk
+                item.connect("activate", function, studio)
         except Exception as e:
             self.menu_clear(menu)
             item = Gtk.MenuItem(_("Error obtaining studio list"))
@@ -195,11 +195,11 @@ class LadiMenu(LadiManagerGtk):
         menu.show_all()
         return menu
 
-    def studio_load(self, item, event, studio):
-        LadiManagerGtk.studio_load(self, item=item, event=event, studio=studio)
+    def studio_load(self, item, studio):
+        LadiManagerGtk.studio_load(self, item=item, studio=studio)
 
-    def studio_delete(self, item, event, studio):
-        LadiManagerGtk.studio_delete(self, item=item, event=event, studio=studio)
+    def studio_delete(self, item, studio):
+        LadiManagerGtk.studio_delete(self, item=item, studio=studio)
 
     def menu_activate(self):
         menu = self.create_menu()
