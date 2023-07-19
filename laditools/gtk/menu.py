@@ -122,6 +122,19 @@ class LadiMenu(LadiManagerGtk):
             item.show()
             menu.append(item)
 
+    def tools_list_fill(self, widget, function):
+        menu = widget.get_submenu()
+        self.menu_clear(menu)
+        tools = [
+            (_("Logs"), "ladi-system-log"),
+            (_("Player"), "ladi-player")
+            ]
+        for title, command in tools:
+            item = Gtk.MenuItem(title)
+            item.show()
+            menu.append(item)
+            item.connect("activate", function, command)
+
     def create_menu(self):
         menu_items = []
 
@@ -136,6 +149,7 @@ class LadiMenu(LadiManagerGtk):
         if ladish_available:
             menu_items.append((Gtk.ImageMenuItem(_("Start gladish")), self.on_menu_launch_handler, "gladish"))
 
+        menu_items.append((Gtk.ImageMenuItem("Tools ..."), self.tools_list_fill, self.on_menu_launch_handler))
         menu_items.append((Gtk.ImageMenuItem("Configure ..."), self.configure_list_fill, self.studio_configure))
 
         menu = Gtk.Menu()
@@ -190,7 +204,7 @@ class LadiMenu(LadiManagerGtk):
                 exec_args = menu_tuple[3:]
             menu.append(item)
             if type(item) is not Gtk.SeparatorMenuItem:
-                if callback in (self.studio_list_fill, self.configure_list_fill):
+                if callback in (self.tools_list_fill, self.studio_list_fill, self.configure_list_fill):
                     item.set_submenu(Gtk.Menu())
                 item.connect("activate", callback, exec_path, *exec_args)
         menu.show_all()
