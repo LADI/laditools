@@ -60,12 +60,12 @@ class LadiMenu(LadiManagerGtk):
             error.run()
             error.destroy()
 
-    def on_menu_launch_handler(self, widget, command):
+    def on_menu_launch_handler(self, widget, command, kill=True):
         commandline = command.split()
         commandline[0] = command = self._launcher_which(commandline[0])
         if not command in self.proc_list:
             LadiManagerGtk.launcher_exec(self, command=commandline)
-        else:
+        elif kill:
             LadiManagerGtk.launcher_kill(self, command=commandline)
 
     def menu_clear(self, menu):
@@ -187,11 +187,12 @@ class LadiMenu(LadiManagerGtk):
             if len(menu_tuple) > 1:
                 callback = menu_tuple[1]
                 exec_path = menu_tuple[2]
+                exec_args = menu_tuple[3:]
             menu.append(item)
             if type(item) is not Gtk.SeparatorMenuItem:
                 if callback in (self.studio_list_fill, self.configure_list_fill):
                     item.set_submenu(Gtk.Menu())
-                item.connect("activate", callback, exec_path)
+                item.connect("activate", callback, exec_path, *exec_args)
         menu.show_all()
         return menu
 
