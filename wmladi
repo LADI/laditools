@@ -163,10 +163,10 @@ class wmladi (wmoo.Application, LadiMenu, LadiApp):
                     self.clear_line(5)
                     self.started = False
             self.clear_diagnose_text()
-        except Exception, e:
+        except Exception as e:
             self.set_diagnose_text(repr(e))
             if debug:
-                print repr (e)
+                print(repr(e))
             self.set_line(0, "JACK")
             self.set_line(1, "is sick")
             self.clear_line(2)
@@ -243,8 +243,8 @@ class wmladi (wmoo.Application, LadiMenu, LadiApp):
                        data=None,
                        button=3,
                        activate_time=0)
-        except Exception, e:
-            print repr(e)
+        except Exception as e:
+            print(repr(e))
             pass
 
 if __name__ == '__main__':
